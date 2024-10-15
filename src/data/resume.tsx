@@ -238,9 +238,14 @@ export const DATA = {
       ],
       links: [
         {
-          type: "Website",
-          href: "https://automatic.chat",
-          icon: <Icons.globe className="size-3" />,
+          type: "Source",
+          href: "https://github.com/Axeloooo/Ecommerce-Client",
+          icon: <Icons.github className="size-3" />,
+        },
+        {
+          type: "Source",
+          href: "https://github.com/Axeloooo/Ecommerce-API",
+          icon: <Icons.github className="size-3" />,
         },
       ],
       image: "/game-heaven-logo.png",
@@ -255,7 +260,7 @@ export const DATA = {
       mlh: "https://s3.amazonaws.com/logged-assets/trust-badge/2019/mlh-trust-badge-2019-white.svg",
       links: [
         {
-          title: "View Certificate",
+          title: "View Credential",
           href: "https://www.credly.com/badges/6f786f17-4bd1-48f9-b804-138c8d752e70/linked_in?t=scu7wq",
           icon: <Icons.globe className="size-3" />,
         },
