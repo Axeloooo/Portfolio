@@ -1,4 +1,5 @@
 import Navbar from "@/components/navbar";
+import FaviconSwitcher from "@/components/favicon-switcher";
 import { Analytics } from "@vercel/analytics/react";
 import { ThemeProvider } from "@/components/theme-provider";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -21,6 +22,12 @@ export const metadata: Metadata = {
     template: `%s | ${DATA.name}`,
   },
   description: DATA.description,
+  icons: {
+    icon: [
+      { url: "/favicon-light.ico", media: "(prefers-color-scheme: light)" },
+      { url: "/favicon-dark.ico", media: "(prefers-color-scheme: dark)" },
+    ],
+  },
   openGraph: {
     title: `${DATA.name}`,
     description: DATA.description,
@@ -65,6 +72,7 @@ export default function RootLayout({
       >
         <ThemeProvider attribute="class" defaultTheme="light">
           <TooltipProvider delayDuration={0}>
+            <FaviconSwitcher />
             {children}
             <SpeedInsights />
             <Analytics />
