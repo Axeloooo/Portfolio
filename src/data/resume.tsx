@@ -184,7 +184,7 @@ export const DATA = {
       location: "Calgary, AB",
       title: "Frontend Engineer (Part-Time)",
       logoUrl: "/bandist-logo.png",
-      start: "Sep.2022",
+      start: "Sep. 2022",
       end: "Apr. 2023",
       description:
         "Connected Django app to Ticketmaster/Spotify, cut costs 20%, and managed PostgreSQL/GCP for 10k+ MAU; shipped a Flutter mobile app with 99.95% uptime on Firebase.",
