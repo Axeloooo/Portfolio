@@ -1,9 +1,11 @@
 import Navbar from "@/components/navbar";
+import FaviconSwitcher from "@/components/favicon-switcher";
 import { Analytics } from "@vercel/analytics/react";
 import { ThemeProvider } from "@/components/theme-provider";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { DATA } from "@/data/resume";
 import { cn } from "@/lib/utils";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 import type { Metadata } from "next";
 import { Inter as FontSans } from "next/font/google";
 import "./globals.css";
@@ -20,6 +22,12 @@ export const metadata: Metadata = {
     template: `%s | ${DATA.name}`,
   },
   description: DATA.description,
+  icons: {
+    icon: [
+      { url: "/favicon-light.ico", media: "(prefers-color-scheme: light)" },
+      { url: "/favicon-dark.ico", media: "(prefers-color-scheme: dark)" },
+    ],
+  },
   openGraph: {
     title: `${DATA.name}`,
     description: DATA.description,
@@ -64,7 +72,9 @@ export default function RootLayout({
       >
         <ThemeProvider attribute="class" defaultTheme="light">
           <TooltipProvider delayDuration={0}>
+            <FaviconSwitcher />
             {children}
+            <SpeedInsights />
             <Analytics />
             <Navbar />
           </TooltipProvider>
