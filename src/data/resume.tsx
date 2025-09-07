@@ -2,13 +2,15 @@ import { Icons } from "@/components/icons";
 import { HomeIcon, NotebookIcon } from "lucide-react";
 
 export const DATA = {
-  name: "Axel Sanchez",
+  name: "Axel Sanchez Portfolio",
   initials: "AOSP",
   url: "https://axelsanchez.me",
   location: "Calgary, Alberta",
   locationLink: "https://www.google.com/maps/place/calgary",
-  description: "hello",
-  summary: "world",
+  description:
+    "Software Engineer, Researcher, and Entrepreneur. On my free time I enjoy football, lifting weights and muay thai.",
+  summary:
+    "I’m Axel Sanchez, a Software Engineer from Mexico. Welcome to my portfolio website, where you’ll find my latest work, research, blogs, and projects. I specialize in building high-performance systems, from GPU computing and cloud microservices to dApps and DeFi solutions on blockchain.",
   avatarUrl: "/me.png",
   skills: [
     // Programming Languages
@@ -94,6 +96,12 @@ export const DATA = {
         icon: Icons.email,
         navbar: false,
       },
+      resume: {
+        name: "Download Resume",
+        url: "/Resume.pdf",
+        icon: Icons.download,
+        navbar: true,
+      },
     },
   },
   work: [
@@ -106,18 +114,20 @@ export const DATA = {
       logoUrl: "/microsoft-logo.jpeg",
       start: "May 2025",
       end: "Aug. 2025",
-      description: "",
+      description:
+        "Built a custom CUDA all-reduce (TRT plugin) on H200s with NVLink/P2P fallback; optimized GPU comms/GEMM and integrated research into production experiments.",
     },
     {
       company: "Agrivanna",
       href: "https://www.agrivanna.com/",
       badges: [],
       location: "Calgary, Alberta",
-      title: "Full Stack Engineer Part-Time",
+      title: "Full Stack Engineer (Part-Time)",
       logoUrl: "/agrivanna-logo.jpeg",
-      start: "Sept. 2024",
+      start: "Sep. 2024",
       end: "Apr. 2025",
-      description: "",
+      description:
+        "Shipped Go/Java microservices and ML features (scikit-learn + PyTorch) for personalized health; deployed FastAPI on Kubernetes and mentored teammates on Docker/K8s.",
     },
     {
       company: "Aptum",
@@ -128,7 +138,8 @@ export const DATA = {
       logoUrl: "/aptum-logo.png",
       start: "May 2024",
       end: "Apr. 2025",
-      description: "",
+      description:
+        "Scaled Kubernetes infra with Terraform/Helm and Jenkins CI, doubling throughput; migrated a monolith to gRPC microservices (Java/Spring/MySQL) with a 66% perf lift.",
     },
     {
       company: "Student Energy UCalgary",
@@ -137,20 +148,22 @@ export const DATA = {
       location: "Calgary, Alberta",
       title: "Vice-President Software Development",
       logoUrl: "/seuc-logo.png",
-      start: "Sept. 2023",
+      start: "Sep. 2023",
       end: "Apr. 2024",
-      description: "",
+      description:
+        "Launched a Next.js/TypeScript news app (+70% engagement) and automated AWS infra with Terraform + GitHub Actions; led hiring and set engineering standards.",
     },
     {
       company: "ReThread",
       badges: [],
       href: "#",
       location: "Calgary, Alberta",
-      title: "Backend Engineer Part-Time",
+      title: "Backend Engineer (Part-Time)",
       logoUrl: "/rethread-logo.png",
-      start: "Sept. 2023",
+      start: "Sep. 2023",
       end: "Apr. 2024",
-      description: "",
+      description:
+        "Designed TypeScript/Express microservices with Redis caching on AWS/Kubernetes; prototyped a PyTorch CNN for fabric classification and set CI/code-review practices.",
     },
     {
       company: "Sigma Foodservice",
@@ -161,18 +174,20 @@ export const DATA = {
       logoUrl: "/sigma-logo.png",
       start: "May 2023",
       end: "Aug. 2023",
-      description: "",
+      description:
+        "Integrated Copomex API in .NET/C# for 10k+ locations (↑ address accuracy 80%); added Playwright E2E + Jenkins to slash QA time and speed deployments.",
     },
     {
       company: "Bandist",
       href: "#",
       badges: [],
       location: "Calgary, AB",
-      title: "Frontend Engineer Part-Time",
+      title: "Frontend Engineer (Part-Time)",
       logoUrl: "/bandist-logo.png",
-      start: "Sept.2022",
+      start: "Sep.2022",
       end: "Apr. 2023",
-      description: "",
+      description:
+        "Connected Django app to Ticketmaster/Spotify, cut costs 20%, and managed PostgreSQL/GCP for 10k+ MAU; shipped a Flutter mobile app with 99.95% uptime on Firebase.",
     },
   ],
   education: [
@@ -181,7 +196,7 @@ export const DATA = {
       href: "https://schulich.ucalgary.ca/",
       degree: "Bachelor of Science in Software Engineering",
       logoUrl: "/ucalgary-logo.jpeg",
-      start: "Sept. 2021",
+      start: "Sep. 2021",
       end: "Apr. 2026",
     },
   ],
@@ -189,7 +204,7 @@ export const DATA = {
     {
       title: "ChoreShare",
       href: "#",
-      dates: "January 2024 - April 2024",
+      dates: "Jan. 2024 - Apr. 2024",
       active: true,
       description:
         "A cross-platform application for household roommates to coordinate tasks.",
@@ -222,7 +237,7 @@ export const DATA = {
     {
       title: "MyNotes",
       href: "#",
-      dates: "December 2023 - January 2024",
+      dates: "Dec. 2023 - Jan. 2024",
       active: true,
       description:
         "A simple note-taking mobile app designed for capturing important ideas and reminders.",
@@ -240,7 +255,7 @@ export const DATA = {
     {
       title: "The Last Show",
       href: "#",
-      dates: "January 2023 - April 2023",
+      dates: "Jan. 2023 - Apr. 2023",
       active: true,
       description:
         "A serverless web app that automatically generates personalized obituaries for people.",
@@ -269,7 +284,7 @@ export const DATA = {
     {
       title: "Game Heaven",
       href: "#",
-      dates: "January 2023 - August 2023",
+      dates: "Jan. 2023 - Aug. 2023",
       active: true,
       description:
         "Developed an AI Customer Support Chatbot which automatically responds to customer support tickets using the latest GPT models.",
@@ -319,7 +334,7 @@ export const DATA = {
     },
     {
       title: "Microsoft Certified Azure Fundamentals",
-      dates: "February 2025",
+      dates: "Feb. 2025",
       image: "microsoft-az900-logo.png",
       mlh: "https://s3.amazonaws.com/logged-assets/trust-badge/2019/mlh-trust-badge-2019-white.svg",
       links: [
