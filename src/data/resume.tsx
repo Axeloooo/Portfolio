@@ -2,37 +2,73 @@ import { Icons } from "@/components/icons";
 import { HomeIcon, NotebookIcon } from "lucide-react";
 
 export const DATA = {
-  name: "Axel Sanchez",
+  name: "Axel Sanchez Portfolio",
   initials: "AOSP",
-  url: "https://axelo.me",
-  location: "Calgary, AB",
+  url: "https://axelsanchez.me",
+  location: "Calgary, Alberta",
   locationLink: "https://www.google.com/maps/place/calgary",
   description:
-    "Software Engineer and Entrepreneur. I enjoy football, soccer, playing videogames, lifting weights and muay thai.",
+    "Software Engineer, Researcher, and Entrepreneur. On my free time I enjoy football, lifting weights and muay thai.",
   summary:
-    "I’m a Software Engineering student at the University of Calgary with experience across startups and established tech companies. At Aptum, I enhanced cloud systems by migrating monoliths to microservices and adding GPU support for AI workloads. At Sigma, I improved eCommerce operations by integrating APIs and implementing CI/CD pipelines, reducing testing time by 98.75%. I’ve also led development at Rethread and Bandist, two startups, where I built scalable platforms and integrated services for over 10,000 users. As VP Software Development for Student Energy UCalgary, I increased engagement by 70% and led software team recruitment. Currently, I joined an AI-powered personalized skincare venture focused on B2B2C solutions.",
+    "I’m Axel Sanchez, a Software Engineer from Mexico. Welcome to my portfolio website, where you’ll find my latest work, research, blogs, and projects. I specialize in building high-performance systems, from GPU computing and cloud microservices to dApps and DeFi solutions on blockchain.",
   avatarUrl: "/me.png",
   skills: [
+    // Programming Languages
+    "C",
+    "C++",
+    "C#",
+    "Java",
+    "JavaScript",
+    "TypeScript",
+    "Python",
+    "Go",
+    "Rust",
+    "Dart",
+    "SQL",
+    "Solidity",
+
+    // Cloud & Infrastructure
+    "Azure",
     "AWS",
     "GCP",
-    "Azure",
-    "Terrform",
-    "Jenkins",
-    "Spring Boot",
-    "React",
-    "Flutter",
-    "Next.js",
-    "Typescript",
-    "Express",
-    "Node.js",
-    "Vue",
-    "Dart",
-    "Python",
-    "MySQL",
-    "Docker",
+    "Blockchain",
     "Kubernetes",
-    "Java",
-    "C++/C",
+    "Docker",
+    "Helm",
+    "Terraform",
+    "Kafka",
+    "RabbitMQ",
+
+    // Databases
+    "MySQL",
+    "PostgreSQL",
+
+    // Frameworks & Platforms
+    ".NET",
+    "Spring Boot",
+    "Express",
+    "Django",
+
+    // Frontend
+    "React",
+    "Next.js",
+    "Vue.js",
+    "Redux",
+    "Expo",
+    "Flutter",
+    "Vite",
+    "Tailwind",
+
+    // APIs & Tools
+    "gRPC",
+
+    // Machine Learning / HPC
+    "PyTorch",
+    "CUDA",
+
+    // CI/CD
+    "Jenkins",
+    "GitHub Actions",
   ],
   navbar: [
     { href: "/", icon: HomeIcon, label: "Home" },
@@ -60,85 +96,115 @@ export const DATA = {
         icon: Icons.email,
         navbar: false,
       },
+      resume: {
+        name: "Download Resume",
+        url: "/Resume.pdf",
+        icon: Icons.download,
+        navbar: true,
+      },
     },
   },
   work: [
     {
+      company: "Microsoft",
+      href: "https://www.microsoft.com/en-ca/",
+      badges: [],
+      location: "Vancouver, British Columbia",
+      title: "Software Engineer Intern",
+      logoUrl: "/microsoft-logo.jpeg",
+      start: "May 2025",
+      end: "Aug. 2025",
+      description:
+        "Built a custom CUDA all-reduce (TRT plugin) on H200s with NVLink/P2P fallback; optimized GPU comms/GEMM and integrated research into production experiments.",
+    },
+    {
+      company: "Agrivanna",
+      href: "https://www.agrivanna.com/",
+      badges: [],
+      location: "Calgary, Alberta",
+      title: "Full Stack Engineer (Part-Time)",
+      logoUrl: "/agrivanna-logo.jpeg",
+      start: "Sep. 2024",
+      end: "Apr. 2025",
+      description:
+        "Shipped Go/Java microservices and ML features (scikit-learn + PyTorch) for personalized health; deployed FastAPI on Kubernetes and mentored teammates on Docker/K8s.",
+    },
+    {
       company: "Aptum",
       href: "https://aptum.com/",
       badges: [],
-      location: "Remote",
+      location: "Calgary, Alberta",
       title: "Cloud Developer Intern",
       logoUrl: "/aptum-logo.png",
       start: "May 2024",
-      end: "Present",
+      end: "Apr. 2025",
       description:
-        "Developed and implemented GPU support feature for VM instances within the Google Cloud plugin, improving processing speed by 25% for AI company customers. Migrated a legacy monolithic plugin architecture to a microservices-based system using gRPC, enhancing scalability and improving  performance by 66%. Directed a platform-wide database migration, updating users, roles, environments, and scopes to ensure system integrity and efficiency.",
-    },
-    {
-      company: "ReThread",
-      badges: [],
-      href: "#",
-      location: "Calgary, AB",
-      title: "Tech Lead",
-      logoUrl: "/rethread-logo.png",
-      start: "September 2023",
-      end: "April 2024",
-      description:
-        "Led and mentored the backend team, coordinating and managing tickets, conducting code reviews, and promoting peer development, resulting in a reduction in bug reports. Architected a microservice e-commerce platform, enhancing scalability and performance, which resulted in enhanced system throughput and reduced downtime. Designed and prototyped user interfaces with Figma, ensuring a seamless and intuitive user experience, leading to an increase in user satisfaction scores.",
+        "Scaled Kubernetes infra with Terraform/Helm and Jenkins CI, doubling throughput; migrated a monolith to gRPC microservices (Java/Spring/MySQL) with a 66% perf lift.",
     },
     {
       company: "Student Energy UCalgary",
       badges: [],
       href: "https://studentenergyuofc.org/",
-      location: "Calgary, AB",
-      title: "CO-VP Software Development",
+      location: "Calgary, Alberta",
+      title: "Vice-President Software Development",
       logoUrl: "/seuc-logo.png",
-      start: "September 2023",
-      end: "April 2024",
+      start: "Sep. 2023",
+      end: "Apr. 2024",
       description:
-        "Led the development team in creating an interactive and dynamic web application for chapter news, increasing site engagement by 70%. Automated deployment processes, reducing update time and ensuring reliable, timely updates. Coordinated development activities, managed project timelines, and conducted interviews for the software team, improving project completion rates.",
+        "Launched a Next.js/TypeScript news app (+70% engagement) and automated AWS infra with Terraform + GitHub Actions; led hiring and set engineering standards.",
     },
     {
-      company: "Sigma",
+      company: "ReThread",
+      badges: [],
+      href: "#",
+      location: "Calgary, Alberta",
+      title: "Backend Engineer (Part-Time)",
+      logoUrl: "/rethread-logo.png",
+      start: "Sep. 2023",
+      end: "Apr. 2024",
+      description:
+        "Designed TypeScript/Express microservices with Redis caching on AWS/Kubernetes; prototyped a PyTorch CNN for fabric classification and set CI/code-review practices.",
+    },
+    {
+      company: "Sigma Foodservice",
       href: "https://www.sigma-alimentos.com/en/",
       badges: [],
       location: "Remote",
-      title: "Software Developer Intern",
+      title: "Software Engineer Intern",
       logoUrl: "/sigma-logo.png",
       start: "May 2023",
-      end: "August 2023",
+      end: "Aug. 2023",
       description:
-        "Integrated Copomex API at an enterprise-level, ensuring pinpoint accuracy for over 10,000 locations, enhancing data precision by 50%. Conducted presentations at 5 sprint reviews, effectively aligning progress with business and marketing objectives, leading to an improvement in team collaboration. Implemented a CI/CD pipeline for the eCommerce’s UI, enhancing test speed and report generation, reducing QA testing time by 98.75%, and increasing deployment frequency.",
+        "Integrated Copomex API in .NET/C# for 10k+ locations (↑ address accuracy 80%); added Playwright E2E + Jenkins to slash QA time and speed deployments.",
     },
     {
       company: "Bandist",
       href: "#",
       badges: [],
       location: "Calgary, AB",
-      title: "Full-Stack Developer",
+      title: "Frontend Engineer (Part-Time)",
       logoUrl: "/bandist-logo.png",
-      start: "September 2022",
-      end: "April 2023",
+      start: "Sep. 2022",
+      end: "Apr. 2023",
       description:
-        "Integrated Django with Ticketmaster & Spotify APIs, achieving a faster registration process and reducing development costs by 20%, while improving user registration experience. Mentored and guided a team of 5 engineers, improving code quality and increasing project delivery. Managed Firebase hosting, ensuring consistent support for over 10,000 active users monthly, and uptime by 99.95%.",
+        "Connected Django app to Ticketmaster/Spotify, cut costs 20%, and managed PostgreSQL/GCP for 10k+ MAU; shipped a Flutter mobile app with 99.95% uptime on Firebase.",
     },
   ],
   education: [
     {
-      school: "University of Calgary",
-      href: "https://www.ucalgary.ca/",
-      degree: "Bachelor's Degree of Software Engineering (BCS)",
-      logoUrl: "/uofc-logo.png",
-      start: "2021",
-      end: "Present",
+      school: "Schulich School of Engineering, University of Calgary",
+      href: "https://schulich.ucalgary.ca/",
+      degree: "Bachelor of Science in Software Engineering",
+      logoUrl: "/ucalgary-logo.jpeg",
+      start: "Sep. 2021",
+      end: "Apr. 2026",
     },
   ],
   projects: [
     {
       title: "ChoreShare",
       href: "#",
-      dates: "January 2024 - April 2024",
+      dates: "Jan. 2024 - Apr. 2024",
       active: true,
       description:
         "A cross-platform application for household roommates to coordinate tasks.",
@@ -171,7 +237,7 @@ export const DATA = {
     {
       title: "MyNotes",
       href: "#",
-      dates: "December 2023 - January 2024",
+      dates: "Dec. 2023 - Jan. 2024",
       active: true,
       description:
         "A simple note-taking mobile app designed for capturing important ideas and reminders.",
@@ -189,7 +255,7 @@ export const DATA = {
     {
       title: "The Last Show",
       href: "#",
-      dates: "January 2023 - April 2023",
+      dates: "Jan. 2023 - Apr. 2023",
       active: true,
       description:
         "A serverless web app that automatically generates personalized obituaries for people.",
@@ -218,7 +284,7 @@ export const DATA = {
     {
       title: "Game Heaven",
       href: "#",
-      dates: "January 2023 - August 2023",
+      dates: "Jan. 2023 - Aug. 2023",
       active: true,
       description:
         "Developed an AI Customer Support Chatbot which automatically responds to customer support tickets using the latest GPT models.",
@@ -262,6 +328,19 @@ export const DATA = {
         {
           title: "View Credential",
           href: "https://www.credly.com/badges/6f786f17-4bd1-48f9-b804-138c8d752e70/linked_in?t=scu7wq",
+          icon: <Icons.globe className="size-3" />,
+        },
+      ],
+    },
+    {
+      title: "Microsoft Certified Azure Fundamentals",
+      dates: "Feb. 2025",
+      image: "microsoft-az900-logo.png",
+      mlh: "https://s3.amazonaws.com/logged-assets/trust-badge/2019/mlh-trust-badge-2019-white.svg",
+      links: [
+        {
+          title: "View Credential",
+          href: "https://learn.microsoft.com/en-us/users/axelsnchez-2277/credentials/2ee95ece9f3f4cac",
           icon: <Icons.globe className="size-3" />,
         },
       ],
