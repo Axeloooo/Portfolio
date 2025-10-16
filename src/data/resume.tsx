@@ -106,6 +106,18 @@ export const DATA = {
   },
   work: [
     {
+      company: "University of Calgary",
+      href: "https://schulich.ucalgary.ca/",
+      badges: [],
+      location: "Calgary, Alberta",
+      title: "Undergraduate Researcher",
+      logoUrl: "/ucalgary-logo.jpeg",
+      start: "Sep. 2025",
+      end: "Present",
+      description:
+        "Research on cross-chain AIoT data marketplace enabling autonomous IoT data tokenization, privacy-preserving trading, and multi-asset settlement via Ethereum, Solana, LayerZero, IPFS, and cryptographic verification mechanisms.",
+    },
+    {
       company: "Microsoft",
       href: "https://www.microsoft.com/en-ca/",
       badges: [],
