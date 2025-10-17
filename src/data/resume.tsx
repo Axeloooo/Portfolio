@@ -106,6 +106,18 @@ export const DATA = {
   },
   work: [
     {
+      company: "University of Calgary",
+      href: "https://schulich.ucalgary.ca/",
+      badges: [],
+      location: "Calgary, Alberta",
+      title: "Undergraduate Researcher",
+      logoUrl: "/ucalgary-logo.jpeg",
+      start: "Sep. 2025",
+      end: "Present",
+      description:
+        "Research on cross-chain AIoT data marketplace enabling autonomous IoT data tokenization, privacy-preserving trading, and multi-asset settlement via Ethereum, Solana, LayerZero, IPFS, and cryptographic verification mechanisms.",
+    },
+    {
       company: "Microsoft",
       href: "https://www.microsoft.com/en-ca/",
       badges: [],
@@ -122,7 +134,7 @@ export const DATA = {
       href: "https://www.agrivanna.com/",
       badges: [],
       location: "Calgary, Alberta",
-      title: "Full Stack Engineer (Part-Time)",
+      title: "Full Stack Engineer Part-Time",
       logoUrl: "/agrivanna-logo.jpeg",
       start: "Sep. 2024",
       end: "Apr. 2025",
@@ -158,7 +170,7 @@ export const DATA = {
       badges: [],
       href: "#",
       location: "Calgary, Alberta",
-      title: "Backend Engineer (Part-Time)",
+      title: "Backend Engineer Part-Time",
       logoUrl: "/rethread-logo.png",
       start: "Sep. 2023",
       end: "Apr. 2024",
@@ -182,7 +194,7 @@ export const DATA = {
       href: "#",
       badges: [],
       location: "Calgary, AB",
-      title: "Frontend Engineer (Part-Time)",
+      title: "Frontend Engineer Part-Time",
       logoUrl: "/bandist-logo.png",
       start: "Sep. 2022",
       end: "Apr. 2023",
@@ -202,12 +214,147 @@ export const DATA = {
   ],
   projects: [
     {
+      title: "DeFi Stablecoin",
+      href: "#",
+      dates: "Aug. 2025 - Sep. 2025",
+      active: true,
+      description:
+        "An decentralized stablecoin protocol with exogenous collateral (ETH & BTC), algorithmic minting, and USD pegged, inspired by MakerDAO",
+      technologies: ["Foundry", "Solidity", "OpenZeppelin", "Github Actions"],
+      links: [
+        {
+          type: "Source",
+          href: "https://github.com/Axeloooo/DeFi-Stablecoin",
+          icon: <Icons.github className="size-3" />,
+        },
+      ],
+      image: "/defi-stablecoin.png",
+      video: "",
+    },
+    {
+      title: "Ride Sharing",
+      href: "#",
+      dates: "Jul. 2025 - Sep. 2025",
+      active: true,
+      description:
+        "Full-stack ride-sharing platform enabling users to request rides, match with drivers, and manage trips through scalable microservice architecture",
+      technologies: [
+        "Go",
+        "TypeScript",
+        "Vite",
+        "React",
+        "TailwindCSS",
+        "RabbitMQ",
+        "Docker",
+        "Kubernetes",
+        "GCP",
+        "Tilt",
+        "MongoDB",
+        "Jaeger",
+        "OpenTelemetry",
+        "gRPC",
+        "Stripe",
+        "Github Actions",
+      ],
+      links: [
+        {
+          type: "Source",
+          href: "https://github.com/Axeloooo/Ride-Sharing",
+          icon: <Icons.github className="size-3" />,
+        },
+      ],
+      image: "/ride-sharing.png",
+      video: "",
+    },
+    {
+      title: "NFT Collection",
+      href: "#",
+      dates: "Jul. 2025 - Aug. 2025",
+      active: true,
+      description:
+        "A collection of ERC-721 NFT smart contracts built with OpenZeppelin, deploying static and dynamic on-chain traits",
+      technologies: ["Foundry", "Solidity", "OpenZeppelin", "Github Actions"],
+      links: [
+        {
+          type: "Source",
+          href: "https://github.com/Axeloooo/NFT-Collection",
+          icon: <Icons.github className="size-3" />,
+        },
+      ],
+      image: "/pug.png",
+      video: "",
+    },
+    {
+      title: "ERC20 Token",
+      href: "#",
+      dates: "Jul. 2025 - Aug. 2025",
+      active: true,
+      description:
+        "An ERC-20 token smart contract built with OpenZeppelin, deploying Axel Token (AXL)",
+      technologies: ["Foundry", "Solidity", "OpenZeppelin", "Github Actions"],
+      links: [
+        {
+          type: "Source",
+          href: "https://github.com/Axeloooo/ERC20-Token",
+          icon: <Icons.github className="size-3" />,
+        },
+      ],
+      image: "/erc20-token.png",
+      video: "",
+    },
+    {
+      title: "GameStore",
+      href: "#",
+      dates: "Mar. 2025 - Jun. 2025",
+      active: true,
+      description:
+        "Full-stack video game store enabling users to browse, search, and purchase titles through a responsive, user-friendly web interface",
+      technologies: [
+        ".NET",
+        "C#",
+        "Vite",
+        "React",
+        "TypeScript",
+        "TailwindCSS",
+        "Keycloak",
+        "MySQL",
+        "Docker",
+      ],
+      links: [
+        {
+          type: "Source",
+          href: "https://github.com/Axeloooo/GameStore",
+          icon: <Icons.github className="size-3" />,
+        },
+      ],
+      image: "/gamestore.png",
+      video: "",
+    },
+    {
+      title: "PyTorch",
+      href: "#",
+      dates: "Mar. 2025 - May. 2025",
+      active: true,
+      description:
+        "Collection of deep learning workflows in PyTorch, from fundamentals and classification to transfer learning and experiment tracking",
+      technologies: ["Python", "PyTorch", "Google Colab"],
+      links: [
+        {
+          type: "Source",
+          href: "https://github.com/Axeloooo/PyTorch",
+          icon: <Icons.github className="size-3" />,
+        },
+      ],
+      image: "/pytorch.webp",
+      video: "",
+    },
+    {
       title: "ChoreShare",
       href: "#",
       dates: "Jan. 2024 - Apr. 2024",
       active: true,
       description:
-        "A cross-platform application for household roommates to coordinate tasks.",
+        "A cross-platform application for household roommates to coordinate tasks",
       technologies: [
         "GCP",
         "Terraform",
@@ -240,7 +387,7 @@ export const DATA = {
       dates: "Dec. 2023 - Jan. 2024",
       active: true,
       description:
-        "A simple note-taking mobile app designed for capturing important ideas and reminders.",
+        "A simple note-taking mobile app designed for capturing important ideas and reminders",
       technologies: ["Flutter", "Dart", "Firebase", "SQLite", "Github Actions"],
       links: [
         {
@@ -253,41 +400,12 @@ export const DATA = {
       video: "",
     },
     {
-      title: "The Last Show",
-      href: "#",
-      dates: "Jan. 2023 - Apr. 2023",
-      active: true,
-      description:
-        "A serverless web app that automatically generates personalized obituaries for people.",
-      technologies: [
-        "Terraform",
-        "React",
-        "Javascript",
-        "Cloudinary",
-        "DynamoDB",
-        "Python",
-        "AWS Lambda",
-        "AWS Polly",
-        "OpenAI",
-        "Netlify",
-      ],
-      links: [
-        {
-          type: "Source",
-          href: "https://github.com/Axeloooo/The-Last-Show",
-          icon: <Icons.github className="size-3" />,
-        },
-      ],
-      image: "/the-last-show-logo.png",
-      video: "",
-    },
-    {
       title: "Game Heaven",
       href: "#",
       dates: "Jan. 2023 - Aug. 2023",
       active: true,
       description:
-        "Developed an AI Customer Support Chatbot which automatically responds to customer support tickets using the latest GPT models.",
+        "Developed an AI Customer Support Chatbot which automatically responds to customer support tickets using the latest GPT models",
       technologies: [
         "Vite",
         "React",
@@ -315,6 +433,84 @@ export const DATA = {
         },
       ],
       image: "/game-heaven-logo.png",
+      video: "",
+    },
+    {
+      title: "The Last Show",
+      href: "#",
+      dates: "Mar. 2023 - Apr. 2023",
+      active: true,
+      description:
+        "A serverless web app that automatically generates personalized obituaries for people",
+      technologies: [
+        "Terraform",
+        "React",
+        "Javascript",
+        "Cloudinary",
+        "Python",
+        "AWS DynamoDB",
+        "AWS Lambda",
+        "AWS Polly",
+        "AWS Secrets Manager",
+        "OpenAI",
+        "Netlify",
+      ],
+      links: [
+        {
+          type: "Source",
+          href: "https://github.com/Axeloooo/The-Last-Show",
+          icon: <Icons.github className="size-3" />,
+        },
+      ],
+      image: "/the-last-show-logo.png",
+      video: "",
+    },
+    {
+      title: "Lotion Plus",
+      href: "#",
+      dates: "Feb. 2023 - Mar. 2023",
+      active: true,
+      description: "A Serverless Notes App",
+      technologies: [
+        "React",
+        "JavaScript",
+        "Python",
+        "AWS Lambda",
+        "AWS DynamoDB",
+        "Terraform",
+        "GitHub Actions",
+        "Netlify",
+      ],
+      links: [
+        {
+          type: "Source",
+          href: "https://github.com/Axeloooo/Lotion-Plus",
+          icon: <Icons.github className="size-3" />,
+        },
+      ],
+      image: "/lotion.png",
+      video: "",
+    },
+    {
+      title: "LibCode",
+      href: "#",
+      dates: "Mar. 2023 - Apr. 2023",
+      active: true,
+      description: "A Data Structures and Algorithms Library Published in PyPi",
+      technologies: ["Python", "PyTest", "PyPi", "GitHub Actions"],
+      links: [
+        {
+          type: "Source",
+          href: "https://github.com/Axeloooo/Ecommerce-Client",
+          icon: <Icons.github className="size-3" />,
+        },
+        {
+          type: "PyPi",
+          href: "https://pypi.org/project/LibCode/1.3.0/",
+          icon: <Icons.globe className="size-3" />,
+        },
+      ],
+      image: "/dsa.jpg",
       video: "",
     },
   ],
