@@ -1,5 +1,9 @@
 # Portfolio
 
+## Table of Contents
+
+- [License](#license)
+
 ## License
 
-Licensed under the [MIT license](https://github.com/dillionverma/portfolio/blob/main/LICENSE.md).
+Licensed under the [Apache License, Version 2.0](LICENSE).
