@@ -115,7 +115,7 @@ export const DATA = {
       start: "Sep. 2025",
       end: "Present",
       description:
-        "Research on cross-chain AIoT data marketplace enabling autonomous IoT data tokenization, privacy-preserving trading, and multi-asset settlement via Ethereum, Solana, LayerZero, IPFS, and cryptographic verification mechanisms.",
+        "Designed and implemented a cross-chain data marketplace enabling trustless dataset listing, semantic discovery, and purchase using LLM-based embeddings, smart contracts, and IPFS, with privacy-preserving encrypted data vending and on-chain cryptographic integrity across Ethereum and Solana.",
     },
     {
       company: "Microsoft",
@@ -203,6 +203,14 @@ export const DATA = {
     },
   ],
   education: [
+    {
+      school: "Schulich School of Engineering, University of Calgary",
+      href: "https://schulich.ucalgary.ca/",
+      degree: "Masters of Science in Software Engineering",
+      logoUrl: "/ucalgary-logo.jpeg",
+      start: "Sep. 2026",
+      end: "Apr. 2028",
+    },
     {
       school: "Schulich School of Engineering, University of Calgary",
       href: "https://schulich.ucalgary.ca/",
