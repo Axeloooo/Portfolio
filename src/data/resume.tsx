@@ -206,7 +206,7 @@ export const DATA = {
     {
       school: "Schulich School of Engineering, University of Calgary",
       href: "https://schulich.ucalgary.ca/",
-      degree: "Master of Science in Software Engineering",
+      degree: "Master of Science in Electrical Engineering",
       logoUrl: "/ucalgary-logo.jpeg",
       start: "Sep. 2026",
       end: "Apr. 2028",
