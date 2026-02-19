@@ -8,7 +8,7 @@ export const DATA = {
   location: "Calgary, Alberta",
   locationLink: "https://www.google.com/maps/place/calgary",
   description:
-    "Software Engineer, Researcher, and Entrepreneur. On my free time I enjoy football, lifting weights and muay thai.",
+    "Software Engineer, Researcher, and Entrepreneur. In my free time I enjoy football, lifting weights and muay thai.",
   summary:
     "I’m Axel Sanchez, a Software Engineer from Mexico. Welcome to my portfolio website, where you’ll find my latest work, research, blogs, and projects. I specialize in building high-performance systems, from GPU computing and cloud microservices to dApps and DeFi solutions on blockchain.",
   avatarUrl: "/me.png",
@@ -129,18 +129,18 @@ export const DATA = {
       description:
         "Built a custom CUDA all-reduce (TRT plugin) on H200s with NVLink/P2P fallback; optimized GPU comms/GEMM and integrated research into production experiments.",
     },
-    {
-      company: "Agrivanna",
-      href: "https://www.agrivanna.com/",
-      badges: [],
-      location: "Calgary, Alberta",
-      title: "Full Stack Engineer Part-Time",
-      logoUrl: "/agrivanna-logo.jpeg",
-      start: "Sep. 2024",
-      end: "Apr. 2025",
-      description:
-        "Shipped Go/Java microservices and ML features (scikit-learn + PyTorch) for personalized health; deployed FastAPI on Kubernetes and mentored teammates on Docker/K8s.",
-    },
+    // {
+    //   company: "Agrivanna",
+    //   href: "https://www.agrivanna.com/",
+    //   badges: [],
+    //   location: "Calgary, Alberta",
+    //   title: "Full Stack Engineer Part-Time",
+    //   logoUrl: "/agrivanna-logo.jpeg",
+    //   start: "Sep. 2024",
+    //   end: "Apr. 2025",
+    //   description:
+    //     "Shipped Go/Java microservices and ML features (scikit-learn + PyTorch) for personalized health; deployed FastAPI on Kubernetes and mentored teammates on Docker/K8s.",
+    // },
     {
       company: "Aptum",
       href: "https://aptum.com/",
@@ -153,30 +153,30 @@ export const DATA = {
       description:
         "Scaled Kubernetes infra with Terraform/Helm and Jenkins CI, doubling throughput; migrated a monolith to gRPC microservices (Java/Spring/MySQL) with a 66% perf lift.",
     },
-    {
-      company: "Student Energy UCalgary",
-      badges: [],
-      href: "https://studentenergyuofc.org/",
-      location: "Calgary, Alberta",
-      title: "Vice-President Software Development",
-      logoUrl: "/seuc-logo.png",
-      start: "Sep. 2023",
-      end: "Apr. 2024",
-      description:
-        "Launched a Next.js/TypeScript news app (+70% engagement) and automated AWS infra with Terraform + GitHub Actions; led hiring and set engineering standards.",
-    },
-    {
-      company: "ReThread",
-      badges: [],
-      href: "#",
-      location: "Calgary, Alberta",
-      title: "Backend Engineer Part-Time",
-      logoUrl: "/rethread-logo.png",
-      start: "Sep. 2023",
-      end: "Apr. 2024",
-      description:
-        "Designed TypeScript/Express microservices with Redis caching on AWS/Kubernetes; prototyped a PyTorch CNN for fabric classification and set CI/code-review practices.",
-    },
+    // {
+    //   company: "Student Energy UCalgary",
+    //   badges: [],
+    //   href: "https://studentenergyuofc.org/",
+    //   location: "Calgary, Alberta",
+    //   title: "Vice-President Software Development",
+    //   logoUrl: "/seuc-logo.png",
+    //   start: "Sep. 2023",
+    //   end: "Apr. 2024",
+    //   description:
+    //     "Launched a Next.js/TypeScript news app (+70% engagement) and automated AWS infra with Terraform + GitHub Actions; led hiring and set engineering standards.",
+    // },
+    // {
+    //   company: "ReThread",
+    //   badges: [],
+    //   href: "#",
+    //   location: "Calgary, Alberta",
+    //   title: "Backend Engineer Part-Time",
+    //   logoUrl: "/rethread-logo.png",
+    //   start: "Sep. 2023",
+    //   end: "Apr. 2024",
+    //   description:
+    //     "Designed TypeScript/Express microservices with Redis caching on AWS/Kubernetes; prototyped a PyTorch CNN for fabric classification and set CI/code-review practices.",
+    // },
     {
       company: "Sigma Foodservice",
       href: "https://www.sigma-alimentos.com/en/",
@@ -189,18 +189,18 @@ export const DATA = {
       description:
         "Integrated Copomex API in .NET/C# for 10k+ locations (↑ address accuracy 80%); added Playwright E2E + Jenkins to slash QA time and speed deployments.",
     },
-    {
-      company: "Bandist",
-      href: "#",
-      badges: [],
-      location: "Calgary, AB",
-      title: "Frontend Engineer Part-Time",
-      logoUrl: "/bandist-logo.png",
-      start: "Sep. 2022",
-      end: "Apr. 2023",
-      description:
-        "Connected Django app to Ticketmaster/Spotify, cut costs 20%, and managed PostgreSQL/GCP for 10k+ MAU; shipped a Flutter mobile app with 99.95% uptime on Firebase.",
-    },
+    // {
+    //   company: "Bandist",
+    //   href: "#",
+    //   badges: [],
+    //   location: "Calgary, AB",
+    //   title: "Frontend Engineer Part-Time",
+    //   logoUrl: "/bandist-logo.png",
+    //   start: "Sep. 2022",
+    //   end: "Apr. 2023",
+    //   description:
+    //     "Connected Django app to Ticketmaster/Spotify, cut costs 20%, and managed PostgreSQL/GCP for 10k+ MAU; shipped a Flutter mobile app with 99.95% uptime on Firebase.",
+    // },
   ],
   education: [
     {
