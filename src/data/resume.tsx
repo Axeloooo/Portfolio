@@ -203,14 +203,14 @@ export const DATA = {
     // },
   ],
   education: [
-    {
-      school: "Schulich School of Engineering, University of Calgary",
-      href: "https://schulich.ucalgary.ca/",
-      degree: "Master of Science in Electrical Engineering",
-      logoUrl: "/ucalgary-logo.jpeg",
-      start: "Sep. 2026",
-      end: "Apr. 2028",
-    },
+    // {
+    //   school: "Schulich School of Engineering, University of Calgary",
+    //   href: "https://schulich.ucalgary.ca/",
+    //   degree: "Master of Science in Electrical Engineering",
+    //   logoUrl: "/ucalgary-logo.jpeg",
+    //   start: "Sep. 2026",
+    //   end: "Apr. 2028",
+    // },
     {
       school: "Schulich School of Engineering, University of Calgary",
       href: "https://schulich.ucalgary.ca/",
@@ -221,6 +221,30 @@ export const DATA = {
     },
   ],
   projects: [
+    {
+      title: "Cross-Chain Rebase Token",
+      href: "#",
+      dates: "Feb. 2025 - Mar. 2025",
+      active: true,
+      description:
+        "Cross-chain rebase token protocol that mints yield-bearing balances from vault deposits and uses Chainlink CCIP to bridge preserved interest rates.",
+      technologies: [
+        "Foundry",
+        "Solidity",
+        "OpenZeppelin",
+        "Chainlink CCIP",
+        "Github Actions",
+      ],
+      links: [
+        {
+          type: "Source",
+          href: "https://github.com/Axeloooo/Cross-Chain-Rebase-Token",
+          icon: <Icons.github className="size-3" />,
+        },
+      ],
+      image: "/cross-chain-rebase-token.png",
+      video: "",
+    },
     {
       title: "DeFi Stablecoin",
       href: "#",
