@@ -233,7 +233,7 @@ export const DATA = {
         "Solidity",
         "OpenZeppelin",
         "Chainlink CCIP",
-        "Github Actions",
+        "GitHub Actions",
       ],
       links: [
         {
@@ -252,7 +252,7 @@ export const DATA = {
       active: true,
       description:
         "An decentralized stablecoin protocol with exogenous collateral (ETH & BTC), algorithmic minting, and USD pegged, inspired by MakerDAO",
-      technologies: ["Foundry", "Solidity", "OpenZeppelin", "Github Actions"],
+      technologies: ["Foundry", "Solidity", "OpenZeppelin", "GitHub Actions"],
       links: [
         {
           type: "Source",
