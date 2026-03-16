@@ -106,18 +106,6 @@ export const DATA = {
   },
   work: [
     {
-      company: "University of Calgary",
-      href: "https://schulich.ucalgary.ca/",
-      badges: [],
-      location: "Calgary, Alberta",
-      title: "Undergraduate Researcher",
-      logoUrl: "/ucalgary-logo.jpeg",
-      start: "Sep. 2025",
-      end: "Present",
-      description:
-        "Designed and implemented a cross-chain data marketplace enabling trustless dataset listing, semantic discovery, and purchase using LLM-based embeddings, smart contracts, and IPFS, with privacy-preserving encrypted data vending and on-chain cryptographic integrity across Ethereum and Solana.",
-    },
-    {
       company: "Microsoft",
       href: "https://www.microsoft.com/en-ca/",
       badges: [],
@@ -129,18 +117,6 @@ export const DATA = {
       description:
         "Built a custom CUDA all-reduce (TRT plugin) on H200s with NVLink/P2P fallback; optimized GPU comms/GEMM and integrated research into production experiments.",
     },
-    // {
-    //   company: "Agrivanna",
-    //   href: "https://www.agrivanna.com/",
-    //   badges: [],
-    //   location: "Calgary, Alberta",
-    //   title: "Full Stack Engineer Part-Time",
-    //   logoUrl: "/agrivanna-logo.jpeg",
-    //   start: "Sep. 2024",
-    //   end: "Apr. 2025",
-    //   description:
-    //     "Shipped Go/Java microservices and ML features (scikit-learn + PyTorch) for personalized health; deployed FastAPI on Kubernetes and mentored teammates on Docker/K8s.",
-    // },
     {
       company: "Aptum",
       href: "https://aptum.com/",
@@ -153,30 +129,6 @@ export const DATA = {
       description:
         "Scaled Kubernetes infra with Terraform/Helm and Jenkins CI, doubling throughput; migrated a monolith to gRPC microservices (Java/Spring/MySQL) with a 66% perf lift.",
     },
-    // {
-    //   company: "Student Energy UCalgary",
-    //   badges: [],
-    //   href: "https://studentenergyuofc.org/",
-    //   location: "Calgary, Alberta",
-    //   title: "Vice-President Software Development",
-    //   logoUrl: "/seuc-logo.png",
-    //   start: "Sep. 2023",
-    //   end: "Apr. 2024",
-    //   description:
-    //     "Launched a Next.js/TypeScript news app (+70% engagement) and automated AWS infra with Terraform + GitHub Actions; led hiring and set engineering standards.",
-    // },
-    // {
-    //   company: "ReThread",
-    //   badges: [],
-    //   href: "#",
-    //   location: "Calgary, Alberta",
-    //   title: "Backend Engineer Part-Time",
-    //   logoUrl: "/rethread-logo.png",
-    //   start: "Sep. 2023",
-    //   end: "Apr. 2024",
-    //   description:
-    //     "Designed TypeScript/Express microservices with Redis caching on AWS/Kubernetes; prototyped a PyTorch CNN for fabric classification and set CI/code-review practices.",
-    // },
     {
       company: "Sigma Foodservice",
       href: "https://www.sigma-alimentos.com/en/",
@@ -189,18 +141,70 @@ export const DATA = {
       description:
         "Integrated Copomex API in .NET/C# for 10k+ locations (↑ address accuracy 80%); added Playwright E2E + Jenkins to slash QA time and speed deployments.",
     },
-    // {
-    //   company: "Bandist",
-    //   href: "#",
-    //   badges: [],
-    //   location: "Calgary, AB",
-    //   title: "Frontend Engineer Part-Time",
-    //   logoUrl: "/bandist-logo.png",
-    //   start: "Sep. 2022",
-    //   end: "Apr. 2023",
-    //   description:
-    //     "Connected Django app to Ticketmaster/Spotify, cut costs 20%, and managed PostgreSQL/GCP for 10k+ MAU; shipped a Flutter mobile app with 99.95% uptime on Firebase.",
-    // },
+  ],
+  research: [
+    {
+      company: "University of Calgary",
+      href: "https://schulich.ucalgary.ca/",
+      badges: [],
+      location: "Calgary, Alberta",
+      title: "Undergraduate Researcher",
+      logoUrl: "/ucalgary-logo.jpeg",
+      start: "Sep. 2025",
+      end: "Present",
+      description:
+        "Designed and implemented a cross-chain data marketplace enabling trustless dataset listing, semantic discovery, and purchase using LLM-based embeddings, smart contracts, and IPFS, with privacy-preserving encrypted data vending and on-chain cryptographic integrity across Ethereum and Solana.",
+    },
+  ],
+  leadership: [
+    {
+      company: "Agrivanna",
+      href: "https://www.agrivanna.com/",
+      badges: [],
+      location: "Calgary, Alberta",
+      title: "Full Stack Engineer Part-Time",
+      logoUrl: "/agrivanna-logo.jpeg",
+      start: "Sep. 2024",
+      end: "Apr. 2025",
+      description:
+        "Shipped Go/Java microservices and ML features (scikit-learn + PyTorch) for personalized health; deployed FastAPI on Kubernetes and mentored teammates on Docker/K8s.",
+    },
+    {
+      company: "Student Energy UCalgary",
+      badges: [],
+      href: "https://studentenergyuofc.org/",
+      location: "Calgary, Alberta",
+      title: "Vice-President Software Development",
+      logoUrl: "/seuc-logo.png",
+      start: "Sep. 2023",
+      end: "Apr. 2024",
+      description:
+        "Launched a Next.js/TypeScript news app (+70% engagement) and automated AWS infra with Terraform + GitHub Actions; led hiring and set engineering standards.",
+    },
+    {
+      company: "ReThread",
+      badges: [],
+      href: "#",
+      location: "Calgary, Alberta",
+      title: "Backend Engineer Part-Time",
+      logoUrl: "/rethread-logo.png",
+      start: "Sep. 2023",
+      end: "Apr. 2024",
+      description:
+        "Designed TypeScript/Express microservices with Redis caching on AWS/Kubernetes; prototyped a PyTorch CNN for fabric classification and set CI/code-review practices.",
+    },
+    {
+      company: "Bandist",
+      href: "#",
+      badges: [],
+      location: "Calgary, AB",
+      title: "Frontend Engineer Part-Time",
+      logoUrl: "/bandist-logo.png",
+      start: "Sep. 2022",
+      end: "Apr. 2023",
+      description:
+        "Connected Django app to Ticketmaster/Spotify, cut costs 20%, and managed PostgreSQL/GCP for 10k+ MAU; shipped a Flutter mobile app with 99.95% uptime on Firebase.",
+    },
   ],
   education: [
     // {

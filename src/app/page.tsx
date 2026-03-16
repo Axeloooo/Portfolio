@@ -49,6 +49,29 @@ export default function Page() {
           </Markdown>
         </BlurFade>
       </section>
+      <section id="education">
+        <div className="flex min-h-0 flex-col gap-y-3">
+          <BlurFade delay={BLUR_FADE_DELAY * 7}>
+            <h2 className="text-xl font-bold">Education</h2>
+          </BlurFade>
+          {DATA.education.map((education, id) => (
+            <BlurFade
+              key={education.school}
+              delay={BLUR_FADE_DELAY * 8 + id * 0.05}
+            >
+              <ResumeCard
+                key={education.school}
+                href={education.href}
+                logoUrl={education.logoUrl}
+                altText={education.school}
+                title={education.school}
+                subtitle={education.degree}
+                period={`${education.start} - ${education.end}`}
+              />
+            </BlurFade>
+          ))}
+        </div>
+      </section>
       <section id="work">
         <div className="flex min-h-0 flex-col gap-y-3">
           <BlurFade delay={BLUR_FADE_DELAY * 5}>
@@ -74,24 +97,51 @@ export default function Page() {
           ))}
         </div>
       </section>
-      <section id="education">
+      <section id="research">
         <div className="flex min-h-0 flex-col gap-y-3">
-          <BlurFade delay={BLUR_FADE_DELAY * 7}>
-            <h2 className="text-xl font-bold">Education</h2>
+          <BlurFade delay={BLUR_FADE_DELAY * 5}>
+            <h2 className="text-xl font-bold">Research Experience</h2>
           </BlurFade>
-          {DATA.education.map((education, id) => (
+          {DATA.research.map((research, id) => (
             <BlurFade
-              key={education.school}
-              delay={BLUR_FADE_DELAY * 8 + id * 0.05}
+              key={research.company}
+              delay={BLUR_FADE_DELAY * 6 + id * 0.05}
             >
               <ResumeCard
-                key={education.school}
-                href={education.href}
-                logoUrl={education.logoUrl}
-                altText={education.school}
-                title={education.school}
-                subtitle={education.degree}
-                period={`${education.start} - ${education.end}`}
+                key={research.company}
+                logoUrl={research.logoUrl}
+                altText={research.company}
+                title={research.company}
+                subtitle={research.title}
+                href={research.href}
+                badges={research.badges}
+                period={`${research.start} - ${research.end ?? "Present"}`}
+                description={research.description}
+              />
+            </BlurFade>
+          ))}
+        </div>
+      </section>
+      <section id="leadership">
+        <div className="flex min-h-0 flex-col gap-y-3">
+          <BlurFade delay={BLUR_FADE_DELAY * 5}>
+            <h2 className="text-xl font-bold">Leadership Experience</h2>
+          </BlurFade>
+          {DATA.leadership.map((leadership, id) => (
+            <BlurFade
+              key={leadership.company}
+              delay={BLUR_FADE_DELAY * 6 + id * 0.05}
+            >
+              <ResumeCard
+                key={leadership.company}
+                logoUrl={leadership.logoUrl}
+                altText={leadership.company}
+                title={leadership.company}
+                subtitle={leadership.title}
+                href={leadership.href}
+                badges={leadership.badges}
+                period={`${leadership.start} - ${leadership.end ?? "Present"}`}
+                description={leadership.description}
               />
             </BlurFade>
           ))}
