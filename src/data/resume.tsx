@@ -10,7 +10,7 @@ export const DATA = {
   description:
     "Software Engineer, Researcher, and Entrepreneur. In my free time I enjoy football, lifting weights and muay thai.",
   summary:
-    "I’m Axel Sanchez, a Software Engineer from Mexico. Welcome to my portfolio website, where you’ll find my latest work, research, blogs, and projects. I specialize in building high-performance systems, from GPU computing and cloud microservices to dApps and DeFi solutions on blockchain.",
+    "Hi, I’m Axel Sanchez, a Software Engineer graduate of the University of Calgary. I specialize in high-performance systems ranging from GPU computing and cloud microservices to Agentic AI and blockchain applications. I’ve had the privilege of working across recognized companies like Microsoft, Aptum and Sigma. Take a look around, and if something resonates, I’d love to connect.",
   avatarUrl: "/me.png",
   skills: [
     // Programming Languages
@@ -65,6 +65,7 @@ export const DATA = {
     // Machine Learning / HPC
     "PyTorch",
     "CUDA",
+    "LLM",
 
     // CI/CD
     "Jenkins",
@@ -115,7 +116,7 @@ export const DATA = {
       start: "May 2025",
       end: "Aug. 2025",
       description:
-        "Built a custom CUDA all-reduce (TRT plugin) on H200s with NVLink/P2P fallback; optimized GPU comms/GEMM and integrated research into production experiments.",
+        "I spent this internship deep in the GPU stack, building custom CUDA kernels for tensor-parallel LLM inference on NVIDIA H200 clusters. I implemented one-shot, two-shot, and user-buffers All-Reduce variants integrated as TensorRT-LLM plugins in C++, and developed BLAS primitives benchmarked head-to-head against NCCL and cuBLAS across FP16 and FP32. The highlight was an IPC-based AllReduce that hit 2x speedup over NCCL on sub-2 MB payloads by fusing reduction directly with matrix multiplication, eliminating a full round-trip across the memory hierarchy.",
     },
     {
       company: "Aptum",
@@ -127,7 +128,7 @@ export const DATA = {
       start: "May 2024",
       end: "Apr. 2025",
       description:
-        "Scaled Kubernetes infra with Terraform/Helm and Jenkins CI, doubling throughput; migrated a monolith to gRPC microservices (Java/Spring/MySQL) with a 66% perf lift.",
+        "I owned cloud infrastructure and service modernization for enterprise clients running workloads across AWS, Azure, and GCP. On the infrastructure side, I managed production Kubernetes with Terraform and Helm and doubled Jenkins CI/CD throughput by redesigning the pipeline stages. The bigger challenge was refactoring a legacy monolith into gRPC-based microservices using Spring Boot and MySQL, which cut request latency by 66% and made each service independently deployable. I also wrote the DevOps runbooks and onboarding guides that three intern cohorts after me used to get up to speed.",
     },
     {
       company: "Sigma Foodservice",
@@ -139,7 +140,7 @@ export const DATA = {
       start: "May 2023",
       end: "Aug. 2023",
       description:
-        "Integrated Copomex API in .NET/C# for 10k+ locations (↑ address accuracy 80%); added Playwright E2E + Jenkins to slash QA time and speed deployments.",
+        "I joined Sigma to improve data quality and developer velocity across one of Mexico's largest food distribution networks. My first project was integrating the Copomex geolocation API into C#/.NET services across 10,000+ retail locations, which pushed address-resolution accuracy up by 80%. I then built out full end-to-end regression coverage using Playwright and Jenkins, cutting manual QA effort by 98.75% and giving the team the confidence to ship faster. Throughout the term I worked closely with product stakeholders in Agile sprint reviews to keep engineering scope and delivery timelines aligned.",
     },
   ],
   research: [
@@ -153,7 +154,7 @@ export const DATA = {
       start: "Sep. 2025",
       end: "Present",
       description:
-        "Designed and implemented a cross-chain data marketplace enabling trustless dataset listing, semantic discovery, and purchase using LLM-based embeddings, smart contracts, and IPFS, with privacy-preserving encrypted data vending and on-chain cryptographic integrity across Ethereum and Solana.",
+        "I am building BridgeMart, a cross-chain data marketplace on Ethereum and Solana where anyone can list, discover, and purchase encrypted datasets without trusting a third party. The core of the system is a privacy-preserving vending pipeline: datasets are encrypted client-side, integrity hashes are stored on-chain, and a smart-contract-gated decryption-key release ensures buyers only decrypt what they have paid for. On top of that, I shipped a RAG-style discovery service that uses LLM embeddings to match natural-language queries against tabular dataset signatures, backed by a FastAPI/Pydantic API and consumed by React and React Native frontends.",
     },
   ],
   leadership: [
@@ -162,7 +163,7 @@ export const DATA = {
       href: "https://www.agrivanna.com/",
       badges: [],
       location: "Calgary, Alberta",
-      title: "Full Stack Engineer Part-Time",
+      title: "Founding Engineer",
       logoUrl: "/agrivanna-logo.jpeg",
       start: "Sep. 2024",
       end: "Apr. 2025",
@@ -174,37 +175,37 @@ export const DATA = {
       badges: [],
       href: "https://studentenergyuofc.org/",
       location: "Calgary, Alberta",
-      title: "Vice-President Software Development",
+      title: "VP Software Development",
       logoUrl: "/seuc-logo.png",
       start: "Sep. 2023",
       end: "Apr. 2024",
       description:
         "Launched a Next.js/TypeScript news app (+70% engagement) and automated AWS infra with Terraform + GitHub Actions; led hiring and set engineering standards.",
     },
-    {
-      company: "ReThread",
-      badges: [],
-      href: "#",
-      location: "Calgary, Alberta",
-      title: "Backend Engineer Part-Time",
-      logoUrl: "/rethread-logo.png",
-      start: "Sep. 2023",
-      end: "Apr. 2024",
-      description:
-        "Designed TypeScript/Express microservices with Redis caching on AWS/Kubernetes; prototyped a PyTorch CNN for fabric classification and set CI/code-review practices.",
-    },
-    {
-      company: "Bandist",
-      href: "#",
-      badges: [],
-      location: "Calgary, AB",
-      title: "Frontend Engineer Part-Time",
-      logoUrl: "/bandist-logo.png",
-      start: "Sep. 2022",
-      end: "Apr. 2023",
-      description:
-        "Connected Django app to Ticketmaster/Spotify, cut costs 20%, and managed PostgreSQL/GCP for 10k+ MAU; shipped a Flutter mobile app with 99.95% uptime on Firebase.",
-    },
+    // {
+    //   company: "ReThread",
+    //   badges: [],
+    //   href: "#",
+    //   location: "Calgary, Alberta",
+    //   title: "Backend Engineer Part-Time",
+    //   logoUrl: "/rethread-logo.png",
+    //   start: "Sep. 2023",
+    //   end: "Apr. 2024",
+    //   description:
+    //     "Designed TypeScript/Express microservices with Redis caching on AWS/Kubernetes; prototyped a PyTorch CNN for fabric classification and set CI/code-review practices.",
+    // },
+    // {
+    //   company: "Bandist",
+    //   href: "#",
+    //   badges: [],
+    //   location: "Calgary, AB",
+    //   title: "Frontend Engineer Part-Time",
+    //   logoUrl: "/bandist-logo.png",
+    //   start: "Sep. 2022",
+    //   end: "Apr. 2023",
+    //   description:
+    //     "Connected Django app to Ticketmaster/Spotify, cut costs 20%, and managed PostgreSQL/GCP for 10k+ MAU; shipped a Flutter mobile app with 99.95% uptime on Firebase.",
+    // },
   ],
   education: [
     // {
@@ -226,12 +227,41 @@ export const DATA = {
   ],
   projects: [
     {
+      title:
+        "ChiselWare IP Factory Platform by Rocksavage Technology, Inc. (Capstone)",
+      href: "#",
+      dates: "Sep. 2025 - Apr. 2026",
+      active: true,
+      description:
+        "A full-stack semiconductor IP marketplace co-built with a 6-engineer team, enabling verified submission, certification, and monetized distribution of Chisel-based IP cores, complete with Stripe payments, OIDC auth, and automated Chisel-to-Verilog compilation.",
+      technologies: [
+        "React",
+        "TypeScript",
+        "FastAPI",
+        "Python",
+        "GitHub Actions",
+        "MySQL",
+        "Docker",
+        "Kubernetes",
+        "Azure",
+      ],
+      links: [
+        {
+          type: "Source",
+          href: "https://github.com/chiselWare",
+          icon: <Icons.github className="size-3" />,
+        },
+      ],
+      image: "/ip-factory.png",
+      video: "",
+    },
+    {
       title: "Cross-Chain Rebase Token",
       href: "#",
       dates: "Feb. 2025 - Mar. 2025",
       active: true,
       description:
-        "Cross-chain rebase token protocol that mints yield-bearing balances from vault deposits and uses Chainlink CCIP to bridge preserved interest rates.",
+        "A cross-chain rebase token protocol that mints yield-bearing balances from vault deposits and bridges preserved interest rates across networks using Chainlink CCIP.",
       technologies: [
         "Foundry",
         "Solidity",
@@ -255,7 +285,7 @@ export const DATA = {
       dates: "Aug. 2025 - Sep. 2025",
       active: true,
       description:
-        "An decentralized stablecoin protocol with exogenous collateral (ETH & BTC), algorithmic minting, and USD pegged, inspired by MakerDAO",
+        "A decentralized stablecoin protocol backed by exogenous collateral (ETH and BTC), featuring algorithmic minting and a USD peg, inspired by the MakerDAO model.",
       technologies: ["Foundry", "Solidity", "OpenZeppelin", "GitHub Actions"],
       links: [
         {
@@ -273,7 +303,7 @@ export const DATA = {
       dates: "Jul. 2025 - Sep. 2025",
       active: true,
       description:
-        "Full-stack ride-sharing platform enabling users to request rides, match with drivers, and manage trips through scalable microservice architecture",
+        "A full-stack ride-sharing platform where users request rides, match with drivers, and manage trips end to end; built on a scalable microservice architecture designed to handle real-world traffic patterns.",
       technologies: [
         "Go",
         "TypeScript",
@@ -308,7 +338,7 @@ export const DATA = {
       dates: "Jul. 2025 - Aug. 2025",
       active: true,
       description:
-        "A collection of ERC-721 NFT smart contracts built with OpenZeppelin, deploying static and dynamic on-chain traits",
+        "A collection of ERC-721 NFT smart contracts built with OpenZeppelin, supporting both static and dynamic on-chain traits with fully verifiable metadata.",
       technologies: ["Foundry", "Solidity", "OpenZeppelin", "Github Actions"],
       links: [
         {
@@ -326,7 +356,7 @@ export const DATA = {
       dates: "Jul. 2025 - Aug. 2025",
       active: true,
       description:
-        "An ERC-20 token smart contract built with OpenZeppelin, deploying Axel Token (AXL)",
+        "An ERC-20 token smart contract built with OpenZeppelin, deploying Axel Token (AXL) with full test coverage and an automated deployment pipeline.",
       technologies: ["Foundry", "Solidity", "OpenZeppelin", "Github Actions"],
       links: [
         {
@@ -344,7 +374,7 @@ export const DATA = {
       dates: "Mar. 2025 - Jun. 2025",
       active: true,
       description:
-        "Full-stack video game store enabling users to browse, search, and purchase titles through a responsive, user-friendly web interface",
+        "A full-stack video game store where users browse, search, and purchase titles through a responsive interface; secured with Keycloak authentication and backed by a .NET/C# API.",
       technologies: [
         ".NET",
         "C#",
@@ -367,13 +397,21 @@ export const DATA = {
       video: "",
     },
     {
-      title: "PyTorch",
+      title:
+        "Deep Learning Fundamentals, CNN, Transfer Learning, and ViT Replication",
       href: "#",
       dates: "Mar. 2025 - May. 2025",
       active: true,
       description:
-        "Collection of deep learning workflows in PyTorch, from fundamentals and classification to transfer learning and experiment tracking",
-      technologies: ["Python", "PyTorch", "Google Colab"],
+        "A hands-on collection of PyTorch deep learning workflows covering fundamentals, image classification with CNNs, transfer learning with experiment tracking, and a paper replication of the Vision Transformer (ViT).",
+      technologies: [
+        "Python",
+        "PyTorch",
+        "CNN",
+        "Transformers",
+        "Matplotlib",
+        "NumPy",
+      ],
       links: [
         {
           type: "Source",
@@ -390,7 +428,7 @@ export const DATA = {
       dates: "Jan. 2024 - Apr. 2024",
       active: true,
       description:
-        "A cross-platform application for household roommates to coordinate tasks",
+        "A cross-platform app for roommates to organize and assign household chores together; built on a Spring Boot microservice backend with a React/Redux frontend and deployed on GCP Kubernetes.",
       technologies: [
         "GCP",
         "Terraform",
@@ -423,7 +461,7 @@ export const DATA = {
       dates: "Dec. 2023 - Jan. 2024",
       active: true,
       description:
-        "A simple note-taking mobile app designed for capturing important ideas and reminders",
+        "A minimal, offline-first note-taking mobile app built with Flutter and Dart, designed for capturing ideas and reminders with local SQLite storage and Firebase sync.",
       technologies: ["Flutter", "Dart", "Firebase", "SQLite", "Github Actions"],
       links: [
         {
@@ -441,7 +479,7 @@ export const DATA = {
       dates: "Jan. 2023 - Aug. 2023",
       active: true,
       description:
-        "Developed an AI Customer Support Chatbot which automatically responds to customer support tickets using the latest GPT models",
+        "A full-stack e-commerce storefront for video games, featuring an AI customer support chatbot that automatically handles support tickets using the latest GPT models.",
       technologies: [
         "Vite",
         "React",
@@ -477,7 +515,7 @@ export const DATA = {
       dates: "Mar. 2023 - Apr. 2023",
       active: true,
       description:
-        "A serverless web app that automatically generates personalized obituaries for people",
+        "A serverless web app that generates personalized AI-written obituaries from user input; powered by OpenAI for text generation, AWS Polly for speech synthesis, and Cloudinary for media storage.",
       technologies: [
         "Terraform",
         "React",
@@ -506,7 +544,8 @@ export const DATA = {
       href: "#",
       dates: "Feb. 2023 - Mar. 2023",
       active: true,
-      description: "A Serverless Notes App",
+      description:
+        "A serverless notes app deployed on AWS Lambda and DynamoDB with infrastructure managed via Terraform and automated deployments through GitHub Actions.",
       technologies: [
         "React",
         "JavaScript",
@@ -532,7 +571,8 @@ export const DATA = {
       href: "#",
       dates: "Mar. 2023 - Apr. 2023",
       active: true,
-      description: "A Data Structures and Algorithms Library Published in PyPi",
+      description:
+        "A Python library of data structures and algorithms published to PyPI, with comprehensive unit tests and an automated release pipeline through GitHub Actions.",
       technologies: ["Python", "PyTest", "PyPi", "GitHub Actions"],
       links: [
         {
@@ -578,4 +618,9 @@ export const DATA = {
       ],
     },
   ],
+  contactSection: {
+    heading: "Let's Work Together",
+    description:
+      "Whether you have a project in mind, a role you think I'd be a great fit for, or just want to say hello, I'd love to hear from you. Drop me an [email](mailto:axelshz@gmail.com) and I'll get back to you as soon as possible.",
+  },
 } as const;

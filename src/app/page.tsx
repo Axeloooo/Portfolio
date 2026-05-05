@@ -6,7 +6,6 @@ import { ResumeCard } from "@/components/resume-card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { DATA } from "@/data/resume";
-import Link from "next/link";
 import Markdown from "react-markdown";
 
 const BLUR_FADE_DELAY = 0.04;
@@ -20,9 +19,9 @@ export default function Page() {
             <div className="flex-col flex flex-1 space-y-1.5">
               <BlurFadeText
                 delay={BLUR_FADE_DELAY}
-                className="text-3xl font-bold tracking-tighter sm:text-5xl xl:text-5xl/none"
+                className="text-3xl font-bold tracking-tighter sm:text-5xl xl:text-4xl/none"
                 yOffset={8}
-                text={`Hi! / Bonjour! / Hola! 👋`}
+                text={`Hi! / Bonjour! / Hola! / Привіт! 👋`}
               />
               <BlurFadeText
                 className="max-w-[600px] md:text-xl"
@@ -211,13 +210,13 @@ export default function Page() {
                   Certifications
                 </div>
                 <h2 className="text-3xl font-bold tracking-tighter sm:text-5xl">
-                  Always eager to learn and grow
+                  Built on a Foundation of Learning
                 </h2>
                 <p className="text-muted-foreground md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
-                  Throughout my journey, I’ve earned {DATA.certificates.length}{" "}
-                  certifications. These credentials validate my knowledge of
-                  cloud technologies and keep me up to date with industry
-                  trends, helping me build scalable and efficient solutions.
+                  Learning never stops. I’ve earned {DATA.certificates.length}{" "}
+                  certifications across cloud and systems technologies to stay
+                  sharp and grounded in the platforms I build on, ensuring every
+                  solution I deliver reflects current best practices.
                 </p>
               </div>
             </div>
@@ -249,18 +248,11 @@ export default function Page() {
                 Contact
               </div>
               <h2 className="text-3xl font-bold tracking-tighter sm:text-5xl">
-                Get in Touch
+                {DATA.contactSection.heading}
               </h2>
-              <p className="mx-auto max-w-[600px] text-muted-foreground md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
-                Send me an{" "}
-                <Link
-                  href={DATA.contact.social.email.url}
-                  className="text-blue-500 hover:underline"
-                >
-                  email
-                </Link>
-                .
-              </p>
+              <Markdown className="prose mx-auto max-w-[600px] text-pretty font-sans text-muted-foreground dark:prose-invert md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed [&_a]:text-blue-500 [&_a]:no-underline hover:[&_a]:underline">
+                {DATA.contactSection.description}
+              </Markdown>
             </div>
           </BlurFade>
         </div>
