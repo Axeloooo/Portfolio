@@ -6,7 +6,6 @@ import { ResumeCard } from "@/components/resume-card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { DATA } from "@/data/resume";
-import Link from "next/link";
 import Markdown from "react-markdown";
 
 const BLUR_FADE_DELAY = 0.04;
@@ -249,20 +248,11 @@ export default function Page() {
                 Contact
               </div>
               <h2 className="text-3xl font-bold tracking-tighter sm:text-5xl">
-                Let&apos;s Work Together
+                {DATA.contactSection.heading}
               </h2>
-              <p className="mx-auto max-w-[600px] text-muted-foreground md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
-                Whether you have a project in mind, a role you think I&apos;d be
-                a great fit for, or just want to say hello, I&apos;d love to
-                hear from you. Drop me an{" "}
-                <Link
-                  href={DATA.contact.social.email.url}
-                  className="text-blue-500 hover:underline"
-                >
-                  email
-                </Link>{" "}
-                and I&apos;ll get back to you as soon as possible.
-              </p>
+              <Markdown className="prose mx-auto max-w-[600px] text-pretty font-sans text-muted-foreground dark:prose-invert md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed [&_a]:text-blue-500 [&_a]:no-underline hover:[&_a]:underline">
+                {DATA.contactSection.description}
+              </Markdown>
             </div>
           </BlurFade>
         </div>

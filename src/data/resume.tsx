@@ -618,4 +618,9 @@ export const DATA = {
       ],
     },
   ],
+  contactSection: {
+    heading: "Let's Work Together",
+    description:
+      "Whether you have a project in mind, a role you think I'd be a great fit for, or just want to say hello, I'd love to hear from you. Drop me an [email](mailto:axelshz@gmail.com) and I'll get back to you as soon as possible.",
+  },
 } as const;
