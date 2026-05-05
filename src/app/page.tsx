@@ -20,9 +20,9 @@ export default function Page() {
             <div className="flex-col flex flex-1 space-y-1.5">
               <BlurFadeText
                 delay={BLUR_FADE_DELAY}
-                className="text-3xl font-bold tracking-tighter sm:text-5xl xl:text-5xl/none"
+                className="text-3xl font-bold tracking-tighter sm:text-5xl xl:text-4xl/none"
                 yOffset={8}
-                text={`Hi! / Bonjour! / Hola! 👋`}
+                text={`Hi! / Bonjour! / Hola! / Привіт! 👋`}
               />
               <BlurFadeText
                 className="max-w-[600px] md:text-xl"
@@ -211,13 +211,13 @@ export default function Page() {
                   Certifications
                 </div>
                 <h2 className="text-3xl font-bold tracking-tighter sm:text-5xl">
-                  Always eager to learn and grow
+                  Built on a Foundation of Learning
                 </h2>
                 <p className="text-muted-foreground md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
-                  Throughout my journey, I’ve earned {DATA.certificates.length}{" "}
-                  certifications. These credentials validate my knowledge of
-                  cloud technologies and keep me up to date with industry
-                  trends, helping me build scalable and efficient solutions.
+                  Learning never stops. I’ve earned {DATA.certificates.length}{" "}
+                  certifications across cloud and systems technologies to stay
+                  sharp and grounded in the platforms I build on, ensuring every
+                  solution I deliver reflects current best practices.
                 </p>
               </div>
             </div>
@@ -249,17 +249,19 @@ export default function Page() {
                 Contact
               </div>
               <h2 className="text-3xl font-bold tracking-tighter sm:text-5xl">
-                Get in Touch
+                Let&apos;s Work Together
               </h2>
               <p className="mx-auto max-w-[600px] text-muted-foreground md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
-                Send me an{" "}
+                Whether you have a project in mind, a role you think I&apos;d be
+                a great fit for, or just want to say hello, I&apos;d love to
+                hear from you. Drop me an{" "}
                 <Link
                   href={DATA.contact.social.email.url}
                   className="text-blue-500 hover:underline"
                 >
                   email
-                </Link>
-                .
+                </Link>{" "}
+                and I&apos;ll get back to you as soon as possible.
               </p>
             </div>
           </BlurFade>
