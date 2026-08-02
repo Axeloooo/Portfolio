@@ -107,6 +107,17 @@ export const DATA = {
   },
   work: [
     {
+      company: "Scotiabank",
+      href: "https://www.scotiabank.com/",
+      badges: [],
+      location: "Toronto, Ontario",
+      title: "AI Engineer",
+      logoUrl: "/scotiabank-logo.png",
+      start: "Jun. 2026",
+      end: "Present",
+      description: "NDA",
+    },
+    {
       company: "Microsoft",
       href: "https://www.microsoft.com/en-ca/",
       badges: [],
@@ -152,7 +163,7 @@ export const DATA = {
       title: "Undergraduate Researcher",
       logoUrl: "/ucalgary-logo.jpeg",
       start: "Sep. 2025",
-      end: "Present",
+      end: "Apr. 2026",
       description:
         "I am building BridgeMart, a cross-chain data marketplace on Ethereum and Solana where anyone can list, discover, and purchase encrypted datasets without trusting a third party. The core of the system is a privacy-preserving vending pipeline: datasets are encrypted client-side, integrity hashes are stored on-chain, and a smart-contract-gated decryption-key release ensures buyers only decrypt what they have paid for. On top of that, I shipped a RAG-style discovery service that uses LLM embeddings to match natural-language queries against tabular dataset signatures, backed by a FastAPI/Pydantic API and consumed by React and React Native frontends.",
     },
