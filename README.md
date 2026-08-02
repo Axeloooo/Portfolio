@@ -16,6 +16,7 @@ My personal portfolio website built with Next.js, showcasing my work experience,
 - [Tech Stack](#tech-stack)
 - [Getting Started](#getting-started)
 - [Commands](#commands)
+- [Contributing](#contributing)
 - [License](#license)
 
 ## Tech Stack
@@ -49,6 +50,22 @@ The development server starts at `http://localhost:3000`.
 | `npm run build`   | Build for production         |
 | `npm run start`   | Start production server      |
 | `npm run lint`    | Run ESLint                   |
+
+## Contributing
+
+This repo uses [Conventional Commits](https://www.conventionalcommits.org/) and [semantic-release](https://semantic-release.gitbook.io/) to automate versioning and GitHub releases from `main`.
+
+1. Branch off `devel` (e.g. `feature/my-change`, `fix/my-bug`).
+2. Open a PR into `devel`. The CI workflow (lint + build) runs automatically.
+3. **Always merge with "Squash and merge"** — never "Rebase and merge" or "Create a merge commit". Every PR must land as a single commit so semantic-release can read the history correctly.
+4. Give the PR a [Conventional Commits](https://www.conventionalcommits.org/) title, since it becomes the squash commit message:
+   - `feat: ...` → minor version bump
+   - `fix: ...` → patch version bump
+   - `feat!: ...` or a `BREAKING CHANGE:` footer → major version bump
+   - `chore:`, `docs:`, `refactor:`, etc. → no release
+5. When `devel` is ready to ship, open a PR from `devel` into `main` and squash-merge it the same way. The push to `main` triggers the release workflow, which runs semantic-release to tag a version and publish a GitHub release from the commit history.
+
+`main` and `devel` are both protected branches: direct pushes, force-pushes, and branch deletion are blocked, and all changes must go through a reviewed PR.
 
 ## License
 

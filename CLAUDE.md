@@ -47,3 +47,19 @@ Blog posts are `.mdx` files in `content/`. The `src/data/blog.ts` utility handle
 ### Path Alias
 
 `@/*` maps to `src/*` — use this for all internal imports.
+
+## Git Workflow & Releases
+
+Branch model: feature branches → `devel` → `main`. Both `devel` and `main` are protected by a repository ruleset (no direct pushes, no force-pushes, no branch deletion, PRs required).
+
+Versioning is fully automated by `semantic-release` (config in `release.config.js`, workflow in `.github/workflows/release.yml`), which only runs on pushes to `main` and reads commit messages via `@semantic-release/commit-analyzer` (Angular preset) to decide the version bump.
+
+**This means every PR into `devel` or `main` must be merged with "Squash and merge", never "Rebase and merge" or "Create a merge commit".** Rebase/merge-commit strategies leave multiple non-squashed commits (or, in the case of GitHub's rebase-and-merge, commits whose signature gets silently dropped on replay) in the history instead of one clean, conventional-commit-formatted entry — this has already caused a signature-verification incident on `devel` that had to be fixed by rewriting history.
+
+The PR title becomes the squash commit message and must follow [Conventional Commits](https://www.conventionalcommits.org/):
+- `feat: ...` → minor bump
+- `fix: ...` → patch bump
+- `feat!: ...` or a `BREAKING CHANGE:` footer → major bump
+- `chore:`, `docs:`, `refactor:`, etc. → no release
+
+`.github/workflows/ci.yml` (lint + build) runs on every PR targeting `main` or `devel`.
