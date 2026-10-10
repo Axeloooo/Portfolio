@@ -1,3 +1,4 @@
+import AskResumeChat from "@/components/ask-resume-chat";
 import Navbar from "@/components/navbar";
 import FaviconSwitcher from "@/components/favicon-switcher";
 import { Analytics } from "@vercel/analytics/react";
@@ -77,6 +78,7 @@ export default function RootLayout({
             <SpeedInsights />
             <Analytics />
             <Navbar />
+            <AskResumeChat />
           </TooltipProvider>
         </ThemeProvider>
       </body>
