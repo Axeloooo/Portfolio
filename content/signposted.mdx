@@ -1,67 +1,69 @@
 ---
 title: "Signposted"
 publishedAt: "2026-10-10"
-summary: "Trip planner where a four-step LLM pipeline (research, itinerary, budget, review) builds a plan behind a FastAPI API, shown on a departures-board web UI."
+summary: "A multi-agent travel planner: four Groq-backed LangGraph agents research, schedule, budget and review a trip, FastAPI serves the plan, and a departure-board-style React UI shows each agent's progress. It was deployed once on free tiers and is now offline because of hosting budget."
+image: "/signposted.png"
 ---
 
-**Stack:** Python, FastAPI, LangGraph, Groq, PostgreSQL, SQLAlchemy, React, TypeScript, Vite, Docker  
-**Project:** Personal project · 2026 · Author  
-**Commits:** 33  
-**API tests:** 28 passed (pytest, apps/api)  
-**Releases:** v1.0.0, v1.0.1  
-**Links:** [Source on GitHub](https://github.com/Axeloooo/Signposted)
+**Stack:** Python, FastAPI, LangGraph, Groq, SQLAlchemy, PostgreSQL, React, TypeScript, Vite, Docker, Vercel, Render · **Repo:** [Axeloooo/Signposted](https://github.com/Axeloooo/Signposted)
 
 ## Problem
-Signposted turns a destination, trip length, budget and interests into a day-by-day plan with a cost split. The README calls it a multi-agent travel planner, but the pipeline is four prompts to one model (Groq `llama-3.3-70b-versatile`) run in a fixed order, with no web search or tools, so the research step is the model's own knowledge and costs are estimates. A plan takes several sequential model calls, so the API answers at once and the UI polls for progress.
+
+Planning a trip means juggling destination research, a day-by-day schedule and a budget, and the pieces constrain each other. You submit a destination, number of days, a USD budget and interests, and four agents produce a plan that a reviewer checks against the budget and interests before it is returned.
+
+The web UI presents the plan as a departure board: time-first itineraries, a live status for each agent, and a flag on the stop where running spend first crosses the budget. The app was deployed once on free tiers and is now offline because of hosting budget.
 
 ## Architecture diagram
+
 ```text
-Groups
-  apps/web (React, Vite): screens: NewTrip, Progress, Itinerary, api/client.ts
-  apps/api (FastAPI): main.py, BackgroundTasks
-  agents/graph.py (LangGraph): research_agent, itinerary_agent, budget_agent, reviewer_agent
+  React SPA (polls GET /trips/{id} every 1.5 s)
+      |  /api/*
+      v
+  nginx or Vercel rewrite (strips /api)
+      |
+      v
+  FastAPI (create_app)
+      |  POST /trips: insert status=planning, return 202
+      v
+  PostgreSQL / SQLite   trips.plan (JSON column)
+      ^                          |
+      | progress after each      | background task
+      | node, then final plan    v
+      +---------------  plan_trip (LangGraph)
 
-Flow
-  research_agent --> itinerary_agent
-  itinerary_agent --> budget_agent
-  budget_agent --> reviewer_agent
-  reviewer_agent --(REVISE, under 2 rounds)--> itinerary_agent
-  screens: NewTrip, Progress, Itinerary --> api/client.ts
-  api/client.ts --> nginx or Vercel rewrite
-  nginx or Vercel rewrite --> main.py
-  main.py --> BackgroundTasks
-  BackgroundTasks --> agents/graph.py (LangGraph)
-  agents/graph.py (LangGraph) --> Groq
-  BackgroundTasks --(save progress and plan)--> PostgreSQL
-  main.py --> PostgreSQL
+     research_agent --> itinerary_agent --> budget_agent --> reviewer_agent
+                             ^                                    |
+                             +------ REVISE, reviews < 2 ---------+
+                                     APPROVE or 2 reviews --> END
 
-Details
-  api/client.ts: polls every 1.5 s
-  nginx or Vercel rewrite: /api to API
-  main.py: POST /trips, GET /trips
-  BackgroundTasks: run_planning
-  PostgreSQL: trips.plan JSON
-  Groq: llama-3.3-70b-versatile
+  every agent node --> Groq chat model (llama-3.3-70b-versatile)
 ```
 
-Read left to right: the React app posts a trip through a same-origin `/api` proxy to `main.py`, which starts planning as a background task and returns. The LangGraph pipeline runs research, itinerary, budget and review, can send the itinerary back once, and writes progress and the final plan into one JSON column in PostgreSQL.
+`POST /trips` validates the request, stores a trip with status `planning` and returns 202. A background task streams the compiled graph and writes progress into the `plan` JSON after each node, which is what the browser polls. The reviewer approves or sends the graph back to the itinerary agent with its feedback; the loop is capped at two review rounds, so at most one revision pass. The itinerary agent is asked for JSON only, which is parsed and validated into typed stops; if parsing fails, the raw text is kept.
 
 ## Key decisions
-- **Return 202 and poll.** `POST /trips` in `apps/api/app/main.py` starts `run_planning` as a background task, and each finished node writes `{status, progress}` into `trips.plan`, so any process can answer the poll. `docs/DEPLOYMENT.md` explains this choice.
-- **Cap the review loop.** `agents/graph.py` sets `MAX_REVIEW_ROUNDS = 2` and routes on a regex over the reviewer's `APPROVE` or `REVISE` line. The reviewer counts every review, so this allows at most one rewrite; `test_graph.py` covers giving up.
-- **Validate itinerary JSON, degrade to text.** `agents/itinerary.py` strips code fences and checks the output with Pydantic models; if it fails, the API returns raw text with `plan.days` null and the UI shows plain text.
-- **Inject the model into the app.** `create_app(settings, llm)` lets tests use a fake chat model and SQLite, so no API key or Postgres is needed (`apps/api/README.md`).
-- **One `TripApi` interface in the UI.** `apps/web/src/api/client.ts` has an HTTP client and a dev-only mock (`api/mock.ts`); `api/map.ts` marks the first stop where running cost passes the budget as a "hold".
+
+- **202 and polling instead of a held-open request.** A trip takes several model calls, and the nginx proxy and the free-tier host have their own timeouts and sleep behaviour.
+- **Persist progress per agent**, so the UI can render live status without a streaming connection.
+- **A bounded review loop.** The revision prompt includes the previous itinerary and the reviewer's feedback; a test pins this.
+- **Structured output with a tolerant parser.** Prompt for JSON, strip code fences, slice to the outermost braces, validate with Pydantic (`HH:MM` times, a fixed set of stop kinds, non-negative costs), and fall back to raw text.
+- **Restart safety.** Trips still marked `planning` at startup are marked `failed`, so nothing hangs after a redeploy.
+- **Injected dependencies.** `create_app(settings, llm)` lets tests use a fake chat model and SQLite with no credentials.
+- **Input limits at the edge:** destination length, 1 to 14 days, a bounded budget and a capped interest list.
 
 ## Challenges
-- **Revision loop lost context.** In `b866f9e` the rewrite prompt got only the reviewer's feedback; the fix adds the previous itinerary (`agents/nodes.py`) and makes the APPROVE check tolerate leading punctuation.
-- **Lost work on restart.** In-flight plans die with the process, so `main.py` marks trips left in `planning` as failed at startup (`test_restart_marks_interrupted_trips_failed`). `docs/DEPLOYMENT.md` notes Render's free tier sleeps and can hit this.
-- **Release pipeline churn.** Three commits (`9bbd421`, `907c338`, `36a3016`) retried the semantic-release token before settling on `GITHUB_TOKEN`.
-- **Not hardened.** The docs state the API has no authentication or rate limiting, and tables come from `create_all` with no migrations.
+
+- **Unreliable model output.** The planner returns a 503 when the model key is missing, stores a `failed` plan with a generic message on errors, and tolerates malformed itinerary JSON.
+- **Long chains versus hosting limits.** The docs note a slow first request after the free API sleeps and that a restart mid-plan fails the trip rather than leaving it stuck. The client tolerates a few failed polls (`MAX_POLL_FAILURES = 3`) before giving up.
+- **Free-tier rate limits.** A trip makes four model calls, up to seven if the reviewer asks for a revision, so the docs suggest a smaller Groq model as a fallback.
+- **Proxy configuration.** The nginx template resolves the API upstream when the container starts, and CI runs `nginx -t` on it.
 
 ## Results
-The repo has a working API, pipeline and web UI. 28 tests pass (`pytest` in `apps/api`, fake model and SQLite), and the web app has 18 Vitest cases (`App.test.tsx`, `http.test.ts`). CI in `.github/workflows/pr.yml` runs lint (black, ruff, mypy), tests, web build and Docker builds, and semantic-release tagged v1.0.0 and v1.0.1. `docker-compose.yml`, `render.yaml` and `apps/web/vercel.json` configure deployment. It was deployed once; it is offline now because of hosting budget, so there is no live demo.
+
+- The repository contains the full stack: API, agent graph, web UI, Docker images, Docker Compose, a Render blueprint, a Vercel config and a deployment guide.
+- A pytest suite covers the API and the graph's approval and revision behaviour; Vitest covers the web UI and HTTP client. CI also runs black, ruff, mypy and prettier, and builds both Docker images.
+- Releases v1.0.0 and v1.0.1 are recorded in the changelog. No measurements of latency, cost or itinerary quality are committed.
 
 ## Links
-- Repository: https://github.com/Axeloooo/Signposted
-- Deployment notes: `docs/DEPLOYMENT.md` in the repo
+
+- [Repository](https://github.com/Axeloooo/Signposted)

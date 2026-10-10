@@ -1,69 +1,63 @@
 ---
-title: "autograd-from-scratch"
+title: "Autograd From Scratch"
 publishedAt: "2026-10-10"
-summary: "A scalar reverse-mode autograd engine and small MLP library in pure Python, built while following Karpathy's micrograd lecture."
+summary: "A scalar reverse-mode autograd engine and a small neural-network library in dependency-free Python, with Graphviz graph export."
+image: "/autograd-from-scratch.png"
 ---
 
-**Stack:** Python, pytest, mypy, ruff, GitHub Actions, semantic-release, Graphviz DOT  
-**Project:** Follow-along · 2026 · Author  
-**Tests:** 19 (pytest)  
-**Runtime deps:** None  
-**Commits:** 16  
-**Links:** [Source on GitHub](https://github.com/Axeloooo/autograd-from-scratch)
+**Stack:** Python, pytest, mypy, ruff, black, GitHub Actions, semantic-release · **Repo:** [Axeloooo/autograd-from-scratch](https://github.com/Axeloooo/autograd-from-scratch)
 
 ## Problem
 
-A scalar reverse-mode autograd engine and a small neural network library in plain Python, built from scratch with no runtime dependencies. The repo follows the micrograd lecture from Andrej Karpathy's Neural Networks: Zero to Hero series, as its README says. Beyond the lecture it adds an iterative backward pass, Graphviz DOT export, finite-difference gradient tests, seedable randomness and a CI and release setup.
+This project builds backpropagation in plain Python from one idea: a scalar `Value` node that records the operation that produced it and a closure that pushes gradients back to its inputs. A small `Neuron` / `Layer` / `MLP` library sits on top and trains on tiny datasets.
+
+The runtime has no dependencies (`dependencies = []`), and engine, network and graph export total about 260 lines.
 
 ## Architecture diagram
 
 ```text
-Groups
-  engine.py: Value, operators, backward()
-  nn.py: Neuron, Layer, MLP
-
-Flow
-  Neuron --> Layer
-  Layer --> MLP
-  operators --(build graph + _backward closures)--> Value
-  backward() --(chain rule in reverse order)--> Value
-  Neuron --(uses Value ops)--> Value
-  graph.py --(reads _prev, _op)--> Value
-  graph.py --> Graphviz DOT text
-  tests/ --> Value
-  tests/ --> MLP
-  tests/ --> graph.py
-
-Details
-  Value: data, grad, _prev, _op
-  operators: add mul pow exp log tanh relu
-  backward(): iterative topo sort
-  graph.py: trace, to_dot
-  tests/: finite differences
+  nn.py:   Neuron --> Layer --> MLP
+                                 |
+                  forward pass builds the graph
+                                 v
+  +----------------------------------------------------+
+  | engine.py   Value                                  |
+  |   data, grad, label, _prev, _op, _backward         |
+  |   add / mul / pow / exp / log / tanh / relu        |
+  |   each op = new Value + closure doing  grad += ... |
+  +----------------------------------------------------+
+        |                                  |
+        | backward(): iterative            | trace() / to_dot()
+        | topological sort, then           | graph.py
+        | reversed _backward calls         v
+        v                            Graphviz DOT text
+  MLP.parameters()  (.grad filled in)
+        |
+        v
+  p.data -= lr * p.grad      <- update loop lives in the README and tests
 ```
 
-`engine.py` holds `Value`, which records its inputs and a `_backward` closure per operation. `nn.py` stacks `Neuron`, `Layer` and `MLP` on those operations, and `graph.py` reads the same graph to emit Graphviz DOT text. Tests sit on top of all three.
+`Value` stores its data, gradient, child nodes, the operation and a backward closure. `backward()` sorts the graph topologically, seeds the root gradient with 1.0 and runs the closures in reverse. `graph.py` walks the same graph to emit DOT text. The training loop is deliberately not library code.
 
 ## Key decisions
 
-- **Iterative backward pass.** `Value.backward` in `engine.py` uses an iterative depth-first topological sort instead of recursion, so deep graphs do not hit Python's recursion limit. Commit `c7bec16` says so, and `tests/test_engine.py` builds a 5000-node chain.
-- **DOT text instead of the graphviz package.** `to_dot` in `graph.py` returns plain DOT, which keeps runtime dependencies at zero (`pyproject.toml`). It escapes record-label characters, covered by `tests/test_graph.py`.
-- **Gradients accumulate with `+=`, as in the lecture.** A value used twice gets both contributions; `test_value_used_twice_accumulates` checks it.
-- **Finite-difference checks for each operator.** Besides the lecture's exact numbers (loss -8, gradients 6, -4, -2, 4), `tests/test_engine.py` compares analytic gradients with numeric ones.
-- **Seedable randomness.** `Neuron` and `MLP` in `nn.py` accept a `random.Random`, so the MLP test is deterministic.
+- **Accumulate gradients with `+=`.** A value used more than once must sum its contributions; `test_value_used_twice_accumulates` covers it.
+- **Iterative topological sort.** `backward()` uses an explicit stack so a very deep graph cannot hit Python's recursion limit. A test builds a 5,000-node chain.
+- **Few primitive derivatives.** Subtraction and division are composed from `* -1.0` and `** -1`, so only add, mul, pow, exp, log, tanh and relu have hand-written backward rules.
+- **DOT as plain text.** `to_dot` returns Graphviz source and escapes record-label characters, so the `graphviz` package is not needed.
+- **Defensive details.** `Neuron` and `MLP` accept an injectable `random.Random`, and `zip(..., strict=True)` catches input-size mismatches.
 
 ## Challenges
 
-- The first version of `Value.backward` (`523a7e0`) built the topological order recursively, which would hit Python's recursion limit on deep graphs. `c7bec16` made it iterative, and `test_backward_on_a_deep_graph_does_not_overflow_the_stack` uses a 5000-node chain.
-- DOT record labels break on characters such as `|` and braces, so `graph.py` escapes them.
-- The release workflow went through changes: a custom release token was added (`4390040`) and then replaced with the built-in `GITHUB_TOKEN` (`e3b0de2`). The repo does not say why.
-- Known limits from the code: scalars only, Python loops in `Neuron.__call__`, and `__pow__` accepts only int or float exponents.
+- **Deep graphs.** `backward()` was recursive until v1.2.0, which made it iterative alongside graph drawing; the 5,000-node test pins the fix.
+- **Trusting hand-written derivatives.** Tests compare analytic gradients with finite differences across nine parametrized cases (relu at +0.9 and -0.9 among them) and check a hand-worked expression with loss -8.0. relu's derivative at exactly 0 is 0, and no test covers that point.
 
 ## Results
 
-The library covers add, mul, pow, exp, log, tanh, relu and the reflected operators, plus `Neuron`, `Layer` and `MLP`. The suite has 19 pytest tests (5 engine functions, one parametrized into 9 cases, plus 2 nn and 3 graph). There is no standalone training script or notebook; the README's training-loop row points at `tests/test_nn.py::test_mlp_learns_tiny_dataset`. One test trains an MLP on a 4-sample toy set for 50 steps and asserts the loss falls below 10% of its starting value; no loss figures are printed anywhere. CI in `.github/workflows/ci.yml` runs ruff, black, mypy, prettier and pytest on Python 3.10 and 3.13. `CHANGELOG.md` lists v1.0.0 to v1.2.0 from semantic-release, but `pyproject.toml` still says 0.0.0, and the release workflow (`.github/workflows/release.yaml`) only tags and updates `CHANGELOG.md`; there is no PyPI publish step.
+- A working scalar autograd engine, an MLP that learns a four-sample dataset (the test requires the loss to fall below 10% of its start after 50 steps), and DOT export of any computation graph.
+- Three test modules (engine, network, graph). CI runs ruff, black, mypy, prettier and pytest on Python 3.10 and 3.13; mypy is strict and the package ships `py.typed`.
+- Releases v1.0.0 to v1.2.0: Conventional Commits are enforced by commitlint and pre-commit (with gitleaks), `release.yaml` runs semantic-release on `main` and merges `main` back into `devel`.
 
 ## Links
 
-- Repository: [github.com/Axeloooo/autograd-from-scratch](https://github.com/Axeloooo/autograd-from-scratch)
-- Source lecture: [Andrej Karpathy, The spelled-out intro to neural networks and backpropagation: building micrograd](https://www.youtube.com/watch?v=VMj-3S1tku0)
+- [Repository](https://github.com/Axeloooo/autograd-from-scratch)

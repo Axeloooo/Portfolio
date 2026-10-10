@@ -1,66 +1,64 @@
 ---
 title: "charlm"
 publishedAt: "2026-10-10"
-summary: "Character-level name generators, from a count bigram to a BatchNorm MLP and a hierarchical tree, packaged as a typed Python library with a CLI."
+summary: "Character-level language models in PyTorch, from a counted bigram table through MLP and BatchNorm to a WaveNet-style hierarchy, with hand-written layers."
+image: "/charlm.png"
 ---
 
-**Stack:** Python, PyTorch, pytest, mypy, ruff, GitHub Actions, semantic-release  
-**Project:** Follow-along · 2026 · Author  
-**Commits:** 16  
-**Test functions:** 21  
-**Releases:** v1.0.0 to v1.1.1  
-**Links:** [Source on GitHub](https://github.com/Axeloooo/charlm)
+**Stack:** Python, PyTorch, pytest, mypy, GitHub Actions, semantic-release · **Repo:** [Axeloooo/charlm](https://github.com/Axeloooo/charlm)
 
 ## Problem
-This follows Andrej Karpathy's makemore lectures from the Neural Networks: Zero to Hero series. The README lists five parts: building makemore, MLP, activations/gradients/BatchNorm, backprop by hand, and WaveNet. The models learn to generate names from the 32,033-name makemore dataset. The repo turns notebook-style lecture code into an installable package with tests and a CLI, so each model can be trained from one command.
+
+charlm builds one progression on one task, generating names: a bigram table made by counting, a neural bigram, an embedding MLP, the same MLP with BatchNorm, and a WaveNet-style model that fuses context hierarchically. The layers (`Linear`, `BatchNorm1d`, `Embedding` and others) are written by hand in the style of `torch.nn`, without using `torch.nn.Module`.
+
+It is an installable package with a CLI, and the 32,033-name dataset ships inside it.
 
 ## Architecture diagram
-```text
-Flow
-  names.txt --> data.py
-  data.py --> bigram.py
-  data.py --> models.py
-  layers.py --> models.py
-  models.py --> train.py
-  __main__.py --> data.py
-  __main__.py --> bigram.py
-  __main__.py --> models.py
-  __main__.py --> train.py
-  tests/ ..> backprop.py
 
-Details
-  names.txt: 32,033 names
-  data.py: vocab, 80/10/10 split,, build_dataset
-  bigram.py: CountBigram, NeuralBigram
-  models.py: build_mlp, build_wavenet
-  layers.py: Linear, BatchNorm1d, Tanh,, Embedding, FlattenConsecutive
-  backprop.py: forward, manual_backward
-  train.py: train, evaluate, sample
-  __main__.py: --model bigram, mlp, mlp-bn, wavenet
-  tests/: manual grads vs autograd
+```text
+  names.txt (package data)
+      |
+      v
+  load_words --> build_vocab (27 symbols) --+
+      |                                     |
+      v                                     v
+  split_words 80/10/10, seed 42      build_mlp / build_wavenet
+      |                              (vocab_size, block_size, generator)
+      +--> CountBigram --> nll + samples            |
+      |                                             v
+      +--> build_dataset(block_size) --------> train
+                                               minibatch SGD,
+                                               lr / 10 after 75%
+                                                  |        |
+                                                  v        v
+                                            evaluate    sample
+                                         train/dev/test  until "."
+
+  Tests only:  NeuralBigram (one-hot @ W)   backprop.py (manual backward)
 ```
 
-Read left to right: `names.txt` is split and windowed by `data.py`, then feeds the bigram models and the layer-based models built from `layers.py`. Solid arrows mean data flows to; the dotted arrow means the tests import the module. `backprop.py` is a standalone module that only the tests exercise, against `loss.backward()`; no CLI path calls it. `__main__.py` selects a model and calls `train.py`.
+`layers.py` provides `Linear`, `BatchNorm1d` (2D and 3D input, running stats), `Tanh`, `Embedding`, `FlattenConsecutive` and `Sequential`. The WaveNet stack is Embedding, then three blocks of FlattenConsecutive(2), Linear, BatchNorm and Tanh that shrink the context 8, 4, 2, 1, then a final Linear. `backprop.py` is a separate hand-derived backward pass for a 2-layer BatchNorm MLP, checked against autograd in tests.
 
 ## Key decisions
-- **Hand-written layers instead of `torch.nn`.** `layers.py` defines `Module`, `Linear`, `BatchNorm1d`, `Tanh`, `Embedding`, `FlattenConsecutive` and `Sequential`, and `train.py` updates parameters with a manual SGD loop (learning rate drops 10x at 75% of steps).
-- **One layer for both MLP and tree.** `FlattenConsecutive` flattens the whole context for the MLP and merges neighbouring pairs for the "WaveNet" model in `models.py`. This is the lecture's hierarchical-merge MLP, not a dilated-convolution WaveNet.
-- **BatchNorm over 2D and 3D input.** `BatchNorm1d` reduces over `(0, 1)` for `(N, L, C)` input, which the tree model needs, and is covered in `tests/test_models.py`.
-- **Manual backward as a separate functional module.** `backprop.py` keeps a forward cache and writes cross-entropy, linear, tanh, collapsed BatchNorm and embedding gradients by hand; `tests/test_backprop.py` compares them to `loss.backward()` with `atol` 1e-5.
-- **Dataset shipped inside the package.** Commit `9f3cc27` moved `names.txt` into `src/charlm/` and added package data, with a `--data` flag for other word lists.
+
+- **Hand-written layers.** `Module`, `Linear`, `BatchNorm1d` and `Sequential` are implemented directly so each layer's behaviour is visible.
+- **Careful initialisation.** Weights use `1/sqrt(fan_in)` scaling and the last layer is scaled by 0.1, so the initial loss starts near ln(27); a test asserts it.
+- **BatchNorm over 2D and 3D input.** For sequences it reduces over batch and length and keeps running statistics under `no_grad`.
+- **Manual backprop, verified.** Gradients use Bessel-corrected variance and `index_add_` for embeddings, and `test_manual_gradients_match_autograd` compares all seven parameter tensors with `allclose`.
+- **Reproducibility.** One seeded `torch.Generator` and a fixed split seed make runs repeatable.
 
 ## Challenges
-- **Install bug.** The dataset first lived at `data/names.txt`, outside the package, so a regular install could not find it. `9f3cc27` fixed this and also made `build_wavenet` reject a block size that is not a power of the group size.
-- **Release automation took several passes.** `678735f` switched to a release token, `b136fa7` went back to the built-in `GITHUB_TOKEN`, and `e0897c7` and `886d9d4` sync `main` back into `devel`.
-- **Gradient check is narrow.** The test covers only the two-layer BatchNorm MLP in `backprop.py`; the `Module`-based models rely on autograd.
-- **Short default runs.** The README notes the CLI defaults finish on a CPU in seconds, while the lectures train for 100k-200k steps.
+
+- **Shapes in the hierarchy.** `FlattenConsecutive` fuses neighbouring positions and must squeeze once the context reaches length 1 (`test_flatten_consecutive_shapes`). `build_wavenet` validates that the block size is a power of the grouping factor.
+- **BatchNorm statistics on 3D input and the manual backward pass.** Both are easy to get subtly wrong, so each has a test against a reference.
+- **Installed copies need the dataset.** `names.txt` is declared as package data (`[tool.setuptools.package-data]`) so non-editable installs find it; `test_default_names_file_ships_inside_the_package` covers it.
 
 ## Results
-- Four models run from `python -m charlm --model bigram|mlp|mlp-bn|wavenet`, reporting train, dev and test loss.
-- 21 test functions in five files under `tests/` cover bigram, data, models, CLI and the gradient check.
-- CI (`.github/workflows/ci.yml`) runs ruff, black, mypy, prettier and pytest on Python 3.10 and 3.13. Three releases (v1.0.0, v1.1.0, v1.1.1) are in `CHANGELOG.md`.
-- The only runtime dependency is `torch>=2.2`. No loss values or sample names appear in the repo.
+
+- Four model types behind `python -m charlm --model {bigram,mlp,mlp-bn,wavenet}`, each printing train, dev and test loss and generated names. The `bigram` option is a counted table with no training.
+- Five test files cover vocabulary and splits, count versus neural bigram agreement, BatchNorm statistics, shapes, initial loss, loss reduction over 300 steps, manual versus autograd gradients and the CLI. CI runs them with ruff, black, mypy and prettier on Python 3.10 and 3.13.
+- Releases 1.0.0, 1.1.0 and 1.1.1 come from semantic-release, with commitlint on commit messages and a back-merge from `main` into `devel`.
 
 ## Links
-- Repository: https://github.com/Axeloooo/charlm
-- Source material: Andrej Karpathy, Neural Networks: Zero to Hero (makemore lectures): https://www.youtube.com/watch?v=PaCmpygFfXo
+
+- [Repository](https://github.com/Axeloooo/charlm)

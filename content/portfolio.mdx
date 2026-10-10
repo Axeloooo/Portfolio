@@ -1,64 +1,64 @@
 ---
 title: "Portfolio"
 publishedAt: "2026-10-10"
-summary: "Personal portfolio site on Next.js 14 with a typed content file, an MDX blog and a PR-to-release workflow."
+summary: "This site: a data-driven Next.js 14 portfolio where nearly all content lives in one typed file, with a Markdown blog and an automated squash-and-release workflow."
+image: "/portfolio.png"
 ---
 
-**Stack:** Next.js 14, TypeScript, Tailwind CSS, shadcn/ui, MDX, framer-motion, GitHub Actions, semantic-release  
-**Project:** Personal project · 2024 - 2026 · Author  
-**Commits:** 46  
-**Project cards:** 14 in src/data/resume.tsx  
-**Tests:** None configured  
-**Links:** [Source on GitHub](https://github.com/Axeloooo/Portfolio)
+**Stack:** Next.js 14, React, TypeScript, Tailwind CSS, shadcn/ui, Framer Motion, Shiki, GitHub Actions, semantic-release · **Repo:** [Axeloooo/Portfolio](https://github.com/Axeloooo/Portfolio)
 
 ## Problem
-A single place to show work experience, education, research, projects and skills, plus a blog. Content, sections, CI and a release workflow are all maintained in the one repo.
+
+A portfolio is mostly content that changes often, around a small amount of code that should not. The goal was a site where adding a job, a project or a skill is an edit to one typed data file, and where CI lints and builds every pull request and releases come from commit titles.
 
 ## Architecture diagram
+
 ```text
-Groups
-  Content: src/data/resume.tsx, content/*.mdx
-  src/app (Next.js 14 App Router): layout.tsx, page.tsx, blog/page.tsx, blog/[slug]/page.tsx
+  src/data/resume.tsx  (DATA: jobs, projects, skills, education, contact)
+      |
+      v
+  app/page.tsx --> ProjectCard, ResumeCard, HackathonCard, BlurFade
 
-Flow
-  src/data/resume.tsx --> page.tsx
-  page.tsx --> src/components
-  content/*.mdx --> src/data/blog.ts
-  src/data/blog.ts --> blog/page.tsx
-  src/data/blog.ts --> blog/[slug]/page.tsx
-  layout.tsx --> page.tsx
-  layout.tsx --> blog/page.tsx
-  layout.tsx --> Vercel Analytics
-  src/data/resume.tsx --> layout.tsx
-  GitHub Actions ..> src/app (Next.js 14 App Router)
+  content/*.mdx  (Markdown posts)
+      |
+      v
+  data/blog.ts: gray-matter --> remark --> rehype-pretty-code (Shiki)
+      |
+      v
+  blog list page + blog/[slug] pages  (static, generateStaticParams)
 
-Details
-  src/data/resume.tsx: DATA object
-  page.tsx: home sections
-  src/data/blog.ts: gray-matter + unified
-  src/components: ProjectCard, ResumeCard, magicui
-  Vercel Analytics: + Speed Insights
-  GitHub Actions: ci.yml, release.yml
+  app/layout.tsx wraps both: font, theme provider, dock navbar,
+                             favicons, Vercel Analytics + Speed Insights
+
+  pull request to devel / main --> ci.yml: install, lint, build
+  push to main                 --> release.yml: semantic-release
 ```
 
-There is no backend or database. All home-page content comes from one `DATA` object in `src/data/resume.tsx`; blog posts are `.mdx` files turned into HTML by `src/data/blog.ts`. `layout.tsx` wraps both routes and loads the Vercel packages, and the two workflows in `.github/workflows/` run on pull requests and on pushes to `main`.
+There is no backend, database or API route. `DATA` holds personal info, skills, work, research, leadership, education, projects, certificates and social links. Blog posts are parsed at build time and statically generated.
 
 ## Key decisions
-- **Content in one typed data file.** `src/data/resume.tsx` holds work, education, skills, projects and links, so adding a project is one object edit. Axel added `research` and `leadership` sections (`3fa4274`), rendered in `src/app/page.tsx`.
-- **Blog as MDX files, no CMS.** `src/data/blog.ts` reads `content/` with `fs`, parses frontmatter with `gray-matter`, and highlights code with `rehype-pretty-code`. Only one placeholder post, `content/hello-world.mdx`, exists.
-- **Theme-aware favicons.** `next-themes` handles the class-based dark mode, and `src/components/favicon-switcher.tsx` with `public/favicon-{light,dark}.ico` (`44dc181`) swaps the icon.
-- **Squash-merge and Conventional Commit titles.** The README (Contributing) requires feature branches into `devel` into `main`, always squash-merged, with PR titles in Conventional Commit form so semantic-release (`.releaserc`, `release.yml`) can read the history.
-- **CI gate.** `ci.yml` runs `npm run lint` and `npm run build` on pull requests to `main` and `devel`.
+
+- **One content file.** Nearly all home-page content comes from `DATA`, which keeps edits trivial and diffs reviewable.
+- **Build-time Markdown pipeline.** Syntax highlighting happens at build time with Shiki (`min-light` and `min-dark` themes) instead of shipping a runtime MDX compiler.
+- **Tailwind HSL variables with class-based dark mode.** Colors are CSS variables and `next-themes` toggles the class; favicons switch with the theme.
+- **shadcn/ui primitives plus custom animation components.** Primitives stay untouched under `components/ui`; the dock and blur-fade effects live in `components/magicui`.
+- **A multilingual hero.** The greeting shows English, French, Spanish and Ukrainian side by side, which is why the font loads a Cyrillic subset.
+- **Pinned Node.** `engines.node` is set to 24.x in `package.json` to override the host dashboard setting.
+- **Squash-only branch model.** Feature branches go to `devel`, releases go to `main`, and semantic-release derives versions from squashed Conventional Commit titles.
 
 ## Challenges
-- **Type error in an animation component.** `0d4c7d0` ("Fixed type issue by casting to any") added `margin: inViewMargin as any` in `src/components/magicui/blur-fade.tsx`, the cast is still present.
-- **Lint toolchain churn.** On 2026-01-19, `bd56d1b` raised `eslint-config-next` to ^16 and `a1ed52a` raised ESLint to ^9, then `df643d6` set them back to `eslint` ^8.57 and `eslint-config-next` ^14.2. No message gives a reason.
-- **Node runtime pin.** `9c60ae0` pinned `engines.node` to `24.x` because, per its message, Vercel is deprecating Node.js 20 and the field overrides the dashboard setting. `ci.yml` still uses `lts/*` and the README says "Node.js LTS", so CI could drift from the deploy runtime.
-- **Unfinished links.** `src/app/blog/[slug]/page.tsx` points the default OpenGraph image at `/og?title=...`, but `src/app/og` does not exist. Many entries in `resume.tsx` use `href: "#"`, and the package name is spelled `porfolio`.
+
+- **Keeping history clean.** Rebase-and-merge once broke commit signatures on `devel`; resolving it led to the squash-only rule documented in the repo.
+- **Dependency alignment.** ESLint 9 and `eslint-config-next` 16 were tried, then reverted to ESLint 8 and config-next 14 to match Next.js 14.
+- **Keeping content centralised.** Review feedback on a content change moved the contact section copy out of `page.tsx` into `DATA.contactSection`.
+- **Theme-aware highlighting.** Code blocks need both a light and a dark Shiki theme, resolved at build time with `rehype-pretty-code`.
 
 ## Results
-The repo contains the home page (hero, work, education, research, leadership, skills, projects, certificates, contact), light and dark themes, a dock navbar, a downloadable `public/Resume.pdf`, an MDX blog and OpenGraph metadata. `resume.tsx` lists 14 project cards. The site URL set in code is `axelsanchez.me`. There are 46 commits and no test suite. The only tags are `v0.1.0` and `v1.0.0`, which predate the release workflow, so no automated release is shown.
+
+- A statically generated site with a home page, a blog index and per-post pages, a downloadable resume PDF, and project cards driven entirely by data.
+- CI installs, lints and builds on every pull request into `devel` or `main`; a release workflow runs semantic-release on `main`.
+- No test suite is configured; correctness is enforced by lint and the production build.
 
 ## Links
-- Repository: https://github.com/Axeloooo/Portfolio
-- Site URL set in code (not verified live): https://axelsanchez.me
+
+- [Repository](https://github.com/Axeloooo/Portfolio)

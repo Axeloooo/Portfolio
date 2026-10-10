@@ -1,69 +1,64 @@
 ---
 title: "Headnote"
 publishedAt: "2026-10-10"
-summary: "A document-grounded chat app: FastAPI and LangGraph retrieve passages from Chroma, and answers cite the source documents in a React UI."
+summary: "A ChatGPT-style retrieval-augmented assistant: save documents to a library, ask questions, and get answers with source pills that cite the retrieved chunks. It was deployed once on free tiers and is now offline because of hosting budget."
+image: "/headnote.png"
 ---
 
-**Stack:** Python, FastAPI, LangGraph, ChromaDB, SQLAlchemy, React, TypeScript, Vite, Docker, LangSmith  
-**Project:** Follow-along · 2026 · Author  
-**Commits:** 27  
-**Release:** 1.0.0  
-**Tests:** 23 API test functions, 19 web test cases  
-**Links:** [Source on GitHub](https://github.com/Axeloooo/Headnote)
+**Stack:** Python, FastAPI, LangGraph, ChromaDB, SQLAlchemy, PostgreSQL, React, TypeScript, Vite, Docker, Vercel, Render · **Repo:** [Axeloooo/Headnote](https://github.com/Axeloooo/Headnote)
 
 ## Problem
 
-Headnote is a chat app that answers from a library of saved documents and shows which excerpts each answer used. It follows the "Build Your Own ChatGPT Agent" YouTube tutorial named in the README and adds a document library, per-answer citations, conversation history, a React UI, container and free-tier deploy configs, and CI with release automation.
+Headnote lets you add documents to a library, ask a question, and read an answer whose source pills show which document and which part of it were retrieved.
+
+With no API key, an offline echo model lets the whole app run end to end; with a key it uses Anthropic or OpenAI. It was built for free-tier hosting: Vercel for the web app, Render for the API and Neon for Postgres. The app was deployed once and is now offline because of hosting budget.
 
 ## Architecture diagram
 
 ```text
-Groups
-  agent.py (LangGraph): retrieve, respond
+  React SPA (apps/web)
+      |  /api/*   (same origin)
+      v
+  nginx in Docker   or   Vercel rewrite
+      |
+      v
+  FastAPI (create_app)
+      |
+      +-- POST /documents --> chunk_text (~800 chars) --+
+      |                                                 v
+      +-- POST /chat --> LangGraph:                ChromaDB collection
+      |                    retrieve (top 3 chunks) <----+
+      |                    respond --> ChatAnthropic | ChatOpenAI | echo model
+      |
+      +-- SQLAlchemy --> SQLite (local) or Postgres (Neon)
 
-Flow
-  Browser --> nginx or Vercel
-  nginx or Vercel --> apps/web
-  nginx or Vercel --(/api/*)--> apps/api main.py
-  retrieve --> respond
-  apps/api main.py --(POST /chat)--> retrieve
-  retrieve --> Chroma
-  respond --> llm.py
-  apps/api main.py --> SQLAlchemy
-  apps/api main.py --(POST /documents)--> chunk_text
-  chunk_text --> Chroma
-  seed.py --> Chroma
-
-Details
-  nginx or Vercel: static app + /api proxy
-  apps/web: React + Vite bundle
-  apps/api main.py: FastAPI
-  Chroma: rag.py
-  llm.py: Claude, OpenAI or echo
-  SQLAlchemy: SQLite or Neon
-  seed.py: demo_docs
+  seed_library: bundled demo docs --> Chroma + SQL at start
 ```
 
-nginx (container) or Vercel serves the built React app and forwards `/api/*` to the FastAPI service, so the browser stays on one origin. `POST /chat` runs a two-node LangGraph (retrieve, then respond); documents are chunked into Chroma, and conversations and document metadata live in SQL.
+`POST /documents` splits text into paragraph-packed chunks, inserts a `Document` row to get an id, and adds the chunks to Chroma with that id as metadata. `POST /chat` loads the last 20 messages, runs the two-node graph with the top three chunks in the system prompt, saves both messages, and returns the reply with sources mapped back to titles.
 
 ## Key decisions
 
-- **Fixed retrieve-then-respond graph.** The "agent" is a LangGraph `StateGraph` with `START -> retrieve -> respond -> END`: no tools, loops or conditional edges, and retrieval takes the top 3 hits (`apps/api/app/agent.py`).
-- **Offline echo model and fail-fast providers.** With no API key the app uses `EchoChatModel`, so the app and tests run offline; an explicitly chosen provider without a key raises (`llm.py`, `tests/test_llm.py`). Anthropic support was added in 5284ca3 alongside OpenAI.
-- **Metadata in SQL, text in Chroma.** Chunks carry a `document_id`, so `_sources` in `main.py` can map hits back to document titles for citations; hits with no matching row are skipped (`models.py`).
-- **Local embeddings by default.** Chroma's local model is used unless an OpenAI key is set, and it is baked into the Docker image to avoid a cold-start download (`rag.py`, `apps/api/Dockerfile`).
-- **Same-origin proxy instead of CORS.** nginx and a Vercel rewrite forward `/api`; CORS is opt-in (`nginx.conf.template`, `vercel.json`).
+- **A fixed two-step graph.** Retrieve then respond keeps the flow predictable and easy to test.
+- **Citations from metadata.** Each chunk carries its `document_id` and chunk number, so answers cite a title and "part N"; chunks whose document row is gone are skipped.
+- **Provider auto-selection with an offline fallback.** The app picks Anthropic, OpenAI or the echo model from the available keys, and fails with an explicit error if a forced provider has no key.
+- **Embeddings that match the deployment.** OpenAI embeddings when a key is present, otherwise Chroma's local model, which the Dockerfile pre-downloads at build time.
+- **Same-origin proxy instead of CORS.** CORS is off by default and opt-in through `CORS_ORIGINS`.
+- **Database URL normalisation and `pool_pre_ping`**, so a pasted Neon string works and idle serverless connections do not break requests.
 
 ## Challenges
 
-- **Ephemeral free-tier disk.** The Chroma index is lost when Render's free instance sleeps, while document rows stay in Neon. `seed.py` rebuilds the demo index at start; documents users added are not searchable again (`docs/DEPLOYMENT.md`).
-- **Release pipeline churn.** Three consecutive commits (6a6823b, 33dd39c, 934e681) reworked token setup for semantic-release before settling on the built-in `GITHUB_TOKEN`.
-- **Rename fallout.** Renaming from Cairnly (ca7be90) changed the default DB filename and Chroma collection, so the README has an upgrade section.
-- **Stated limits.** No authentication or rate limiting, character-based chunking without overlap, no streaming, and a `delete_document` function with no endpoint.
+- **Ephemeral disks on free hosting.** The vector index disappears when the free Render instance spins down while Postgres rows persist. A seed step rebuilds the index from bundled demo documents at start, reusing document rows by title; user-added documents drop out of search after a restart, which the deployment guide states.
+- **Cold starts and memory.** The free instance sleeps after inactivity and its first request is slow; local embeddings may exceed 512 MB, so hosted setups can switch to OpenAI embeddings.
+- **Proxy timeouts on long answers.** The guide documents calling the API directly with `VITE_API_URL` and `CORS_ORIGINS` as the alternative.
+- **A rename without data loss.** The project was renamed from Cairnly to Headnote; the README explains how to keep an existing `cairnly.db` or `cairnly_docs` collection by renaming it to the new defaults.
 
 ## Results
 
-The repo has the API, the web app, Docker Compose, CI (ruff, black, mypy, pytest, prettier, vitest, image builds) and a 1.0.0 release dated 2026-10-10 (`CHANGELOG.md`). API and web test suites exist (23 API test functions, 19 web test cases). `docs/AWS_DEPLOYMENT.md` is notes only. It was deployed once; it is offline now because of hosting budget, so there is no live demo.
+- The repository ships Docker Compose, a Render blueprint and a Vercel config, plus guides for free-tier and AWS deployment.
+- API tests cover the chat flow, deployment URL handling and provider selection with file-based SQLite and a deterministic embedding function, so no network is needed; web tests use Vitest and Testing Library.
+- CI runs ruff, black, mypy, prettier, pytest, web typecheck, tests and build. Releases run semantic-release with the built-in `GITHUB_TOKEN`, and a separate CI job builds both Docker images and checks that the nginx config parses.
+- No retrieval-quality or latency measurements are recorded in the repository.
 
 ## Links
 

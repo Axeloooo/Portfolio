@@ -1,62 +1,68 @@
 ---
 title: "Ride Sharing"
 publishedAt: "2026-10-10"
-summary: "Go microservices backend for a ride-hailing flow: route and fare preview, trip creation, driver matching over RabbitMQ, and Stripe Checkout sessions."
+summary: "An event-driven ride-hailing backend in Go: four microservices over gRPC and RabbitMQ with WebSocket updates, Stripe Checkout, OpenTelemetry tracing, a Next.js client and Kubernetes manifests driven by Tilt."
+image: "/ride-sharing.png"
 ---
 
-**Stack:** Go, gRPC, Protocol Buffers, RabbitMQ, MongoDB, Stripe, OpenTelemetry, Jaeger, Kubernetes, Tilt, Docker, WebSocket  
-**Project:** Course build · 2025 · Author  
-**Go services:** 4  
-**Merged PRs:** 10  
-**Tests / CI:** none  
-**Links:** [Source on GitHub](https://github.com/Axeloooo/Ride-Sharing)
+**Stack:** Go, gRPC, RabbitMQ, MongoDB, Stripe, OpenTelemetry, Jaeger, Next.js, Kubernetes, Tilt · **Repo:** [Axeloooo/Ride-Sharing](https://github.com/Axeloooo/Ride-Sharing)
 
 ## Problem
 
-This is the backend for an Uber-style ride-hailing app, built as a Go microservices course project. The web client, architecture docs and deploy README come from the course starter; the Go services, messaging, tracing and Kubernetes wiring are the author's.
+A rider previews a route and fares, requests a trip, a driver has to be found and accept in real time, and a payment session has to follow. This project builds that flow as four Go services plus a web client, using synchronous calls where a caller needs an answer and events where services only need to react.
 
 ## Architecture diagram
 
 ```text
-Groups
-  RabbitMQ: exchange trip, dlx: queues
+  Next.js web --HTTP preview/start--> API gateway <--WebSocket-- web
+                                      |      |   (/ws/riders, /ws/drivers)
+                       gRPC           |      | gRPC
+              +-----------------------+      +------------------+
+              v                                                 v
+        Trip service ---HTTP---> OSRM routing API         Driver service
+        MongoDB (trips)                                   in-memory drivers
+              |                                                 ^
+              | trip.event.created                              |
+              v                                                 |
+  ================ RabbitMQ topic exchange "trip" ================
+   | find drivers -------------------------------------------->  |
+   | <-- driver.cmd.trip_request / no_drivers_found ------------+
+   | notify queues --> gateway --> rider / driver WebSocket
+   | driver accept / decline (via gateway) --> trip service
+   | driver_assigned + create payment session --> Payment service
+   |                                                    |
+   |                                         Stripe Checkout Session
+   | <-- payment.event.session_created ----------------+
+   +-- failed after retries --> dlx --> dead_letter_queue
 
-Flow
-  web (starter Next.js) --(HTTP + WebSocket)--> api-gateway
-  api-gateway --(gRPC)--> trip-service
-  api-gateway --(gRPC)--> driver-service
-  trip-service --(HTTP)--> OSRM routing API
-  trip-service --> MongoDB
-  api-gateway <--> queues
-  trip-service <--> queues
-  driver-service <--> queues
-  payment-service <--> queues
-  payment-service --(Checkout Session)--> Stripe
-  api-gateway ..(traces)..> Jaeger
+  OpenTelemetry spans from gateway, trip, driver, payment --> Jaeger
 ```
 
-The web client reaches the api-gateway over HTTP and WebSocket. The gateway calls trip-service and driver-service over gRPC, and the trip lifecycle (driver request, accept or decline, payment session) moves as events through one RabbitMQ topic exchange. The diagram shows one tracing edge; all four Go services export traces to Jaeger.
+The **gateway** exposes `/trip/preview`, `/trip/start` and two WebSocket endpoints. The **trip service** (domain / service / infrastructure layout) gets routes from an external OSRM HTTP API, computes fares for sedan, SUV, van and luxury, and stores trips in MongoDB. The **driver service** keeps an in-memory registry, assigns each new driver a location and geohash, and matches by package type. The **payment service** turns a driver-assigned event into a Stripe Checkout session that the gateway pushes to the rider.
 
 ## Key decisions
 
-- **gRPC for request/response, RabbitMQ for the trip lifecycle.** Preview, create-trip and driver registration are gRPC calls (`proto/trip.proto`, `proto/driver.proto`); everything after trip creation is an event published on the `trip` exchange (`shared/messaging/rabbitmq.go`). The event design is in the course docs.
-- **Dead-letter exchange with retries.** Every queue is declared with `x-dead-letter-exchange=dlx`, and consumers retry with backoff before rejecting (commit `2b38298`, `shared/retry/retry.go`). The headers set before rejection are not republished, so the end-to-end dead-letter path is wired but not verified.
-- **Trace context carried through AMQP headers.** A custom publisher and consumer propagate it, so one Jaeger trace spans HTTP, gRPC and the queue hop (`shared/tracing/rabbitmq.go`, commit `db48438`).
-- **Layered trip-service with a repository interface.** `internal/{domain,service,infrastructure}` has in-memory and MongoDB implementations of `TripRepository`; MongoDB was swapped in last (commit `7342c0e`).
-- **Stripe behind an interface.** `domain.PaymentProcessor` hides the Stripe adapter in `services/payment-service/internal/infrastructure/stripe/stripe.go`.
+- **Hybrid sync and async.** gRPC with generated protobuf code for request/response; RabbitMQ routing keys such as `trip.event.*` and `driver.cmd.*` for events and commands.
+- **Durable messaging with retries.** Queues are durable with `x-dead-letter-exchange`, publishing is persistent, and service consumers use manual acks with prefetch 1. A retry helper makes one attempt plus three retries with exponential backoff from 1 s capped at 10 s, then rejects the message into `dead_letter_queue`. The gateway's WebSocket notification consumers auto-ack.
+- **Tracing across the gateway, gRPC and AMQP hops.** OpenTelemetry spans propagate through them and export to Jaeger.
+- **Clean architecture and swappable storage.** The trip service has in-memory and MongoDB repositories behind one interface.
+- **Hosted payment page.** Stripe Checkout instead of a custom card form, with success and cancel URLs from a Kubernetes ConfigMap.
+- **Geohash for driver location**, on the server and in the map client.
+- **Developer ergonomics.** Tilt with live-update builds, minimal Alpine images, Windows build fallbacks and a service scaffold generator.
 
 ## Challenges
 
-- Several fixes came from wiring services together: a mis-named proto field (`e7293be`), a WebSocket route (`1b56f7e`), RabbitMQ consumer error handling (`7de98eb`) and Mongo env vars (`3fac848`).
-- Driver and WebSocket state live in per-process memory while driver-service runs two replicas in dev (`infra/development/k8s/driver-service-deployment.yaml`). A code comment in `connection_manager.go` notes that multiple gateways would need shared storage.
-- `tilt up` needs `infra/development/k8s/secrets.yaml`, which is gitignored and not documented, so a fresh clone cannot start without creating it.
+- **Delivering events to the right WebSocket.** Each connected rider or driver gets queue consumers on shared queues, and the connection manager is in-process; its own comment notes that multiple gateway instances would need shared storage.
+- **State in a scaled service.** The driver registry is per-process memory while the dev manifest runs two replicas, so replicas do not share drivers. Matching takes the first driver whose package type fits, and one registry read does not take the mutex.
+- **Dev setup gaps.** Development manifests exist for every service plus Jaeger, RabbitMQ and MongoDB, but the Tiltfile does not load the MongoDB manifest, and a local `secrets.yaml` (not committed) is required.
+- **External routing dependency.** Routes come from a hard-coded third-party OSRM endpoint rather than a self-hosted one.
 
 ## Results
 
-The Go code builds and passes `go vet` (checked on a copy with Go 1.24.7). In code, the flow covers route preview with four fare tiers via an external OSRM service, fare storage in MongoDB, trip creation, driver matching, driver accept or decline over WebSocket, and Stripe Checkout session creation. Matching picks the first registered driver with the same package, and driver location updates are ignored.
-
-The payment loop is not finished: there is no Stripe webhook or success handling, so a trip is never marked paid. MongoDB is used only by trip-service. There are no tests and no CI. The production manifests and GCP deploy steps are from the starter and cover only the gateway and trip-service, so no deployment is claimed here.
+- The request path is implemented end to end: preview and fares, trip creation, driver matching with accept and decline, and Stripe Checkout session creation pushed to the rider over WebSocket.
+- Operational scaffolding is committed: Tiltfile, Kubernetes manifests (production manifests exist for the gateway and trip service), Jaeger for traces, a dead-letter queue, and design notes with Mermaid sequence and flow diagrams in `docs/architecture`.
+- The repository has no automated tests or CI workflow yet.
 
 ## Links
 
-- Repository: https://github.com/Axeloooo/Ride-Sharing
+- [Repository](https://github.com/Axeloooo/Ride-Sharing)

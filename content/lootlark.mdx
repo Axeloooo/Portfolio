@@ -1,55 +1,66 @@
 ---
-title: "LootLark"
+title: "Lootlark"
 publishedAt: "2026-10-10"
-summary: "Full-stack video game store on ASP.NET Core, React and .NET Aspire, with Stripe test-mode checkout and a queue-backed worker that issues game codes."
+summary: "A full-stack video game store on .NET 8 and React: catalog, baskets, Stripe checkout and asynchronous fulfilment built on a transactional outbox, Service Bus and idempotent order handling, orchestrated locally with .NET Aspire."
+image: "/gamestore.png"
 ---
 
-**Stack:** .NET 8, ASP.NET Core, React, TypeScript, PostgreSQL, .NET Aspire, Stripe, Azure Service Bus, Keycloak, Testcontainers  
-**Project:** Course build · 2025 - 2026 · Author  
-**Commits:** 125  
-**Tests:** 82 unit (1 skipped), 23 integration (per README)  
-**Releases:** v0.1.0, v0.2.0  
-**Links:** [Source on GitHub](https://github.com/Axeloooo/LootLark)
+**Stack:** C#, .NET 8, ASP.NET Core, .NET Aspire, EF Core, PostgreSQL, Azure Service Bus, Stripe, Keycloak, React, TypeScript, Vite, Testcontainers · **Repo:** [Axeloooo/GameStore](https://github.com/Axeloooo/GameStore) (the codebase keeps the original name GameStore in its projects, routes and Keycloak realm)
 
 ## Problem
-LootLark is a video game store: browse and filter a catalogue by genre, keep a per-user basket, pay through Stripe in test mode, and receive game codes once the order is processed. It follows the .NET Academy .NET 8 bootcamp, and the code stays close to the course's final trees (`README.md`). That is why the projects, namespaces, API routes and Keycloak realm still use the course's `GameStore.*` names; LootLark is the product name.
+
+A store that sells digital goods must not hand out duplicate codes when the browser double-clicks, Stripe redelivers a webhook, or the process crashes between writing to the database and publishing a message. Lootlark is a full-stack game store (browse and filter the catalog, keep a basket, check out with Stripe in test mode, receive codes) built around making that payment-to-fulfilment path safe. Admins can create, edit and delete games, including cover image upload.
 
 ## Architecture diagram
+
 ```text
-Flow
-  frontend (React, Vite) --(OIDC)--> Keycloak / Entra ID
-  frontend (React, Vite) --(bearer JWT)--> GameStore.Api
-  frontend (React, Vite) --(Stripe.js)--> Stripe (test mode)
-  GameStore.Api --(checkout session)--> Stripe (test mode)
-  Stripe CLI container --(webhook (local))--> GameStore.Api
-  Stripe (test mode) ..> Stripe CLI container
-  GameStore.Api --> PostgreSQL
-  GameStore.Api --> Azurite blobs
-  GameStore.Api --(OutboxProcessor)--> Service Bus: orders
-  Service Bus: orders --> GameStore.Worker
-  GameStore.Worker --> PostgreSQL
-  GameStore.AppHost (Aspire) ..(starts and wires)..> GameStore.Api
-  GameStore.AppHost (Aspire) ..> GameStore.Worker
+  React SPA --OIDC--> Keycloak (local) / Entra ID
+      |
+      | Bearer JWT                          Stripe.js card entry
+      v                                            |
+  GameStore.Api --create Checkout Session--> Stripe (test mode)
+      ^   |                                        |
+      |   +--> PostgreSQL, Blob storage            |
+      |                                            |
+      +--- signed webhook: checkout.session.completed
+      |
+      | one transaction: order -> Processing,
+      | basket cleared, OutboxMessage written
+      v
+  OutboxProcessor (polls every 10 s)
+      | publishes OrderPaid
+      v
+  Service Bus queue "orders" --> GameStore.Worker
+      |                              | generates codes,
+      |                              v order -> Completed (PostgreSQL)
+      +-- no MessageType --> dead-letter queue --> logging processor
 ```
 
-The React SPA signs in through Keycloak (local) or Entra ID and calls `GameStore.Api` with a bearer token. The API creates the Stripe checkout session, and the payment webhook (forwarded by a Stripe CLI container locally) starts order processing; the API publishes through an outbox to a Service Bus queue, and `GameStore.Worker` completes the order.
+The API is a .NET 8 minimal API in vertical feature slices (Games, Genres, Baskets, Orders, Payments). Order states run Pending, Processing, Completed. A .NET Aspire AppHost starts PostgreSQL, Azurite, the Service Bus emulator, Keycloak and two Stripe CLI containers.
 
 ## Key decisions
-- **Transactional outbox before the queue.** The webhook handler moves the order to Processing, clears the basket and inserts an `OutboxMessage` in one transaction. `OutboxProcessor` then publishes `OrderPaid` (see `docs/architecture.md` section 4.3, migration `AddOutboxMessages`).
-- **Idempotent checkout.** A unique (CustomerId, OperationId) index, a Stripe idempotency key and unique-violation handling in `OrderCreator` stop duplicate orders; the worker's `OrderPaidHandler` checks the order is Processing first.
-- **Aspire for local orchestration.** `GameStore.AppHost/AppHost.cs` starts PostgreSQL 17.4, Azurite, the Service Bus emulator, Keycloak and two Stripe CLI containers, using a custom `StripeCLI.Hosting` resource.
-- **Local only.** Azure DevOps pipelines and deploy files were added with the course modules, then removed (`be1a2dc`, `d9a654d`); `README.md` states nothing provisions cloud resources.
-- **Real dependencies in tests.** Integration tests use Testcontainers against PostgreSQL and Azurite (`GameStoreWebApplicationFactory.cs`) and the Service Bus emulator (`Worker/OrdersWorkerTests.cs`).
+
+- **Transactional outbox** rather than publishing from the webhook: the order change and the message commit atomically, at the price of up to ten seconds of delay and at-least-once delivery.
+- **Idempotency at several levels.** A client `operationId` with a unique index on customer and operation, a Stripe idempotency key per order, status guards before confirming payment and before completing an order, and duplicate detection on the queue.
+- **Fast webhook, async fulfilment.** The webhook acknowledges quickly and a separate worker does the slow part.
+- **Two identity providers behind one policy scheme**, chosen by token issuer: tokens from a `ciamlogin.com` issuer use the Entra handler and all others use Keycloak, which is what runs locally.
+- **Order items snapshot** product name, price and image at purchase time.
+- **Stripe signatures verified with API-version mismatch tolerated**, because test accounts send events in their own API version.
+- **Local-only by design.** The AppHost runs every dependency as a container or emulator; nothing in the repository provisions cloud resources.
 
 ## Challenges
-- **Vulnerable transitive packages.** Patched versions were pinned (`dca6342`, `d60d21e`) and a dependency audit added to CI.
-- **Docker Hub rate limits in CI.** Anonymous pulls hit the limit, so CI logs in to Docker Hub, pins Service Bus emulator 2.0.1 in `OrdersWorkerTests.cs` and uses a mirror with retries (`2e7c602`, `34c7d12`, `b15cb0c`).
-- **Setup trap.** A placeholder `EntraAuthority` must be an HTTPS URL or every API request returns 500 (`README.md`).
-- **Known gaps.** One test is skipped for Azurite-style URLs (`CdnUrlTransformerTests.cs`), and the outbox poller runs inside the API, so several instances would each poll and could publish a message twice; queue duplicate detection and the worker's status check absorb that (`docs/architecture.md`, section 8).
+
+- **Concurrent duplicate checkouts.** Two simultaneous requests can both try to create the same order; the unique-violation race is caught and the existing order re-read, with unit tests that use an interceptor to force the collision.
+- **Deterministic async tests.** Integration tests wait on exact database events through `OutboxMessageProcessedInterceptor` and `OrderCompletedInterceptor`.
+- **CI stability.** CI pulls test images from a mirror with retries (to avoid Docker Hub rate limits) and pins the Service Bus emulator at 2.0.1.
+- **Dependency vulnerabilities.** Patched transitive packages are pinned in the project files and an audit job checks npm and NuGet advisories.
 
 ## Results
-The repo contains a working local stack: catalogue search and genre filter, admin CRUD with image upload, per-user basket, Stripe test checkout, game-code generation by the worker, and OpenTelemetry in the Aspire dashboard. Beyond the course material it adds a unit-test project written class by class, a five-job GitHub Actions pipeline, Dependabot, semantic-release (tags v0.1.0 and v0.2.0), and the LootLark brand (`frontend/src/styles/lootlark-tokens.css`). The database moved from SQLite to PostgreSQL, and the UI is Bootstrap 5. The README reports 82 unit tests (one skipped) and 23 integration tests. There is no deployment or demo.
+
+- The full purchase flow is implemented from catalog to codes: basket, idempotent order creation, Stripe Checkout, signed webhook, outbox, queue, worker and order completion, plus an admin games area with image upload.
+- Unit tests cover handlers such as order creation and the outbox; integration tests run against real PostgreSQL, Azurite and the Service Bus emulator through Testcontainers and `WebApplicationFactory`. The README reports 82 unit tests (one skipped on purpose) and 23 integration tests.
+- CI builds, runs both test suites, lints and builds the front end, audits dependencies and checks commit messages. Releases use semantic-release, and Dependabot is configured.
 
 ## Links
-- Repo: https://github.com/Axeloooo/LootLark
-- Architecture notes: https://github.com/Axeloooo/LootLark/blob/devel/docs/architecture.md
+
+- [Repository](https://github.com/Axeloooo/GameStore)

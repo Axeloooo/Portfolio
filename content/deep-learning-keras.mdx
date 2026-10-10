@@ -1,63 +1,64 @@
 ---
-title: "Deep Learning with Keras"
+title: "Deep Learning and Neural Networks with Keras"
 publishedAt: "2026-10-10"
-summary: "Eight Colab notebooks that move from NumPy forward and backward propagation to Keras regression, MNIST, CNNs, attention and pretrained models."
+summary: "Eight self-contained Colab notebooks that move from a NumPy forward pass to Keras regression, MNIST classifiers, CNNs, an LSTM encoder-decoder with attention, and a frozen-base image classifier head with BLIP captioning."
+image: "/deep-learning-keras.png"
 ---
 
-**Stack:** Python, Jupyter, Google Colab, NumPy, Keras, TensorFlow, VGG16, BLIP, PyTorch  
-**Project:** Course build · 2026 · Author  
-**Notebooks:** 8  
-**Commits:** 17  
-**License:** MIT  
-**Links:** [Source on GitHub](https://github.com/Axeloooo/Deep-Learning-and-Neural-Networks-with-Keras)
+**Stack:** Python, Keras, TensorFlow, NumPy, pandas, PyTorch, Hugging Face Transformers, Google Colab · **Repo:** [Axeloooo/Deep-Learning-and-Neural-Networks-with-Keras](https://github.com/Axeloooo/Deep-Learning-and-Neural-Networks-with-Keras)
 
 ## Problem
 
-The repository is a set of lessons that connect the arithmetic inside a neural network to the Keras calls that automate it: trace values through a small network, study how gradients drive learning, then move to tabular data, handwritten digits, convolution, attention and pretrained models (`README.md`). The notebooks follow the labs of the Deep Learning with Keras course; this repo adds the Colab-first packaging, fixes, refinements to some lessons (activation functions, regression) and the README and contributor documentation below.
+This collection starts one level below the framework, with a hand-built forward pass and a NumPy backpropagation loop, and then climbs to Keras one task at a time: tabular regression, image classification, convolutional networks, sequence-to-sequence with attention and image captioning.
+
+There is no application, package or test suite. The deliverable is eight notebooks meant to run in Google Colab, with committed outputs for the numeric ones. The last two keep blank practice exercises, so the VGG16 and BLIP notebook only runs fully once its task cells are filled in.
 
 ## Architecture diagram
 
 ```text
-Groups
-  NumPy from scratch: forward-propagation, backward-propagation (XOR), activation-functions-and-vanishing
-  Keras Sequential: regression-with-keras (concrete CSV), classification-with-keras (MNIST dense), convolutional-neural-networks-with-keras
-  Attention and transfer learning: transformers-with-Keras (LSTM + SelfAttention), classification-and-captioning (VGG16 + BLIP)
+  Google Colab runtime (each notebook stands alone; order = learning path)
 
-Flow
-  forward-propagation --> backward-propagation (XOR)
-  backward-propagation (XOR) --> activation-functions-and-vanishing
-  regression-with-keras (concrete CSV) --> classification-with-keras (MNIST dense)
-  classification-with-keras (MNIST dense) --> convolutional-neural-networks-with-keras
-  transformers-with-Keras (LSTM + SelfAttention) --> classification-and-captioning (VGG16 + BLIP)
-  activation-functions-and-vanishing --> regression-with-keras (concrete CSV)
-  convolutional-neural-networks-with-keras --> transformers-with-Keras (LSTM + SelfAttention)
+  1 forward-propagation (NumPy)
+  2 backward-propagation (XOR, NumPy)
+  3 activation functions and plots
+  4 regression with Keras       <-- concrete-strength CSV
+  5 MNIST classification, Dense <-- keras.datasets.mnist
+  6 CNN: Conv2D + MaxPool       <-- keras.datasets.mnist
+  7 LSTM encoder-decoder + SelfAttention layer
+  8 frozen-base classifier head + BLIP captioning layer
+       ^                    ^
+       |                    |
+  aircraft-damage      Salesforce/blip-image-captioning-base
+  image archive        (Hugging Face)
+
+  push to main --> semantic-release --> GitHub release
 ```
 
-This is a learning path, not a service. Each box is a standalone notebook in `notebooks/`, read in the README order (arrows show suggested order, not dependencies): NumPy first, then Keras Sequential models, then attention and transfer learning.
+The attention notebook uses a custom scaled dot-product `SelfAttention` layer with decoder outputs as queries and encoder outputs as keys and values, on top of an LSTM encoder-decoder. Its filename says "transformers", but it is not a Transformer. Notebook 8 defines a frozen-base classifier head (512-512-1 with dropout 0.3) and wraps BLIP as a custom Keras layer with `tf.py_function`; loading VGG16 and training are left as exercises.
 
 ## Key decisions
 
-- **Colab only, no local setup.** All `!pip install` cells stay commented out and there is no lockfile; the README says to leave them commented (commit `0641241`).
-- **Standalone notebooks.** Each has its own setup cells so it can run independently (`CONTRIBUTING.md`, `README.md`).
-- **NumPy before Keras.** The early notebooks build forward and backward passes by hand so the later `model.fit` calls are not opaque (`README.md` conclusion).
-- **Reproducible reruns.** `backward-propagation.ipynb` fixes `np.random.seed(42)` (commit `c87e156`); the CNN notebook always encodes the original digit labels so the cell is safe to rerun (commit `2ccc52f`).
-- **Correct the docs, not just the code.** `README.md` states that `transformers-with-Keras.ipynb` builds an LSTM encoder-decoder with one custom `SelfAttention` layer, not a full Transformer, although the notebook's own intro still says transformer.
+- **From scratch first.** The first two notebooks implement the forward pass, sigmoid, error and weight updates in NumPy before any Keras appears.
+- **Colab as the supported runtime.** The `!pip install` cells stay commented out and Colab's preinstalled environment is used; there is no lockfile.
+- **Reproducibility.** Fixed seeds in the XOR and captioning notebooks, a rerunnable label-encoding cell in the CNN notebook, and committed outputs so results can be read without executing anything.
+- **Small, deliberate experiments.** Regression compares a 2-layer and a 5-layer network; the CNN notebook varies block count, batch size and epochs; the Dense classifier is saved, reloaded and trained further.
 
 ## Challenges
 
-- **Course environment to Colab.** Commit `0641241` ("make all eight notebooks runnable end to end in Google Colab") ported the notebooks, and the README admits some lesson text still refers to the original course environment.
-- **No automated checks.** There are no tests, and `.github/workflows/release.yaml` only runs semantic-release on `main`; it does not execute notebooks. Validation is a manual run in a fresh Colab runtime.
-- **Slow and variable training.** The backpropagation example runs 180,000 iterations, and the README warns that results vary with initialisation and runtime.
-- **Unfinished parts.** The README calls the collection a work in progress. Notebook 8 still has unfilled `# Write your code here` task cells, and notebooks 7 and 8 have no stored outputs, so this page does not claim all eight run end to end.
+- **Honest comparisons.** The regression runs use different validation splits (0.3 and 0.1) and single runs, and the MNIST notebooks pass the test set as validation data, so the numbers below are monitoring figures, not controlled benchmarks.
+- **Custom pieces inside Keras.** Cross-attention is a hand-written `Layer`, and BLIP (a PyTorch model) is wrapped as a Keras layer through `tf.py_function`.
+- **Release automation on a notebook repo.** The semantic-release workflow checks out full history (`fetch-depth: 0`) and uses the Conventional Commits preset so it can read commit messages.
 
 ## Results
 
-- Notebooks 1 to 6 keep stored outputs. Backpropagation on XOR ends at an average error of 0.00861 (`backward-propagation.ipynb`).
-- Dense MNIST classifier reaches 98.11% accuracy after 10 epochs; the CNN variants reach 98.07% to 98.86% (`classification-with-keras.ipynb`, `convolutional-neural-networks-with-keras.ipynb`).
-- These runs pass the test set as `validation_data`, so they are test-set numbers also watched during training, not held-out results. The README calls them teaching examples, not benchmarks.
-- The repo adds a Colab-first README with per-notebook Open-in-Colab links, `CONTRIBUTING.md`, a code of conduct, and semantic-release configuration.
+Committed notebook outputs, which illustrate the runs rather than serve as benchmarks:
+
+- **XOR in NumPy:** final outputs of about 0.0096, 0.9918, 0.9918 and 0.0084 for targets 0, 1, 1, 0, after 180,000 epochs.
+- **Concrete-strength regression:** a 1,030-row dataset; validation loss ends at 132.4 for the 2-layer model and 14.5 for the 5-layer model, on different splits.
+- **MNIST Dense classifier:** 98.11% accuracy, 98.16% after 20 further epochs.
+- **CNN:** between 98.07% and 98.86% across four batch-size and depth configurations.
+- The attention and VGG16/BLIP notebooks have no committed outputs, so no figures are quoted for them.
 
 ## Links
 
-- Repository: https://github.com/Axeloooo/Deep-Learning-and-Neural-Networks-with-Keras
-- Notebooks (open in Colab via the README table): https://github.com/Axeloooo/Deep-Learning-and-Neural-Networks-with-Keras/tree/main/notebooks
+- [Repository](https://github.com/Axeloooo/Deep-Learning-and-Neural-Networks-with-Keras)

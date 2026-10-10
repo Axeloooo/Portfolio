@@ -1,68 +1,69 @@
 ---
 title: "BPE Tokenizer"
 publishedAt: "2026-10-10"
-summary: "A byte pair encoding tokenizer in Python with a GPT-4-style regex split, special tokens, JSON save/load and a small CLI."
+summary: "A byte-pair-encoding tokenizer in pure Python with a GPT-4-style regex split, special-token handling, JSON model files and a train/encode/decode CLI."
+image: "/bpe-tokenizer.png"
 ---
 
-**Stack:** Python, regex, pytest, mypy, ruff, GitHub Actions, semantic-release  
-**Project:** Follow-along · 2026 · Author  
-**Commits:** 13  
-**Tests:** 17 pytest cases  
-**Source:** 324 lines of Python  
-**Links:** [Source on GitHub](https://github.com/Axeloooo/bpe-tokenizer)
+**Stack:** Python, regex, pytest, mypy, GitHub Actions, semantic-release · **Repo:** [Axeloooo/bpe-tokenizer](https://github.com/Axeloooo/bpe-tokenizer)
 
 ## Problem
 
-This follows Andrej Karpathy's lecture "Let's build the GPT Tokenizer" from the Neural Networks: Zero to Hero series (`README.md`). The goal stated in the README is a byte pair encoding tokenizer built from scratch in the style of GPT-4.
+This is byte-level byte pair encoding built from first principles: learn merges from a corpus, turn text into token ids, and turn ids back into text, using the same splitting rules as the GPT-4 tokenizer.
+
+The scope is deliberately narrow. It trains its own merges; it does not load `cl100k_base`, depend on `tiktoken` or claim output equivalence with either.
 
 ## Architecture diagram
 
 ```text
-Flow
-  corpus.txt --> __main__.py
-  __main__.py --> BasicTokenizer
-  __main__.py --> RegexTokenizer
-  RegexTokenizer --> GPT-4 split pattern
-  RegexTokenizer --> special tokens
-  BasicTokenizer --> base.py
-  RegexTokenizer --> base.py
-  base.py --> tokenizer.json
-  tokenizer.json --> __main__.py
-
-Details
-  __main__.py: train / encode / decode
-  BasicTokenizer: basic.py
-  RegexTokenizer: regex_tokenizer.py
-  special tokens: allowed_special
-  base.py: get_stats, merge, Tokenizer
-  tokenizer.json: save / load
+  corpus.txt
+      |
+      v
+  CLI  (__main__.py)   train | encode | decode
+      |
+      +--------------------------+
+      v                          v
+  RegexTokenizer             BasicTokenizer
+  GPT-4 / GPT-2 split        whole text, one stream
+      |                          |
+      v                          |
+  UTF-8 byte chunks              |
+      |                          |
+      +------------+-------------+
+                   v
+        get_stats + merge loop     (merges never cross chunks in Regex)
+                   |
+                   v
+        merges: pair -> id 256+i  --> vocab: id -> bytes
+                   |
+                   v
+        JSON model file (version 1) <-- special tokens (Python API)
+                   |
+                   +--> loaded again by the CLI for encode / decode
 ```
 
-The CLI loads or trains one of two tokenizers that share `base.py`. `RegexTokenizer` splits text with a regex first, `BasicTokenizer` works on the whole text, and both persist merges to a JSON file.
+A shared `Tokenizer` base holds the merge table, the vocabulary and JSON save/load. `RegexTokenizer` splits text into chunks first and pools pair statistics across them. Encoding applies the earliest-learned merge available; decoding concatenates vocabulary bytes. The CLI never registers special tokens, so they are used through the Python API.
 
 ## Key decisions
 
-The README maps pair counting, the regex pre-split, special tokens, `allowed_special` and JSON save/load to steps of the lecture, so several decisions below follow the lecture code; the page does not separate lecture code from later additions.
-
-- **Two tokenizers on one base class.** `basic.py` merges over the raw UTF-8 bytes of the whole text, while `regex_tokenizer.py` splits into chunks first so merges never cross chunk edges. A test in `tests/test_tokenizers.py` checks that no learned token mixes letters and digits, which the split pattern prevents.
-- **Merge order defines token ids.** Ids start at 256 and `save()` in `base.py` writes merges as an ordered list, so `load()` can rebuild ids from list position. Encoding applies the lowest-id pair first (`basic.py`).
-- **Versioned JSON file format.** `base.py` writes a `version: 1` field and rejects other versions on load.
-- **Strict special-token handling.** `regex_tokenizer.py` checks that special-token ids are unique and not below 256 plus the merge count. The default `allowed_special="none_raise"` raises an error if the text contains a special token. `GPT4_SPECIAL_TOKENS` holds the GPT-4 ids.
-- **`regex` instead of `re`.** The README gives Unicode classes such as `\p{L}` and `\p{N}` as the reason. It is the only runtime dependency (`pyproject.toml`).
+- **Byte-level base vocabulary.** Starting from 256 bytes means any Unicode text round-trips; tests cover accents, CJK and emoji.
+- **Regex pre-split with the `regex` module.** The GPT-4 pattern needs `\p{L}` and `\p{N}`, which the standard `re` lacks. A test asserts that no learned token mixes letters and digits.
+- **Merge order is the id order.** The JSON file stores merges only; ids are rebuilt as `256 + index`, and an unsupported version raises an error.
+- **Safe special tokens.** Encoding raises by default if the text contains one (`allowed_special="none_raise"`), and registering one validates it against byte ids, merge ids and duplicates.
+- **Deterministic training.** Ties resolve the same way every run, which a test checks.
 
 ## Challenges
 
-- The history is mostly release plumbing. `b9c1b11` adds a release token to the workflow, `6b23a1c` simplifies it to the built-in `GITHUB_TOKEN`, and `d9e11ad` clears the changelog so the first tagged release regenerates it. Reasons beyond the commit titles are not recorded.
-- The README lists what is left out: loading OpenAI's pretrained cl100k_base merges, matching tiktoken output, and SentencePiece. This tokenizer trains its own merges, so "GPT-4 style" means the split pattern and special-token ids, not identical output.
-- Training recounts all pairs after every merge (`regex_tokenizer.py`, `basic.py`). There is no optimization or benchmark in the repo.
+- **Knowing which class made a model.** A saved model must be decoded by the tokenizer that trained it. The CLI infers this from an empty versus non-empty pattern in the file.
+- **Training cost.** Pair statistics are recomputed in full on every iteration, so training is O(merges x corpus). That trades speed for readability.
+- **Special-token validation.** Ids must not collide with bytes, merges or each other; validation and the CLI arrived together in one change.
 
 ## Results
 
-- Both tokenizers train, encode and decode, with save/load and a `python -m bpe_tokenizer train|encode|decode` CLI that prints a compression ratio (`__main__.py`).
-- 17 pytest cases cover the Wikipedia `aaabdaaabac` example, round trips, compression, no cross-chunk merges, special tokens, deterministic training, save/load, id validation and the CLI. `pytest -q` reports 17 passed.
-- CI in `.github/workflows/ci.yml` runs ruff, black, mypy in strict mode, prettier and pytest on Python 3.10 and 3.13. A semantic-release workflow on `main` produced the 1.0.0 entry in `CHANGELOG.md`; `pyproject.toml` still says version 0.0.0.
+- A complete train / encode / decode pipeline for both tokenizer kinds, as a Python API and a CLI that prints the compression ratio after training.
+- Tests cover the classic `aaabdaaabac` merge example, round trips, early stop when no pairs remain, special tokens, determinism, save/load and the CLI. CI runs them with ruff, black, mypy and prettier on Python 3.10 and 3.13.
+- Release 1.0.0 comes from semantic-release on `main`, with a workflow step that merges `main` back into `devel`. Commit messages are checked by commitlint.
 
 ## Links
 
-- Repository: [github.com/Axeloooo/bpe-tokenizer](https://github.com/Axeloooo/bpe-tokenizer)
-- Source lecture: Andrej Karpathy, "Let's build the GPT Tokenizer" (Neural Networks: Zero to Hero), [youtube.com/watch?v=zduSFxRajkE](https://www.youtube.com/watch?v=zduSFxRajkE)
+- [Repository](https://github.com/Axeloooo/bpe-tokenizer)
