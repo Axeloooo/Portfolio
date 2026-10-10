@@ -1,26 +1,51 @@
 ---
 title: "Cross-Chain Rebase Token"
-summary: "A yield-bearing rebase token that bridges across networks with Chainlink CCIP."
-dates: "Feb. 2025 - Mar. 2025"
-image: "/cross-chain-rebase-token.png"
+summary: "Foundry/Solidity project: an ETH vault that mints a rebase token with per-user interest rates, and a Chainlink CCIP token pool, tested on Sepolia and Arbitrum Sepolia forks."
+dates: "Mar. 2026 - Mar. 2026"
+type: "Personal project"
+role: "Solo author"
+stack: ["Solidity", "Foundry", "OpenZeppelin", "Chainlink CCIP", "GitHub Actions", "semantic-release"]
+repo: "https://github.com/Axeloooo/Cross-Chain-Rebase-Token"
+facts:
+  - { label: "Commits", value: "27 (Mar. 4-6, 2026)" }
+  - { label: "Tests", value: "9 unit + 1 fork (counted from source)" }
+  - { label: "Contracts", value: "3 (263 lines, plus an 11-line interface)" }
+diagram: |
+  flowchart LR
+    User -->|"deposit() ETH"| Vault
+    User -->|"redeem()"| Vault
+    Vault -->|"mint(to, amt, rate)"| RT1["RebaseToken (Sepolia)"]
+    Vault -->|"burn"| RT1
+    User -->|"ccipSend"| R1["CCIP Router"]
+    R1 --> P1["RebaseTokenPool (Sepolia)"]
+    P1 -->|"burn; pool data = user rate"| RT1
+    P1 -.->|"CCIP message"| P2["RebaseTokenPool (Arbitrum Sepolia)"]
+    P2 -->|"mint(receiver, amt, rate)"| RT2["RebaseToken (Arbitrum Sepolia)"]
+    Reg["TokenAdminRegistry"] --- P1
+    Reg --- P2
 ---
+## Problem
+The project explores a token whose balance grows over time and whose holders keep the interest rate they had when they deposited, even after moving the token to another chain. A `Vault` takes ETH and mints `RebaseToken`; a CCIP token pool carries each user's rate along with the bridged amount. The README describes it as yield-bearing, but the vault does not earn anything: interest is a fixed linear per-second rate paid out as newly minted tokens. **TODO (Axel):** Was this built following a course or tutorial (the structure resembles the Cyfrin Updraft cross-chain rebase token project), and what did you add or change beyond it?
 
-## Overview
+## Architecture diagram
+Read left to right: ETH enters the `Vault` on Sepolia, which mints the token. Bridging goes through the CCIP router and the pools, which burn on the source chain and mint on Arbitrum Sepolia with the original user's rate. The vault exists only on the source chain.
 
-A cross-chain rebase token protocol. Users deposit into a vault and receive a yield-bearing balance, and the interest rate they earned is preserved when the token is bridged to another network using Chainlink CCIP.
+## Key decisions
+- **Interest is realized lazily.** `balanceOf` in `src/RebaseToken.sol` computes principal plus accrual from the user's rate and elapsed seconds; the accrued amount is minted only when the user mints, burns or transfers.
+- **The global rate can only decrease.** `setInterestRate` is owner-only and reverts if the new rate is not lower; `testInterestRateCanOnlyDecrease` covers it, so earlier depositors keep better rates.
+- **The rate travels with the tokens.** `src/RebaseTokenPool.sol` encodes the sender's rate into CCIP `destPoolData` in `lockOrBurn` and decodes it in `releaseOrMint`.
+- **Roles are split.** `AccessControl` grants `MINT_AND_BURN_ROLE` to the vault and pools, while `Ownable` guards rate changes (commit df1d23c). `IRebaseToken` keeps vault and pool decoupled from the token (e8f86b2).
+- **CI first, release automation later.** The CI workflow `test.yml` runs `forge fmt --check`, `forge build --sizes` and `forge test` from the first setup commit (fde4081). `semantic-release` (`release.yml`, `.releaserc`) was added in d47ad66 on the last day; most commits use `feat:`/`fix:` prefixes, but the early ones do not.
+- **Rate inheritance on transfer.** In `src/RebaseToken.sol`, a recipient with a zero balance takes over the sender's rate; a recipient who already holds tokens keeps their own.
 
-## Stack
+## Challenges
+- **Cross-fork testing.** `test/CrossChain.t.sol` forks Sepolia and Arbitrum Sepolia and uses `CCIPLocalSimulatorFork`, which must be called while the source fork is active, so the test switches forks repeatedly and warps time on the remote fork before comparing balances.
+- **CI needs live RPC endpoints.** Commits 30cb658 and 72292ff reworked how RPC URLs reach the tests; CI reads them from repository secrets.
+- **Compiler settings.** `via_ir = true` was enabled in b2f7530 and the pragma was fixed in a4ab2a0. **TODO (Axel):** What problem did `via_ir` solve?
+- **Accrued interest is not backed.** Redeeming interest only works if extra ETH is sent to the vault (`addRewardsToVault` in `test/RebaseToken.t.sol`), so the vault can hold less ETH than the tokens it has issued.
 
-- **Contracts:** Solidity with OpenZeppelin
-- **Tooling and tests:** Foundry
-- **Cross-chain messaging:** Chainlink CCIP
-- **CI:** GitHub Actions
-
-## Key ideas
-
-- Balances grow over time, so holders see yield accrue without claiming it.
-- Bridging carries the holder's interest rate with them, so moving chains neither resets nor inflates what they have earned.
+## Results
+The repo contains the three contracts, deploy/configure/bridge scripts (`Deployer.s.sol`, `ConfigurePool.s.sol`, `BridgeTokens.s.sol`), nine unit test functions (some fuzzed) and one cross-chain test, `testBridgeAllToken`. That test bridges Sepolia to Arbitrum Sepolia and back and asserts the user's rate is equal on both sides (`CrossChain.t.sol`). It runs on forks with the local CCIP simulator only. CI (`test.yml`) runs `forge test` against Sepolia and Arbitrum Sepolia RPC secrets; pass status is not recorded in the repo, and there are no deployed addresses or live demo. **TODO (Axel):** Did you deploy to the testnets and bridge for real (addresses or transaction hashes), and do the fork tests pass in CI?
 
 ## Links
-
-Source code is on [GitHub](https://github.com/Axeloooo/Cross-Chain-Rebase-Token).
+- [Repository](https://github.com/Axeloooo/Cross-Chain-Rebase-Token)

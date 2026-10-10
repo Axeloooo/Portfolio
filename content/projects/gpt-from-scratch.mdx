@@ -1,0 +1,75 @@
+---
+title: "gpt-from-scratch"
+summary: "A GPT-2-architecture transformer in PyTorch with a character-level training CLI on Tiny Shakespeare, built following two Karpathy lectures."
+dates: "Oct. 2026 - Oct. 2026"
+type: "Follow-along"
+role: "Solo author"
+stack: ["Python", "PyTorch", "pytest", "mypy", "ruff", "GitHub Actions", "semantic-release"]
+repo: "https://github.com/Axeloooo/gpt-from-scratch"
+facts:
+  - { label: "Commits", value: "14" }
+  - { label: "Test functions", value: "19" }
+  - { label: "Releases", value: "v1.0.0 to v1.1.1" }
+diagram: |
+  flowchart LR
+    CLI["__main__.py / train.main"] --> DATA
+    TOK -->|"vocab size"| CFG
+    subgraph DATA["data.py"]
+      TXT["input.txt (packaged)"] --> TOK["CharTokenizer"]
+      TOK --> SPLIT["split_tokens 90/10"]
+      SPLIT --> DL["DataLoaderLite"]
+      SPLIT --> GB["get_batch"]
+    end
+    subgraph MODEL["model.py"]
+      CFG["GPTConfig"] --> GPT["GPT"]
+      GPT --> BLK["Block x n_layer"]
+      BLK --> ATT["CausalSelfAttention"]
+      BLK --> MLP["MLP"]
+      GPT --> OPT["configure_optimizers (AdamW)"]
+    end
+    subgraph TRAIN["train.py"]
+      LOOP["train: accum, clip, get_lr"]
+      EST["estimate_loss"]
+    end
+    DL --> LOOP
+    GPT --> LOOP
+    OPT --> LOOP
+    GB --> EST
+    CLI -->|"after training"| EST
+    GPT --> GEN["generate: temperature, top-k"]
+---
+
+## Problem
+
+This is a follow-along of two lectures from Andrej Karpathy's Neural Networks: Zero to Hero series, "Let's build GPT" and "Let's reproduce GPT-2 (124M)". The README describes the path from a character-level transformer up to the GPT-2 124M architecture and training recipe. The repo restructures the lecture code into an installable `src/` package with a CLI and tests. Only the architecture is at 124M scale; the training runs here use a small configuration.
+
+## Architecture diagram
+
+`python -m gpt_from_scratch` calls `train.main`, which reads the packaged Tiny Shakespeare text, tokenizes it by character, splits it 90/10, trains a `GPT` from `model.py`, then prints train and validation loss and a sample from `generate`.
+
+## Key decisions
+
+- **Two attention paths.** `CausalSelfAttention` keeps a written-out masked softmax next to `scaled_dot_product_attention`, chosen by a `flash` flag. `tests/test_model.py::test_manual_attention_matches_flash` checks they agree to 1e-5.
+- **GPT-2 124M defaults, small CLI defaults.** `GPTConfig` defaults to 1024 context, 12 layers, 12 heads, 768 dims and a vocab padded to 50304. The CLI defaults to 4 layers and 128 dims so it can run on a CPU, and sets the vocab size from the character tokenizer rather than 50304. A test builds the config with the unpadded GPT-2 vocab (50257) on the `meta` device and asserts 124,439,808 parameters, so it needs no memory (`tests/test_model.py`).
+- **Tested gradient accumulation.** Following lecture 9 (weight tying, scaled residual init, AdamW decay on matrices only, warmup plus cosine learning rate, gradient clipping), `train` divides each micro-batch loss by `grad_accum_steps`, and `tests/test_train.py` checks that accumulated gradients match one larger batch. The CLI learning rate defaults to 3e-3 while `train()` defaults to the lecture's 6e-4.
+- **Packaged like a library.** `src/` layout, mypy strict, ruff, black, and CI on Python 3.10 and 3.13 (`pyproject.toml`, `.github/workflows/ci.yml`). Releases are automated with commitlint and semantic-release (`.releaserc.json`, `release.yaml`).
+
+## Challenges
+
+- **Dataset missing from installs.** `input.txt` first lived in `data/`, outside the package, so a regular install lacked it. Commit `7fe2ba4` moved it into `src/gpt_from_scratch/` as package data, added a `--data` flag and train/val loss reporting, and added a test.
+- **Release workflow.** It was reworked twice: a custom release token (`0fb8313`), then the built-in `GITHUB_TOKEN` (`e611d03`), with back-merge commits from `main` to `devel`.
+- **Typing a PyTorch model.** `model.py` keeps a few `# type: ignore` comments, and `pyproject.toml` sets `disallow_untyped_calls = false` because torch's backward calls are untyped.
+
+## Results
+
+- `python -m gpt_from_scratch` is wired to train a character-level GPT, printing per-step loss, learning rate and gradient norm, then train and validation loss and a 200-token sample. `test_cli_runs` exercises this path.
+- The repo has 19 test functions across `tests/test_model.py` and `tests/test_train.py`, covering causality, attention equivalence, parameter count, optimizer groups and gradient accumulation. **TODO (Axel):** Do all 19 tests pass in CI, and on which runs?
+- The README's "Not included" section lists what was not done: the GPT-2 124M pretraining run on FineWeb-Edu, HellaSwag evaluation, loading Hugging Face weights, `torch.compile` and multi-GPU training.
+- The repo records no loss values or sample output. **TODO (Axel):** What validation loss and sample text did a longer run (for example `--steps 2000`) give, and on what hardware?
+- Git history covers about one day (2026-10-09 to 2026-10-10). **TODO (Axel):** What were the real start and finish dates, and did you type the lectures along in notebooks before restructuring into a package?
+
+## Links
+
+- Repository: https://github.com/Axeloooo/gpt-from-scratch
+- Lecture: [Let's build GPT: from scratch, in code, spelled out](https://www.youtube.com/watch?v=kCc8FmEb1nY)
+- Lecture: [Let's reproduce GPT-2 (124M)](https://www.youtube.com/watch?v=l8pRSuU81PU)

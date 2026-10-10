@@ -1,0 +1,60 @@
+---
+title: "charlm"
+summary: "Character-level name generators, from a count bigram to a BatchNorm MLP and a hierarchical tree, packaged as a typed Python library with a CLI."
+dates: "Oct. 2026 - Oct. 2026"
+type: "Follow-along"
+role: "Solo author"
+stack: ["Python", "PyTorch", "pytest", "mypy", "ruff", "GitHub Actions", "semantic-release"]
+repo: "https://github.com/Axeloooo/charlm"
+facts:
+  - { label: "Commits", value: "16" }
+  - { label: "Test functions", value: "21" }
+  - { label: "Releases", value: "v1.0.0 to v1.1.1" }
+diagram: |
+  flowchart LR
+    names["names.txt<br/>32,033 names"] --> data["data.py<br/>vocab, 80/10/10 split,<br/>build_dataset"]
+    data --> bigram["bigram.py<br/>CountBigram, NeuralBigram"]
+    data --> models["models.py<br/>build_mlp, build_wavenet"]
+    layers["layers.py<br/>Linear, BatchNorm1d, Tanh,<br/>Embedding, FlattenConsecutive"] --> models
+    backprop["backprop.py<br/>forward, manual_backward"]
+    models --> train["train.py<br/>train, evaluate, sample"]
+    cli["__main__.py<br/>--model bigram, mlp, mlp-bn, wavenet"] --> data
+    cli --> bigram
+    cli --> models
+    cli --> train
+    tests["tests/<br/>manual grads vs autograd"] -.-> backprop
+---
+## Problem
+This is a follow-along of Andrej Karpathy's makemore lectures from the Neural Networks: Zero to Hero series. The README lists five parts: building makemore, MLP, activations/gradients/BatchNorm, backprop by hand, and WaveNet. The models learn to generate names from the 32,033-name makemore dataset. The repo turns notebook-style lecture code into an installable package with tests and a CLI, so each model can be trained from one command.
+
+**TODO (Axel):** What did you want to learn from the series, and what surprised you most?
+
+## Architecture diagram
+Read left to right: `names.txt` is split and windowed by `data.py`, then feeds the bigram models and the layer-based models built from `layers.py`. Solid arrows mean data flows to; the dotted arrow means the tests import the module. `backprop.py` is a standalone module that only the tests exercise, against `loss.backward()`; no CLI path calls it. `__main__.py` selects a model and calls `train.py`.
+
+## Key decisions
+- **Hand-written layers instead of `torch.nn`.** `layers.py` defines `Module`, `Linear`, `BatchNorm1d`, `Tanh`, `Embedding`, `FlattenConsecutive` and `Sequential`, and `train.py` updates parameters with a manual SGD loop (learning rate drops 10x at 75% of steps).
+- **One layer for both MLP and tree.** `FlattenConsecutive` flattens the whole context for the MLP and merges neighbouring pairs for the "WaveNet" model in `models.py`. This is the lecture's hierarchical-merge MLP, not a dilated-convolution WaveNet.
+- **BatchNorm over 2D and 3D input.** `BatchNorm1d` reduces over `(0, 1)` for `(N, L, C)` input, which the tree model needs, and is covered in `tests/test_models.py`.
+- **Manual backward as a separate functional module.** `backprop.py` keeps a forward cache and writes cross-entropy, linear, tanh, collapsed BatchNorm and embedding gradients by hand; `tests/test_backprop.py` compares them to `loss.backward()` with `atol` 1e-5.
+- **Dataset shipped inside the package.** Commit `9f3cc27` moved `names.txt` into `src/charlm/` and added package data, with a `--data` flag for other word lists.
+
+## Challenges
+- **Install bug.** The dataset first lived at `data/names.txt`, outside the package, so a regular install could not find it. `9f3cc27` fixed this and also made `build_wavenet` reject a block size that is not a power of the group size.
+- **Release automation took several passes.** `678735f` switched to a release token, `b136fa7` went back to the built-in `GITHUB_TOKEN`, and `e0897c7` and `886d9d4` sync `main` back into `devel`.
+- **Gradient check is narrow.** The test covers only the two-layer BatchNorm MLP in `backprop.py`; the `Module`-based models rely on autograd.
+- **Short default runs.** The README notes the CLI defaults finish on a CPU in seconds, while the lectures train for 100k-200k steps.
+
+## Results
+- Four models run from `python -m charlm --model bigram|mlp|mlp-bn|wavenet`, reporting train, dev and test loss.
+- 21 test functions in five files under `tests/` cover bigram, data, models, CLI and the gradient check.
+- CI (`.github/workflows/ci.yml`) runs ruff, black, mypy, prettier and pytest on Python 3.10 and 3.13. Three releases (v1.0.0, v1.1.0, v1.1.1) are in `CHANGELOG.md`.
+- The only runtime dependency is `torch>=2.2`. No loss values or sample names appear in the repo.
+
+**TODO (Axel):** What final dev/test losses did each model reach, and after how many steps?
+
+**TODO (Axel):** Confirm the real work dates; git history shows only 2026-10-09 and 2026-10-10, which looks re-imported.
+
+## Links
+- Repository: https://github.com/Axeloooo/charlm
+- Source material: Andrej Karpathy, Neural Networks: Zero to Hero (makemore lectures): https://www.youtube.com/watch?v=PaCmpygFfXo

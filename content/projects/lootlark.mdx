@@ -1,0 +1,57 @@
+---
+title: "LootLark"
+summary: "Full-stack video game store on ASP.NET Core, React and .NET Aspire, with Stripe test-mode checkout and a queue-backed worker that issues game codes."
+dates: "Mar. 2025 - Oct. 2026"
+type: "Course build"
+role: "Solo author"
+stack: [".NET 8", "ASP.NET Core", "React", "TypeScript", "PostgreSQL", ".NET Aspire", "Stripe", "Azure Service Bus", "Keycloak", "Testcontainers"]
+repo: "https://github.com/Axeloooo/LootLark"
+facts:
+  - { label: "Commits", value: "125" }
+  - { label: "Tests", value: "82 unit (1 skipped), 23 integration (per README)" }
+  - { label: "Releases", value: "v0.1.0, v0.2.0" }
+diagram: |
+  flowchart LR
+    spa["frontend (React, Vite)"] -->|"OIDC"| kc["Keycloak / Entra ID"]
+    spa -->|"bearer JWT"| api["GameStore.Api"]
+    spa -->|"Stripe.js"| stripe["Stripe (test mode)"]
+    api -->|"checkout session"| stripe
+    stripecli["Stripe CLI container"] -->|"webhook (local)"| api
+    stripe -.-> stripecli
+    api --> db[("PostgreSQL")]
+    api --> blobs[("Azurite blobs")]
+    api -->|"OutboxProcessor"| bus[["Service Bus: orders"]]
+    bus --> worker["GameStore.Worker"]
+    worker --> db
+    apphost["GameStore.AppHost (Aspire)"] -.->|"starts and wires"| api
+    apphost -.-> worker
+---
+## Problem
+LootLark is a video game store: browse and filter a catalogue by genre, keep a per-user basket, pay through Stripe in test mode, and receive game codes once the order is processed. It was built by following the .NET Academy .NET 8 bootcamp, and the code stays close to the course's final trees (`README.md`). That is why the projects, namespaces, API routes and Keycloak realm still use the course's `GameStore.*` names; LootLark is the product name.
+
+**TODO (Axel):** History runs Mar.-Jun. 2025 (MVP, basket, authorization, Keycloak, React frontend), then a 16-month gap, then Oct. 2026 (course modules, tests, cleanup). Is Mar. 2025 - Oct. 2026 the range you want shown?
+
+## Architecture diagram
+The React SPA signs in through Keycloak (local) or Entra ID and calls `GameStore.Api` with a bearer token. The API creates the Stripe checkout session, and the payment webhook (forwarded by a Stripe CLI container locally) starts order processing; the API publishes through an outbox to a Service Bus queue, and `GameStore.Worker` completes the order.
+
+## Key decisions
+- **Transactional outbox before the queue.** The webhook handler moves the order to Processing, clears the basket and inserts an `OutboxMessage` in one transaction. `OutboxProcessor` then publishes `OrderPaid` (see `docs/architecture.md` section 4.3, migration `AddOutboxMessages`).
+- **Idempotent checkout.** A unique (CustomerId, OperationId) index, a Stripe idempotency key and unique-violation handling in `OrderCreator` stop duplicate orders; the worker's `OrderPaidHandler` checks the order is Processing first.
+- **Aspire for local orchestration.** `GameStore.AppHost/AppHost.cs` starts PostgreSQL 17.4, Azurite, the Service Bus emulator, Keycloak and two Stripe CLI containers, using a custom `StripeCLI.Hosting` resource.
+- **Local only.** Azure DevOps pipelines and deploy files were added with the course modules, then removed (`be1a2dc`, `d9a654d`); `README.md` states nothing provisions cloud resources.
+- **Real dependencies in tests.** Integration tests use Testcontainers against PostgreSQL and Azurite (`GameStoreWebApplicationFactory.cs`) and the Service Bus emulator (`Worker/OrdersWorkerTests.cs`).
+
+## Challenges
+- **Vulnerable transitive packages.** Patched versions were pinned (`dca6342`, `d60d21e`) and a dependency audit added to CI. `CLAUDE.md` records that `npm audit` still has open findings.
+- **Docker Hub rate limits in CI.** Anonymous pulls hit the limit, so CI logs in to Docker Hub, pins Service Bus emulator 2.0.1 in `OrdersWorkerTests.cs` and uses a mirror with retries (`2e7c602`, `34c7d12`, `b15cb0c`).
+- **Setup trap.** A placeholder `EntraAuthority` must be an HTTPS URL or every API request returns 500 (`README.md`).
+- **Known gaps.** One test is skipped for Azurite-style URLs (`CdnUrlTransformerTests.cs`), and the outbox poller runs inside the API, so several instances would each poll and could publish a message twice; queue duplicate detection and the worker's status check absorb that (`docs/architecture.md`, section 8).
+
+## Results
+The repo contains a working local stack: catalogue search and genre filter, admin CRUD with image upload, per-user basket, Stripe test checkout, game-code generation by the worker, and OpenTelemetry in the Aspire dashboard. Beyond the course material it adds a unit-test project written class by class (original work, not a course tree), a five-job GitHub Actions pipeline, Dependabot, semantic-release (tags v0.1.0 and v0.2.0), and the LootLark brand (`frontend/src/styles/lootlark-tokens.css`). The database moved from SQLite to PostgreSQL, and the UI is Bootstrap 5. The README reports 82 unit tests (one skipped) and 23 integration tests. There is no deployment or demo.
+
+**TODO (Axel):** Which of the React frontend, Keycloak/Entra auth, CI and release setup did you design beyond the course trees?
+
+## Links
+- Repo: https://github.com/Axeloooo/LootLark
+- Architecture notes: https://github.com/Axeloooo/LootLark/blob/devel/docs/architecture.md

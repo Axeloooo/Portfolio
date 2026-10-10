@@ -1,0 +1,69 @@
+---
+title: "autograd-from-scratch"
+summary: "A scalar reverse-mode autograd engine and small MLP library in pure Python, built while following Karpathy's micrograd lecture."
+dates: "Oct. 2026 - Oct. 2026"
+type: "Follow-along"
+role: "Solo author"
+stack: ["Python", "pytest", "mypy", "ruff", "GitHub Actions", "semantic-release", "Graphviz DOT"]
+repo: "https://github.com/Axeloooo/autograd-from-scratch"
+facts:
+  - { label: "Tests", value: "19 (pytest)" }
+  - { label: "Runtime deps", value: "None" }
+  - { label: "Commits", value: "16" }
+diagram: |
+  flowchart LR
+    subgraph engine["engine.py"]
+      V["Value<br/>data, grad, _prev, _op"]
+      OPS["operators<br/>add mul pow exp log tanh relu"]
+      BW["backward()<br/>iterative topo sort"]
+    end
+    subgraph nn["nn.py"]
+      N["Neuron"] --> L["Layer"] --> M["MLP"]
+    end
+    G["graph.py<br/>trace, to_dot"]
+    T["tests/<br/>finite differences"]
+    OPS -->|"build graph + _backward closures"| V
+    BW -->|"chain rule in reverse order"| V
+    N -->|"uses Value ops"| V
+    G -->|"reads _prev, _op"| V
+    G --> DOT["Graphviz DOT text"]
+    T --> V
+    T --> M
+    T --> G
+---
+
+## Problem
+
+A scalar reverse-mode autograd engine and a small neural network library in plain Python, built from scratch with no runtime dependencies. The repo follows the micrograd lecture from Andrej Karpathy's Neural Networks: Zero to Hero series, as its README says. Beyond the lecture it adds an iterative backward pass, Graphviz DOT export, finite-difference gradient tests, seedable randomness and a CI and release setup.
+
+## Architecture diagram
+
+`engine.py` holds `Value`, which records its inputs and a `_backward` closure per operation. `nn.py` stacks `Neuron`, `Layer` and `MLP` on those operations, and `graph.py` reads the same graph to emit Graphviz DOT text. Tests sit on top of all three.
+
+## Key decisions
+
+- **Iterative backward pass.** `Value.backward` in `engine.py` uses an iterative depth-first topological sort instead of recursion, so deep graphs do not hit Python's recursion limit. Commit `c7bec16` says so, and `tests/test_engine.py` builds a 5000-node chain.
+- **DOT text instead of the graphviz package.** `to_dot` in `graph.py` returns plain DOT, which keeps runtime dependencies at zero (`pyproject.toml`). It escapes record-label characters, covered by `tests/test_graph.py`.
+- **Gradients accumulate with `+=`, as in the lecture.** A value used twice gets both contributions; `test_value_used_twice_accumulates` checks it.
+- **Finite-difference checks for each operator.** Besides the lecture's exact numbers (loss -8, gradients 6, -4, -2, 4), `tests/test_engine.py` compares analytic gradients with numeric ones.
+- **Seedable randomness.** `Neuron` and `MLP` in `nn.py` accept a `random.Random`, so the MLP test is deterministic.
+
+## Challenges
+
+- The first version of `Value.backward` (`523a7e0`) built the topological order recursively, which would hit Python's recursion limit on deep graphs. `c7bec16` made it iterative, and `test_backward_on_a_deep_graph_does_not_overflow_the_stack` uses a 5000-node chain.
+- DOT record labels break on characters such as `|` and braces, so `graph.py` escapes them.
+- The release workflow went through changes: a custom release token was added (`4390040`) and then replaced with the built-in `GITHUB_TOKEN` (`e3b0de2`). The repo does not say why.
+- Known limits from the code: scalars only, Python loops in `Neuron.__call__`, and `__pow__` accepts only int or float exponents.
+
+## Results
+
+The library covers add, mul, pow, exp, log, tanh, relu and the reflected operators, plus `Neuron`, `Layer` and `MLP`. The suite has 19 pytest tests (5 engine functions, one parametrized into 9 cases, plus 2 nn and 3 graph). There is no standalone training script or notebook; the README's training-loop row points at `tests/test_nn.py::test_mlp_learns_tiny_dataset`. One test trains an MLP on a 4-sample toy set for 50 steps and asserts the loss falls below 10% of its starting value; no loss figures are printed anywhere. CI in `.github/workflows/ci.yml` runs ruff, black, mypy, prettier and pytest on Python 3.10 and 3.13. `CHANGELOG.md` lists v1.0.0 to v1.2.0 from semantic-release, but `pyproject.toml` still says 0.0.0, and the release workflow (`.github/workflows/release.yaml`) only tags and updates `CHANGELOG.md`; there is no PyPI publish step.
+
+**TODO (Axel):** What did you want to learn from this, and did you check gradients against PyTorch or train on anything beyond the toy dataset?
+
+**TODO (Axel):** What were the real working dates? Git shows only 2026-10-09 and 2026-10-10, and the initial commit is dated after the first feature commit.
+
+## Links
+
+- Repository: [github.com/Axeloooo/autograd-from-scratch](https://github.com/Axeloooo/autograd-from-scratch)
+- Source lecture: [Andrej Karpathy, The spelled-out intro to neural networks and backpropagation: building micrograd](https://www.youtube.com/watch?v=VMj-3S1tku0)

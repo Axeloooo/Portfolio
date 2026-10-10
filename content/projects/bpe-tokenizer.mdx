@@ -1,0 +1,66 @@
+---
+title: "BPE Tokenizer"
+summary: "A byte pair encoding tokenizer in Python with a GPT-4-style regex split, special tokens, JSON save/load and a small CLI."
+dates: "Oct. 2026 - Oct. 2026"
+type: "Follow-along"
+role: "Solo author"
+stack: ["Python", "regex", "pytest", "mypy", "ruff", "GitHub Actions", "semantic-release"]
+repo: "https://github.com/Axeloooo/bpe-tokenizer"
+facts:
+  - { label: "Commits", value: "13" }
+  - { label: "Tests", value: "17 pytest cases" }
+  - { label: "Source", value: "324 lines of Python" }
+diagram: |
+  flowchart LR
+    corpus["corpus.txt"] --> cli["__main__.py<br/>train / encode / decode"]
+    cli --> basic["BasicTokenizer<br/>basic.py"]
+    cli --> rx["RegexTokenizer<br/>regex_tokenizer.py"]
+    rx --> pat["GPT-4 split pattern"]
+    rx --> spec["special tokens<br/>allowed_special"]
+    basic --> base["base.py<br/>get_stats, merge, Tokenizer"]
+    rx --> base
+    base --> json["tokenizer.json<br/>save / load"]
+    json --> cli
+---
+
+## Problem
+
+This is a follow-along of Andrej Karpathy's lecture "Let's build the GPT Tokenizer" from the Neural Networks: Zero to Hero series (`README.md`). The goal stated in the README is a byte pair encoding tokenizer built from scratch in the style of GPT-4.
+
+**TODO (Axel):** What did you want to learn from this build, and what did you train it on (corpus, vocab size, compression ratio)? The repo records no run output.
+
+## Architecture diagram
+
+The CLI loads or trains one of two tokenizers that share `base.py`. `RegexTokenizer` splits text with a regex first, `BasicTokenizer` works on the whole text, and both persist merges to a JSON file.
+
+## Key decisions
+
+The README maps pair counting, the regex pre-split, special tokens, `allowed_special` and JSON save/load to steps of the lecture, so several decisions below follow the lecture code; the page does not separate lecture code from later additions.
+
+- **Two tokenizers on one base class.** `basic.py` merges over the raw UTF-8 bytes of the whole text, while `regex_tokenizer.py` splits into chunks first so merges never cross chunk edges. A test in `tests/test_tokenizers.py` checks that no learned token mixes letters and digits, which the split pattern prevents.
+- **Merge order defines token ids.** Ids start at 256 and `save()` in `base.py` writes merges as an ordered list, so `load()` can rebuild ids from list position. Encoding applies the lowest-id pair first (`basic.py`).
+- **Versioned JSON file format.** `base.py` writes a `version: 1` field and rejects other versions on load.
+- **Strict special-token handling.** `regex_tokenizer.py` checks that special-token ids are unique and not below 256 plus the merge count. The default `allowed_special="none_raise"` raises an error if the text contains a special token. `GPT4_SPECIAL_TOKENS` holds the GPT-4 ids.
+- **`regex` instead of `re`.** The README gives Unicode classes such as `\p{L}` and `\p{N}` as the reason. It is the only runtime dependency (`pyproject.toml`).
+
+## Challenges
+
+- The history is mostly release plumbing. `b9c1b11` adds a release token to the workflow, `6b23a1c` simplifies it to the built-in `GITHUB_TOKEN`, and `d9e11ad` clears the changelog so the first tagged release regenerates it. Reasons beyond the commit titles are not recorded.
+- The README lists what is left out: loading OpenAI's pretrained cl100k_base merges, matching tiktoken output, and SentencePiece. This tokenizer trains its own merges, so "GPT-4 style" means the split pattern and special-token ids, not identical output.
+- Training recounts all pairs after every merge (`regex_tokenizer.py`, `basic.py`). There is no optimization or benchmark in the repo.
+
+**TODO (Axel):** What was hardest or most surprising: the split pattern, tie-breaking between equal pair counts, or id ordering?
+
+## Results
+
+- Both tokenizers train, encode and decode, with save/load and a `python -m bpe_tokenizer train|encode|decode` CLI that prints a compression ratio (`__main__.py`).
+- 17 pytest cases cover the Wikipedia `aaabdaaabac` example, round trips, compression, no cross-chunk merges, special tokens, deterministic training, save/load, id validation and the CLI. `pytest -q` reports 17 passed.
+- CI in `.github/workflows/ci.yml` runs ruff, black, mypy in strict mode, prettier and pytest on Python 3.10 and 3.13. A semantic-release workflow on `main` produced the 1.0.0 entry in `CHANGELOG.md`; `pyproject.toml` still says version 0.0.0.
+- Git shows 13 commits, all dated 2026-10-09 and 2026-10-10, with the "initial commit" dated after another commit.
+
+**TODO (Axel):** What were the real working dates, and which parts (CLI, JSON format, special-token validation) did you add beyond the lecture code?
+
+## Links
+
+- Repository: [github.com/Axeloooo/bpe-tokenizer](https://github.com/Axeloooo/bpe-tokenizer)
+- Source lecture: Andrej Karpathy, "Let's build the GPT Tokenizer" (Neural Networks: Zero to Hero), [youtube.com/watch?v=zduSFxRajkE](https://www.youtube.com/watch?v=zduSFxRajkE)

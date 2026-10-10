@@ -1,0 +1,68 @@
+---
+title: "Portfolio"
+summary: "Personal portfolio site on Next.js 14 with a typed content file, an MDX blog and a PR-to-release workflow."
+dates: "Oct. 2024 - Aug. 2026"
+type: "Personal project"
+role: "Solo author"
+stack: ["Next.js 14", "TypeScript", "Tailwind CSS", "shadcn/ui", "MDX", "framer-motion", "GitHub Actions", "semantic-release"]
+repo: "https://github.com/Axeloooo/Portfolio"
+facts:
+  - { label: "Commits", value: "46" }
+  - { label: "Project cards", value: "14 in src/data/resume.tsx" }
+  - { label: "Tests", value: "None configured" }
+diagram: |
+  flowchart LR
+    subgraph Content
+      D["src/data/resume.tsx<br/>DATA object"]
+      M["content/*.mdx"]
+    end
+    subgraph App["src/app (Next.js 14 App Router)"]
+      L["layout.tsx"]
+      P["page.tsx<br/>home sections"]
+      BL["blog/page.tsx"]
+      BS["blog/[slug]/page.tsx"]
+    end
+    B["src/data/blog.ts<br/>gray-matter + unified"]
+    C["src/components<br/>ProjectCard, ResumeCard, magicui"]
+    V["Vercel Analytics<br/>+ Speed Insights"]
+    GH["GitHub Actions<br/>ci.yml, release.yml"]
+    D --> P
+    P --> C
+    M --> B
+    B --> BL
+    B --> BS
+    L --> P
+    L --> BL
+    L --> V
+    D --> L
+    GH -.-> App
+---
+## Problem
+A single place to show work experience, education, research, projects and skills, plus a blog. The first-commit README (`266a13e`, Oct. 2024) points to the MIT license of `dillionverma/portfolio`, and the code layout (`src/components/magicui/`, the `DATA` object) matches that template. The current README no longer mentions it. Axel then rewrote the content and added sections, CI and a release workflow.
+
+**TODO (Axel):** Confirm the site is based on `dillionverma/portfolio` and whether you want the page to credit it.
+
+## Architecture diagram
+There is no backend or database. All home-page content comes from one `DATA` object in `src/data/resume.tsx`; blog posts are `.mdx` files turned into HTML by `src/data/blog.ts`. `layout.tsx` wraps both routes and loads the Vercel packages, and the two workflows in `.github/workflows/` run on pull requests and on pushes to `main`.
+
+## Key decisions
+- **Content in one typed data file.** `src/data/resume.tsx` holds work, education, skills, projects and links, so adding a project is one object edit. Axel added `research` and `leadership` sections (`3fa4274`), rendered in `src/app/page.tsx`.
+- **Blog as MDX files, no CMS.** `src/data/blog.ts` reads `content/` with `fs`, parses frontmatter with `gray-matter`, and highlights code with `rehype-pretty-code`. Only one placeholder post, `content/hello-world.mdx`, exists.
+- **Theme-aware favicons.** `next-themes` handles the class-based dark mode, and `src/components/favicon-switcher.tsx` with `public/favicon-{light,dark}.ico` (`44dc181`) swaps the icon.
+- **Squash-merge and Conventional Commit titles.** The README (Contributing) requires feature branches into `devel` into `main`, always squash-merged, with PR titles in Conventional Commit form so semantic-release (`.releaserc`, `release.yml`) can read the history.
+- **CI gate.** `ci.yml` runs `npm run lint` and `npm run build` on pull requests to `main` and `devel`.
+
+## Challenges
+- **Template type error.** `0d4c7d0` ("Fixed type issue by casting to any") added `margin: inViewMargin as any` in `src/components/magicui/blur-fade.tsx`, the cast is still present.
+- **Lint toolchain churn.** On 2026-01-19, `bd56d1b` raised `eslint-config-next` to ^16 and `a1ed52a` raised ESLint to ^9, then `df643d6` set them back to `eslint` ^8.57 and `eslint-config-next` ^14.2. No message gives a reason.
+- **Node runtime pin.** `9c60ae0` pinned `engines.node` to `24.x` because, per its message, Vercel is deprecating Node.js 20 and the field overrides the dashboard setting. `ci.yml` still uses `lts/*` and the README says "Node.js LTS", so CI could drift from the deploy runtime.
+- **Unfinished links.** `src/app/blog/[slug]/page.tsx` points the default OpenGraph image at `/og?title=...`, but `src/app/og` does not exist. Many entries in `resume.tsx` use `href: "#"`, and the package name is spelled `porfolio`.
+
+## Results
+The repo contains the home page (hero, work, education, research, leadership, skills, projects, certificates, contact), light and dark themes, a dock navbar, a downloadable `public/Resume.pdf`, an MDX blog and OpenGraph metadata. `resume.tsx` lists 14 project cards. The site URL set in code is `axelsanchez.me`. There are 46 commits and no test suite. The only tags are `v0.1.0` and `v1.0.0` from 2024-10-14, which predate the release workflow (Sep. 2025), so no automated release is shown. History has no commits between Nov. 2024 and Sep. 2025.
+
+**TODO (Axel):** Is the site live at `axelsanchez.me`, and do you have traffic or Speed Insights numbers to cite? What happened during the 10-month gap, and did the Sep. 2025 rebuild have a goal? Also, did a rebase merge once break commit signatures on `devel`, and should that appear here?
+
+## Links
+- Repository: https://github.com/Axeloooo/Portfolio
+- Site URL set in code (not verified live): https://axelsanchez.me

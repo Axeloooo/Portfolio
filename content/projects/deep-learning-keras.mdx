@@ -1,0 +1,63 @@
+---
+title: "Deep Learning with Keras"
+summary: "Eight Colab notebooks that move from NumPy forward and backward propagation to Keras regression, MNIST, CNNs, attention and pretrained models."
+dates: "Aug. 2026 - Sep. 2026"
+type: "Course build"
+role: "Author (see TODO below)"
+stack: ["Python", "Jupyter", "Google Colab", "NumPy", "Keras", "TensorFlow", "VGG16", "BLIP", "PyTorch"]
+repo: "https://github.com/Axeloooo/Deep-Learning-and-Neural-Networks-with-Keras"
+facts:
+  - { label: "Notebooks", value: "8" }
+  - { label: "Commits", value: "17" }
+  - { label: "License", value: "MIT" }
+diagram: |
+  flowchart TD
+    subgraph NumPy["NumPy from scratch"]
+      FP["forward-propagation"] --> BP["backward-propagation (XOR)"] --> AF["activation-functions-and-vanishing"]
+    end
+    subgraph Keras["Keras Sequential"]
+      RG["regression-with-keras (concrete CSV)"] --> CL["classification-with-keras (MNIST dense)"] --> CNN["convolutional-neural-networks-with-keras"]
+    end
+    subgraph Adv["Attention and transfer learning"]
+      TR["transformers-with-Keras (LSTM + SelfAttention)"] --> CC["classification-and-captioning (VGG16 + BLIP)"]
+    end
+    AF --> RG
+    CNN --> TR
+---
+
+## Problem
+
+The repository is a set of lessons that connect the arithmetic inside a neural network to the Keras calls that automate it: trace values through a small network, study how gradients drive learning, then move to tabular data, handwritten digits, convolution, attention and pretrained models (`README.md`). The notebooks derive from IBM Skills Network / Cognitive Class course labs; the notebook text still refers to Skills Network Labs, and the data and exercise structure come from that course. Most lesson text, datasets and exercise structure appear to come from that course; this repo adds the Colab-first packaging, fixes, refinements to some lessons (activation functions, regression) and the README and contributor documentation below. **TODO (Axel):** Which course is this exactly, and was it for a class, a certificate or self-study?
+
+## Architecture diagram
+
+This is a learning path, not a service. Each box is a standalone notebook in `notebooks/`, read in the README order (arrows show suggested order, not dependencies): NumPy first, then Keras Sequential models, then attention and transfer learning.
+
+## Key decisions
+
+- **Colab only, no local setup.** All `!pip install` cells stay commented out and there is no lockfile; the README says to leave them commented (commit `0641241`).
+- **Standalone notebooks.** Each has its own setup cells so it can run independently (`CONTRIBUTING.md`, `README.md`).
+- **NumPy before Keras.** The early notebooks build forward and backward passes by hand so the later `model.fit` calls are not opaque (`README.md` conclusion).
+- **Reproducible reruns.** `backward-propagation.ipynb` fixes `np.random.seed(42)` (commit `c87e156`); the CNN notebook always encodes the original digit labels so the cell is safe to rerun (commit `2ccc52f`).
+- **Correct the docs, not just the code.** `README.md` states that `transformers-with-Keras.ipynb` builds an LSTM encoder-decoder with one custom `SelfAttention` layer, not a full Transformer, although the notebook's own intro still says transformer.
+
+## Challenges
+
+- **Course environment to Colab.** Commit `0641241` ("make all eight notebooks runnable end to end in Google Colab") ported the notebooks, and the README admits some lesson text still refers to the original Skills Network environment.
+- **No automated checks.** There are no tests, and `.github/workflows/release.yaml` only runs semantic-release on `main`; it does not execute notebooks. Validation is a manual run in a fresh Colab runtime.
+- **Slow and variable training.** The backpropagation example runs 180,000 iterations, and the README warns that results vary with initialisation and runtime.
+- **Unfinished parts.** The README calls the collection a work in progress. Notebook 8 still has unfilled `# Write your code here` task cells, and notebooks 7 and 8 have no stored outputs, so this page does not claim all eight run end to end.
+
+## Results
+
+- Notebooks 1 to 6 keep stored outputs. Backpropagation on XOR ends at an average error of 0.00861 (`backward-propagation.ipynb`).
+- Dense MNIST classifier reaches 98.11% accuracy after 10 epochs; the CNN variants reach 98.07% to 98.86% (`classification-with-keras.ipynb`, `convolutional-neural-networks-with-keras.ipynb`).
+- These runs pass the test set as `validation_data`, so they are test-set numbers also watched during training, not held-out results. The README calls them teaching examples, not benchmarks.
+- The repo adds a Colab-first README with per-notebook Open-in-Colab links, `CONTRIBUTING.md`, a code of conduct, and semantic-release configuration.
+
+**TODO (Axel):** Do notebooks 7 and 8 run in Colab today, and did you write any of the lesson prose or solutions?
+
+## Links
+
+- Repository: https://github.com/Axeloooo/Deep-Learning-and-Neural-Networks-with-Keras
+- Notebooks (open in Colab via the README table): https://github.com/Axeloooo/Deep-Learning-and-Neural-Networks-with-Keras/tree/main/notebooks

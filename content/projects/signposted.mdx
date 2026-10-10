@@ -1,0 +1,64 @@
+---
+title: "Signposted"
+summary: "Trip planner where a four-step LLM pipeline (research, itinerary, budget, review) builds a plan behind a FastAPI API, shown on a departures-board web UI."
+dates: "Oct. 2026 - Oct. 2026"
+type: "Personal project"
+role: "Solo author"
+stack: ["Python", "FastAPI", "LangGraph", "Groq", "PostgreSQL", "SQLAlchemy", "React", "TypeScript", "Vite", "Docker"]
+repo: "https://github.com/Axeloooo/Signposted"
+facts:
+  - { label: "Commits", value: "33" }
+  - { label: "API tests", value: "28 passed (pytest, apps/api)" }
+  - { label: "Releases", value: "v1.0.0, v1.0.1" }
+diagram: |
+  flowchart LR
+    subgraph web["apps/web (React, Vite)"]
+      UI["screens: NewTrip, Progress, Itinerary"]
+      CL["api/client.ts<br/>polls every 1.5 s"]
+    end
+    PX["nginx or Vercel rewrite<br/>/api to API"]
+    subgraph api["apps/api (FastAPI)"]
+      EP["main.py<br/>POST /trips, GET /trips"]
+      BG["BackgroundTasks<br/>run_planning"]
+      subgraph lg["agents/graph.py (LangGraph)"]
+        R["research_agent"] --> I["itinerary_agent"] --> B["budget_agent"] --> V["reviewer_agent"]
+        V -->|"REVISE, under 2 rounds"| I
+      end
+    end
+    DB[("PostgreSQL<br/>trips.plan JSON")]
+    G["Groq<br/>llama-3.3-70b-versatile"]
+    UI --> CL --> PX --> EP
+    EP --> BG --> lg
+    lg --> G
+    BG -->|"save progress and plan"| DB
+    EP --> DB
+---
+## Problem
+Signposted turns a destination, trip length, budget and interests into a day-by-day plan with a cost split. The README calls it a multi-agent travel planner, but the pipeline is four prompts to one model (Groq `llama-3.3-70b-versatile`) run in a fixed order, with no web search or tools, so the research step is the model's own knowledge and costs are estimates. A plan takes several sequential model calls, so the API answers at once and the UI polls for progress. The repo still carries the earlier name TripMate in places.
+
+**TODO (Axel):** Why this project (learning LangGraph, a portfolio piece, a real trip)? And which name should the portfolio use, Signposted or TripMate?
+
+## Architecture diagram
+Read left to right: the React app posts a trip through a same-origin `/api` proxy to `main.py`, which starts planning as a background task and returns. The LangGraph pipeline runs research, itinerary, budget and review, can send the itinerary back once, and writes progress and the final plan into one JSON column in PostgreSQL.
+
+## Key decisions
+- **Return 202 and poll.** `POST /trips` in `apps/api/app/main.py` starts `run_planning` as a background task, and each finished node writes `{status, progress}` into `trips.plan`, so any process can answer the poll. `docs/DEPLOYMENT.md` explains this choice.
+- **Cap the review loop.** `agents/graph.py` sets `MAX_REVIEW_ROUNDS = 2` and routes on a regex over the reviewer's `APPROVE` or `REVISE` line. The reviewer counts every review, so this allows at most one rewrite; `test_graph.py` covers giving up.
+- **Validate itinerary JSON, degrade to text.** `agents/itinerary.py` strips code fences and checks the output with Pydantic models; if it fails, the API returns raw text with `plan.days` null and the UI shows plain text.
+- **Inject the model into the app.** `create_app(settings, llm)` lets tests use a fake chat model and SQLite, so no API key or Postgres is needed (`apps/api/README.md`).
+- **One `TripApi` interface in the UI.** `apps/web/src/api/client.ts` has an HTTP client and a dev-only mock (`api/mock.ts`); `api/map.ts` marks the first stop where running cost passes the budget as a "hold".
+
+## Challenges
+- **Revision loop lost context.** In `b866f9e` the rewrite prompt got only the reviewer's feedback; the fix adds the previous itinerary (`agents/nodes.py`) and makes the APPROVE check tolerate leading punctuation.
+- **Lost work on restart.** In-flight plans die with the process, so `main.py` marks trips left in `planning` as failed at startup (`test_restart_marks_interrupted_trips_failed`). `docs/DEPLOYMENT.md` notes Render's free tier sleeps and can hit this.
+- **Release pipeline churn.** Three commits (`9bbd421`, `907c338`, `36a3016`) retried the semantic-release token before settling on `GITHUB_TOKEN`.
+- **Not hardened.** The docs state the API has no authentication or rate limiting, and tables come from `create_all` with no migrations.
+
+## Results
+The repo has a working API, pipeline and web UI. 28 tests pass (`pytest` in `apps/api`, fake model and SQLite), and the web app has 18 Vitest cases (`App.test.tsx`, `http.test.ts`). CI in `.github/workflows/pr.yml` runs lint (black, ruff, mypy), tests, web build and Docker builds, and semantic-release tagged v1.0.0 and v1.0.1. `docker-compose.yml`, `render.yaml` and `apps/web/vercel.json` configure deployment, but no live URL appears in the repo.
+
+**TODO (Axel):** Is it deployed (URL)? How good are the plans: how often does the reviewer ask for a rewrite or the JSON fail to parse? Are the Oct. 2026 dates the real build period (git shows 33 commits over two days)?
+
+## Links
+- Repository: https://github.com/Axeloooo/Signposted
+- Deployment notes: `docs/DEPLOYMENT.md` in the repo

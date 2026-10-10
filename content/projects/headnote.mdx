@@ -1,0 +1,66 @@
+---
+title: "Headnote"
+summary: "A document-grounded chat app: FastAPI and LangGraph retrieve passages from Chroma, and answers cite the source documents in a React UI."
+dates: "Oct. 2026 - Oct. 2026"
+type: "Follow-along"
+role: "Author (see TODO below)"
+stack: ["Python", "FastAPI", "LangGraph", "ChromaDB", "SQLAlchemy", "React", "TypeScript", "Vite", "Docker", "LangSmith"]
+repo: "https://github.com/Axeloooo/Headnote"
+facts:
+  - { label: "Commits", value: "27" }
+  - { label: "Release", value: "1.0.0" }
+  - { label: "Tests", value: "23 API test functions, 19 web test cases" }
+diagram: |
+  flowchart LR
+    B["Browser"] --> P["nginx or Vercel<br/>static app + /api proxy"]
+    P --> W["apps/web<br/>React + Vite bundle"]
+    P -->|"/api/*"| M["apps/api main.py<br/>FastAPI"]
+    subgraph Agent["agent.py (LangGraph)"]
+      R["retrieve"] --> S["respond"]
+    end
+    M -->|"POST /chat"| R
+    R --> C[("Chroma<br/>rag.py")]
+    S --> L["llm.py<br/>Claude, OpenAI or echo"]
+    M --> D[("SQLAlchemy<br/>SQLite or Neon")]
+    M -->|"POST /documents"| K["chunk_text"] --> C
+    SD["seed.py<br/>demo_docs"] --> C
+---
+
+## Problem
+
+Headnote is a chat app that answers from a library of saved documents and shows which excerpts each answer used. The README says it is based on the "Build Your Own ChatGPT Agent" project from a YouTube video, so it started as a follow-along. The repo then adds a document library, per-answer citations, conversation history, a React UI, container and free-tier deploy configs, and CI with release automation.
+
+**TODO (Axel):** Who is this for, and which parts came from the video versus what you added?
+
+**TODO (Axel):** How do you want your role and process described? The repo contains `CLAUDE.md` and `.claude/skills`.
+
+## Architecture diagram
+
+nginx (container) or Vercel serves the built React app and forwards `/api/*` to the FastAPI service, so the browser stays on one origin. `POST /chat` runs a two-node LangGraph (retrieve, then respond); documents are chunked into Chroma, and conversations and document metadata live in SQL.
+
+## Key decisions
+
+- **Fixed retrieve-then-respond graph.** The "agent" is a LangGraph `StateGraph` with `START -> retrieve -> respond -> END`: no tools, loops or conditional edges, and retrieval takes the top 3 hits (`apps/api/app/agent.py`).
+- **Offline echo model and fail-fast providers.** With no API key the app uses `EchoChatModel`, so the app and tests run offline; an explicitly chosen provider without a key raises (`llm.py`, `tests/test_llm.py`). Anthropic support was added in 5284ca3 alongside OpenAI.
+- **Metadata in SQL, text in Chroma.** Chunks carry a `document_id`, so `_sources` in `main.py` can map hits back to document titles for citations; hits with no matching row are skipped (`models.py`).
+- **Local embeddings by default.** Chroma's local model is used unless an OpenAI key is set, and it is baked into the Docker image to avoid a cold-start download (`rag.py`, `apps/api/Dockerfile`).
+- **Same-origin proxy instead of CORS.** nginx and a Vercel rewrite forward `/api`; CORS is opt-in (`nginx.conf.template`, `vercel.json`).
+
+## Challenges
+
+- **Ephemeral free-tier disk.** The Chroma index is lost when Render's free instance sleeps, while document rows stay in Neon. `seed.py` rebuilds the demo index at start; documents users added are not searchable again (`docs/DEPLOYMENT.md`).
+- **Release pipeline churn.** Three consecutive commits (6a6823b, 33dd39c, 934e681) reworked token setup for semantic-release before settling on the built-in `GITHUB_TOKEN`.
+- **Rename fallout.** Renaming from Cairnly (ca7be90) changed the default DB filename and Chroma collection, so the README has an upgrade section.
+- **Stated limits.** No authentication or rate limiting, character-based chunking without overlap, no streaming, and a `delete_document` function with no endpoint.
+
+## Results
+
+The repo has the API, the web app, Docker Compose, CI (ruff, black, mypy, pytest, prettier, vitest, image builds) and a 1.0.0 release dated 2026-10-10 (`CHANGELOG.md`). API and web test suites exist (23 API test functions, 19 web test cases). `docs/AWS_DEPLOYMENT.md` is notes only, not a deployment, and no live URL is confirmed in the repo.
+
+**TODO (Axel):** Is a hosted demo live, and at what URL? Do you have retrieval-quality results or screenshots?
+
+**TODO (Axel):** The 27 commits fall on 2026-10-09 and 2026-10-10 only; is that the real build period or a re-import?
+
+## Links
+
+- [Repository](https://github.com/Axeloooo/Headnote)

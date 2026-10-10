@@ -1,0 +1,63 @@
+---
+title: "Multi-Agent Research Assistant"
+summary: "A local-first research app that runs a Search, Reader, Writer and Critic pipeline and streams each stage to a React UI."
+dates: "Sep. 2026"
+type: "Personal project"
+role: "Solo author"
+stack: ["Python", "FastAPI", "LangChain", "Gemini", "Tavily", "React", "TypeScript", "Vite", "Playwright"]
+repo: "https://github.com/Axeloooo/Multi-Agent-Research-Assistant"
+facts:
+  - { label: "Status", value: "Beta, local only" }
+  - { label: "Commits", value: "3" }
+  - { label: "Test suites", value: "pytest, Vitest, Playwright" }
+diagram: |
+  flowchart LR
+    UI["frontend (React + Vite)"] -->|"POST /api/runs, DELETE"| API["api/app.py (FastAPI)"]
+    API -->|"SSE + Last-Event-ID replay"| UI
+    API --> REG["api/registry.py<br/>RunRegistry, 1 active run"]
+    REG --> PIPE["pipelines/pipeline.py<br/>stream_research_pipeline"]
+    subgraph Stages
+      S["Search agent"] --> R["Reader agent"] --> W["Writer chain"] --> C["Critic chain"]
+    end
+    PIPE --> S
+    S --> T1["tools: web_search (Tavily)"]
+    R --> T2["tools: scrape_url"]
+    S --> G["Gemini"]
+    R --> G
+    W --> G
+    C --> G
+    PIPE -. "typed PipelineEvent" .-> REG
+---
+
+## Problem
+
+The app takes a focused question in the browser and shows four stages advancing through one research run: search, read, write, critique. The user can cancel a run and download the report. The first version (`13acd6a`) was a synchronous script that ran the stages in order and printed each stage's full output to the terminal. The third commit (`eb72156`, PR #4) replaced it with an async pipeline, an HTTP API and a React UI that streams progress and the final report. **TODO (Axel):** Why did you build this, and did you use an AI coding assistant (`AGENTS.md` suggests an agent-driven workflow)?
+
+## Architecture diagram
+
+A run enters through FastAPI, is held by an in-memory registry, and is executed by an async pipeline that yields typed events. The registry converts those events into server-sent events for the browser. Search and Reader each call one tool; Writer and Critic are plain prompt chains that stream text.
+
+## Key decisions
+
+- **Typed events between pipeline and API.** The pipeline yields provider-neutral events and the registry re-validates them, truncates text and accepts only fixed activity labels. The README states the browser never receives raw tool calls, provider metadata or raw exceptions (`pipelines/events.py`, `api/registry.py`).
+- **SSE with ids and replay instead of WebSockets.** Events carry incrementing ids, the endpoint honours `Last-Event-ID` and sends a 15 second keepalive, and a dropped connection does not cancel the run; cancel is an explicit `DELETE` (`api/app.py`, `useResearchRun.ts`).
+- **Per-stage deadlines.** Search 90s, Reader 120s, Writer 90s, Critic 45s. A failed stage marks later stages skipped (`pipelines/pipeline.py`).
+- **Raw tool output stays server-side.** The Reader receives the Search summary plus the raw tool messages (titles, URLs, snippets), but the browser gets only the summary cut to 1200 characters. The summary and final report can still contain source URLs (`SearchOutput` in `pipeline.py`).
+- **Injected stage runners.** Tests use fakes, so they need no network or keys. Playwright runs against a real FastAPI server with a deterministic fake pipeline (`backend/tests/api/e2e_server.py`).
+
+## Challenges
+
+- The PR #4 history includes "fix: constrain research tool loops", "fix: allow provider stages to finish" and "fix: bound research stages and stream activity", which fed the per-stage deadlines above.
+- LangChain tool callbacks fire on worker threads, so `_ActivityEmitter` hands them to the event loop with `call_soon_threadsafe` and drains pending callbacks before a stage ends (`pipeline.py`).
+- Pages vary in markup, so `scrape_url` tries trafilatura, then readability-lxml, then full-page BeautifulSoup, caps output at 5000 characters, and returns errors as text the agent can read (`tools/tools.py`).
+- Cancelling a queued run differs from cancelling a running one. The registry's `_finish` is idempotent so both paths end cleanly (`registry.py`).
+
+## Results
+
+The repo contains the FastAPI backend, the React frontend with a Storybook story for `RunTimeline`, Markdown and JSON report downloads, and three test layers (pytest with an 80% coverage floor in `backend/pyproject.toml`, Vitest, one Playwright test). CI runs formatting, lint, tests, build and the browser test; a release workflow uses semantic-release. No coverage figure is recorded in the repo.
+
+Limits, from the README: one job at a time, the last 20 runs kept in memory and lost on restart, no multi-user support. The agents are not autonomous: Search and Reader are prompted to call one tool each, the Reader scrapes one URL, and the Critic scores the report without triggering a revision. Citations, durable storage, auth and evaluations are listed as planned. **TODO (Axel):** Did you run live Gemini and Tavily research end to end? Add a sample topic, run time and a screenshot.
+
+## Links
+
+- Repository: https://github.com/Axeloooo/Multi-Agent-Research-Assistant
