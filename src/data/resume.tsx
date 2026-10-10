@@ -239,7 +239,7 @@ export const DATA = {
   projects: [
     {
       title: "Headnote",
-      href: "/projects/headnote",
+      href: "/blog/headnote",
       dates: "2026",
       active: true,
       description:
@@ -268,7 +268,7 @@ export const DATA = {
     },
     {
       title: "Signposted",
-      href: "/projects/signposted",
+      href: "/blog/signposted",
       dates: "2026",
       active: true,
       description:
@@ -297,7 +297,7 @@ export const DATA = {
     },
     {
       title: "charlm",
-      href: "/projects/charlm",
+      href: "/blog/charlm",
       dates: "2026",
       active: true,
       description:
@@ -323,7 +323,7 @@ export const DATA = {
     },
     {
       title: "gpt-from-scratch",
-      href: "/projects/gpt-from-scratch",
+      href: "/blog/gpt-from-scratch",
       dates: "2026",
       active: true,
       description:
@@ -349,7 +349,7 @@ export const DATA = {
     },
     {
       title: "BPE Tokenizer",
-      href: "/projects/bpe-tokenizer",
+      href: "/blog/bpe-tokenizer",
       dates: "2026",
       active: true,
       description:
@@ -375,7 +375,7 @@ export const DATA = {
     },
     {
       title: "autograd-from-scratch",
-      href: "/projects/autograd-from-scratch",
+      href: "/blog/autograd-from-scratch",
       dates: "2026",
       active: true,
       description:
@@ -401,7 +401,7 @@ export const DATA = {
     },
     {
       title: "Deep Learning with Keras",
-      href: "/projects/deep-learning-keras",
+      href: "/blog/deep-learning-keras",
       dates: "2026",
       active: true,
       description:
@@ -429,7 +429,7 @@ export const DATA = {
     },
     {
       title: "Multi-Agent Research Assistant",
-      href: "/projects/multi-agent-research-assistant",
+      href: "/blog/multi-agent-research-assistant",
       dates: "2026",
       active: true,
       description:
@@ -457,7 +457,7 @@ export const DATA = {
     },
     {
       title: "Portfolio",
-      href: "/projects/portfolio",
+      href: "/blog/portfolio",
       dates: "2024 - 2026",
       active: true,
       description:
@@ -513,7 +513,7 @@ export const DATA = {
     },
     {
       title: "Cross-Chain Rebase Token",
-      href: "/projects/cross-chain-rebase-token",
+      href: "/blog/cross-chain-rebase-token",
       dates: "2026",
       active: true,
       description:
@@ -556,7 +556,7 @@ export const DATA = {
     },
     {
       title: "Ride Sharing",
-      href: "/projects/ride-sharing",
+      href: "/blog/ride-sharing",
       dates: "2025",
       active: true,
       description:
@@ -623,7 +623,7 @@ export const DATA = {
     },
     {
       title: "LootLark",
-      href: "/projects/lootlark",
+      href: "/blog/lootlark",
       dates: "2025 - 2026",
       active: true,
       description:
