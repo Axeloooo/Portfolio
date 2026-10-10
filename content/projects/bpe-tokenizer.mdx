@@ -1,9 +1,9 @@
 ---
 title: "BPE Tokenizer"
 summary: "A byte pair encoding tokenizer in Python with a GPT-4-style regex split, special tokens, JSON save/load and a small CLI."
-dates: "Oct. 2026 - Oct. 2026"
+dates: "2026"
 type: "Follow-along"
-role: "Solo author"
+role: "Author"
 stack: ["Python", "regex", "pytest", "mypy", "ruff", "GitHub Actions", "semantic-release"]
 repo: "https://github.com/Axeloooo/bpe-tokenizer"
 facts:
@@ -25,9 +25,7 @@ diagram: |
 
 ## Problem
 
-This is a follow-along of Andrej Karpathy's lecture "Let's build the GPT Tokenizer" from the Neural Networks: Zero to Hero series (`README.md`). The goal stated in the README is a byte pair encoding tokenizer built from scratch in the style of GPT-4.
-
-**TODO (Axel):** What did you want to learn from this build, and what did you train it on (corpus, vocab size, compression ratio)? The repo records no run output.
+This follows Andrej Karpathy's lecture "Let's build the GPT Tokenizer" from the Neural Networks: Zero to Hero series (`README.md`). The goal stated in the README is a byte pair encoding tokenizer built from scratch in the style of GPT-4.
 
 ## Architecture diagram
 
@@ -49,16 +47,11 @@ The README maps pair counting, the regex pre-split, special tokens, `allowed_spe
 - The README lists what is left out: loading OpenAI's pretrained cl100k_base merges, matching tiktoken output, and SentencePiece. This tokenizer trains its own merges, so "GPT-4 style" means the split pattern and special-token ids, not identical output.
 - Training recounts all pairs after every merge (`regex_tokenizer.py`, `basic.py`). There is no optimization or benchmark in the repo.
 
-**TODO (Axel):** What was hardest or most surprising: the split pattern, tie-breaking between equal pair counts, or id ordering?
-
 ## Results
 
 - Both tokenizers train, encode and decode, with save/load and a `python -m bpe_tokenizer train|encode|decode` CLI that prints a compression ratio (`__main__.py`).
 - 17 pytest cases cover the Wikipedia `aaabdaaabac` example, round trips, compression, no cross-chunk merges, special tokens, deterministic training, save/load, id validation and the CLI. `pytest -q` reports 17 passed.
 - CI in `.github/workflows/ci.yml` runs ruff, black, mypy in strict mode, prettier and pytest on Python 3.10 and 3.13. A semantic-release workflow on `main` produced the 1.0.0 entry in `CHANGELOG.md`; `pyproject.toml` still says version 0.0.0.
-- Git shows 13 commits, all dated 2026-10-09 and 2026-10-10, with the "initial commit" dated after another commit.
-
-**TODO (Axel):** What were the real working dates, and which parts (CLI, JSON format, special-token validation) did you add beyond the lecture code?
 
 ## Links
 

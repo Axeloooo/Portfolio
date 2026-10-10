@@ -1,9 +1,9 @@
 ---
 title: "gpt-from-scratch"
 summary: "A GPT-2-architecture transformer in PyTorch with a character-level training CLI on Tiny Shakespeare, built following two Karpathy lectures."
-dates: "Oct. 2026 - Oct. 2026"
+dates: "2026"
 type: "Follow-along"
-role: "Solo author"
+role: "Author"
 stack: ["Python", "PyTorch", "pytest", "mypy", "ruff", "GitHub Actions", "semantic-release"]
 repo: "https://github.com/Axeloooo/gpt-from-scratch"
 facts:
@@ -41,7 +41,7 @@ diagram: |
 
 ## Problem
 
-This is a follow-along of two lectures from Andrej Karpathy's Neural Networks: Zero to Hero series, "Let's build GPT" and "Let's reproduce GPT-2 (124M)". The README describes the path from a character-level transformer up to the GPT-2 124M architecture and training recipe. The repo restructures the lecture code into an installable `src/` package with a CLI and tests. Only the architecture is at 124M scale; the training runs here use a small configuration.
+This follows two lectures from Andrej Karpathy's Neural Networks: Zero to Hero series, "Let's build GPT" and "Let's reproduce GPT-2 (124M)". The README describes the path from a character-level transformer up to the GPT-2 124M architecture and training recipe. The repo restructures the lecture code into an installable `src/` package with a CLI and tests. Only the architecture is at 124M scale; the training runs here use a small configuration.
 
 ## Architecture diagram
 
@@ -63,10 +63,9 @@ This is a follow-along of two lectures from Andrej Karpathy's Neural Networks: Z
 ## Results
 
 - `python -m gpt_from_scratch` is wired to train a character-level GPT, printing per-step loss, learning rate and gradient norm, then train and validation loss and a 200-token sample. `test_cli_runs` exercises this path.
-- The repo has 19 test functions across `tests/test_model.py` and `tests/test_train.py`, covering causality, attention equivalence, parameter count, optimizer groups and gradient accumulation. **TODO (Axel):** Do all 19 tests pass in CI, and on which runs?
+- The repo has 19 test functions across `tests/test_model.py` and `tests/test_train.py`, covering causality, attention equivalence, parameter count, optimizer groups and gradient accumulation.
 - The README's "Not included" section lists what was not done: the GPT-2 124M pretraining run on FineWeb-Edu, HellaSwag evaluation, loading Hugging Face weights, `torch.compile` and multi-GPU training.
-- The repo records no loss values or sample output. **TODO (Axel):** What validation loss and sample text did a longer run (for example `--steps 2000`) give, and on what hardware?
-- Git history covers about one day (2026-10-09 to 2026-10-10). **TODO (Axel):** What were the real start and finish dates, and did you type the lectures along in notebooks before restructuring into a package?
+- The repo records no loss values or sample output.
 
 ## Links
 

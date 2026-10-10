@@ -1,9 +1,9 @@
 ---
 title: "LootLark"
 summary: "Full-stack video game store on ASP.NET Core, React and .NET Aspire, with Stripe test-mode checkout and a queue-backed worker that issues game codes."
-dates: "Mar. 2025 - Oct. 2026"
+dates: "2025 - 2026"
 type: "Course build"
-role: "Solo author"
+role: "Author"
 stack: [".NET 8", "ASP.NET Core", "React", "TypeScript", "PostgreSQL", ".NET Aspire", "Stripe", "Azure Service Bus", "Keycloak", "Testcontainers"]
 repo: "https://github.com/Axeloooo/LootLark"
 facts:
@@ -27,9 +27,7 @@ diagram: |
     apphost -.-> worker
 ---
 ## Problem
-LootLark is a video game store: browse and filter a catalogue by genre, keep a per-user basket, pay through Stripe in test mode, and receive game codes once the order is processed. It was built by following the .NET Academy .NET 8 bootcamp, and the code stays close to the course's final trees (`README.md`). That is why the projects, namespaces, API routes and Keycloak realm still use the course's `GameStore.*` names; LootLark is the product name.
-
-**TODO (Axel):** History runs Mar.-Jun. 2025 (MVP, basket, authorization, Keycloak, React frontend), then a 16-month gap, then Oct. 2026 (course modules, tests, cleanup). Is Mar. 2025 - Oct. 2026 the range you want shown?
+LootLark is a video game store: browse and filter a catalogue by genre, keep a per-user basket, pay through Stripe in test mode, and receive game codes once the order is processed. It follows the .NET Academy .NET 8 bootcamp, and the code stays close to the course's final trees (`README.md`). That is why the projects, namespaces, API routes and Keycloak realm still use the course's `GameStore.*` names; LootLark is the product name.
 
 ## Architecture diagram
 The React SPA signs in through Keycloak (local) or Entra ID and calls `GameStore.Api` with a bearer token. The API creates the Stripe checkout session, and the payment webhook (forwarded by a Stripe CLI container locally) starts order processing; the API publishes through an outbox to a Service Bus queue, and `GameStore.Worker` completes the order.
@@ -42,15 +40,13 @@ The React SPA signs in through Keycloak (local) or Entra ID and calls `GameStore
 - **Real dependencies in tests.** Integration tests use Testcontainers against PostgreSQL and Azurite (`GameStoreWebApplicationFactory.cs`) and the Service Bus emulator (`Worker/OrdersWorkerTests.cs`).
 
 ## Challenges
-- **Vulnerable transitive packages.** Patched versions were pinned (`dca6342`, `d60d21e`) and a dependency audit added to CI. `CLAUDE.md` records that `npm audit` still has open findings.
+- **Vulnerable transitive packages.** Patched versions were pinned (`dca6342`, `d60d21e`) and a dependency audit added to CI.
 - **Docker Hub rate limits in CI.** Anonymous pulls hit the limit, so CI logs in to Docker Hub, pins Service Bus emulator 2.0.1 in `OrdersWorkerTests.cs` and uses a mirror with retries (`2e7c602`, `34c7d12`, `b15cb0c`).
 - **Setup trap.** A placeholder `EntraAuthority` must be an HTTPS URL or every API request returns 500 (`README.md`).
 - **Known gaps.** One test is skipped for Azurite-style URLs (`CdnUrlTransformerTests.cs`), and the outbox poller runs inside the API, so several instances would each poll and could publish a message twice; queue duplicate detection and the worker's status check absorb that (`docs/architecture.md`, section 8).
 
 ## Results
-The repo contains a working local stack: catalogue search and genre filter, admin CRUD with image upload, per-user basket, Stripe test checkout, game-code generation by the worker, and OpenTelemetry in the Aspire dashboard. Beyond the course material it adds a unit-test project written class by class (original work, not a course tree), a five-job GitHub Actions pipeline, Dependabot, semantic-release (tags v0.1.0 and v0.2.0), and the LootLark brand (`frontend/src/styles/lootlark-tokens.css`). The database moved from SQLite to PostgreSQL, and the UI is Bootstrap 5. The README reports 82 unit tests (one skipped) and 23 integration tests. There is no deployment or demo.
-
-**TODO (Axel):** Which of the React frontend, Keycloak/Entra auth, CI and release setup did you design beyond the course trees?
+The repo contains a working local stack: catalogue search and genre filter, admin CRUD with image upload, per-user basket, Stripe test checkout, game-code generation by the worker, and OpenTelemetry in the Aspire dashboard. Beyond the course material it adds a unit-test project written class by class, a five-job GitHub Actions pipeline, Dependabot, semantic-release (tags v0.1.0 and v0.2.0), and the LootLark brand (`frontend/src/styles/lootlark-tokens.css`). The database moved from SQLite to PostgreSQL, and the UI is Bootstrap 5. The README reports 82 unit tests (one skipped) and 23 integration tests. There is no deployment or demo.
 
 ## Links
 - Repo: https://github.com/Axeloooo/LootLark

@@ -240,7 +240,7 @@ export const DATA = {
     {
       title: "Headnote",
       href: "/projects/headnote",
-      dates: "Oct. 2026 - Oct. 2026",
+      dates: "2026",
       active: true,
       description:
         "A document-grounded chat app: FastAPI and LangGraph retrieve passages from Chroma, and answers cite the source documents in a React UI.",
@@ -263,13 +263,13 @@ export const DATA = {
           icon: <Icons.github className="size-3" />,
         },
       ],
-      image: "",
+      image: "/headnote.png",
       video: "",
     },
     {
       title: "Signposted",
       href: "/projects/signposted",
-      dates: "Oct. 2026 - Oct. 2026",
+      dates: "2026",
       active: true,
       description:
         "Trip planner where a four-step LLM pipeline (research, itinerary, budget, review) builds a plan behind a FastAPI API, shown on a departures-board web UI.",
@@ -292,13 +292,13 @@ export const DATA = {
           icon: <Icons.github className="size-3" />,
         },
       ],
-      image: "",
+      image: "/signposted.png",
       video: "",
     },
     {
       title: "charlm",
       href: "/projects/charlm",
-      dates: "Oct. 2026 - Oct. 2026",
+      dates: "2026",
       active: true,
       description:
         "Character-level name generators, from a count bigram to a BatchNorm MLP and a hierarchical tree, packaged as a typed Python library with a CLI.",
@@ -318,13 +318,13 @@ export const DATA = {
           icon: <Icons.github className="size-3" />,
         },
       ],
-      image: "",
+      image: "/charlm.png",
       video: "",
     },
     {
       title: "gpt-from-scratch",
       href: "/projects/gpt-from-scratch",
-      dates: "Oct. 2026 - Oct. 2026",
+      dates: "2026",
       active: true,
       description:
         "A GPT-2-architecture transformer in PyTorch with a character-level training CLI on Tiny Shakespeare, built following two Karpathy lectures.",
@@ -344,13 +344,13 @@ export const DATA = {
           icon: <Icons.github className="size-3" />,
         },
       ],
-      image: "",
+      image: "/gpt-from-scratch.png",
       video: "",
     },
     {
       title: "BPE Tokenizer",
       href: "/projects/bpe-tokenizer",
-      dates: "Oct. 2026 - Oct. 2026",
+      dates: "2026",
       active: true,
       description:
         "A byte pair encoding tokenizer in Python with a GPT-4-style regex split, special tokens, JSON save/load and a small CLI.",
@@ -370,13 +370,13 @@ export const DATA = {
           icon: <Icons.github className="size-3" />,
         },
       ],
-      image: "",
+      image: "/bpe-tokenizer.png",
       video: "",
     },
     {
       title: "autograd-from-scratch",
       href: "/projects/autograd-from-scratch",
-      dates: "Oct. 2026 - Oct. 2026",
+      dates: "2026",
       active: true,
       description:
         "A scalar reverse-mode autograd engine and small MLP library in pure Python, built while following Karpathy's micrograd lecture.",
@@ -396,13 +396,13 @@ export const DATA = {
           icon: <Icons.github className="size-3" />,
         },
       ],
-      image: "",
+      image: "/autograd-from-scratch.png",
       video: "",
     },
     {
       title: "Deep Learning with Keras",
       href: "/projects/deep-learning-keras",
-      dates: "Aug. 2026 - Sep. 2026",
+      dates: "2026",
       active: true,
       description:
         "Eight Colab notebooks that move from NumPy forward and backward propagation to Keras regression, MNIST, CNNs, attention and pretrained models.",
@@ -424,13 +424,13 @@ export const DATA = {
           icon: <Icons.github className="size-3" />,
         },
       ],
-      image: "",
+      image: "/deep-learning-keras.png",
       video: "",
     },
     {
       title: "Multi-Agent Research Assistant",
       href: "/projects/multi-agent-research-assistant",
-      dates: "Sep. 2026",
+      dates: "2026",
       active: true,
       description:
         "A local-first research app that runs a Search, Reader, Writer and Critic pipeline and streams each stage to a React UI.",
@@ -452,13 +452,13 @@ export const DATA = {
           icon: <Icons.github className="size-3" />,
         },
       ],
-      image: "",
+      image: "/multi-agent-research-assistant.png",
       video: "",
     },
     {
       title: "Portfolio",
       href: "/projects/portfolio",
-      dates: "Oct. 2024 - Aug. 2026",
+      dates: "2024 - 2026",
       active: true,
       description:
         "Personal portfolio site on Next.js 14 with a typed content file, an MDX blog and a PR-to-release workflow.",
@@ -479,7 +479,7 @@ export const DATA = {
           icon: <Icons.github className="size-3" />,
         },
       ],
-      image: "",
+      image: "/portfolio.png",
       video: "",
     },
     {
@@ -514,7 +514,7 @@ export const DATA = {
     {
       title: "Cross-Chain Rebase Token",
       href: "/projects/cross-chain-rebase-token",
-      dates: "Mar. 2026 - Mar. 2026",
+      dates: "2026",
       active: true,
       description:
         "Foundry/Solidity project: an ETH vault that mints a rebase token with per-user interest rates, and a Chainlink CCIP token pool, tested on Sepolia and Arbitrum Sepolia forks.",
@@ -557,7 +557,7 @@ export const DATA = {
     {
       title: "Ride Sharing",
       href: "/projects/ride-sharing",
-      dates: "Aug. 2025 - Aug. 2025",
+      dates: "2025",
       active: true,
       description:
         "Go microservices backend for a ride-hailing flow: route and fare preview, trip creation, driver matching over RabbitMQ, and Stripe Checkout sessions.",
@@ -624,7 +624,7 @@ export const DATA = {
     {
       title: "LootLark",
       href: "/projects/lootlark",
-      dates: "Mar. 2025 - Oct. 2026",
+      dates: "2025 - 2026",
       active: true,
       description:
         "Full-stack video game store on ASP.NET Core, React and .NET Aspire, with Stripe test-mode checkout and a queue-backed worker that issues game codes.",

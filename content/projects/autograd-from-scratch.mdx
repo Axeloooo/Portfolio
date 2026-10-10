@@ -1,9 +1,9 @@
 ---
 title: "autograd-from-scratch"
 summary: "A scalar reverse-mode autograd engine and small MLP library in pure Python, built while following Karpathy's micrograd lecture."
-dates: "Oct. 2026 - Oct. 2026"
+dates: "2026"
 type: "Follow-along"
-role: "Solo author"
+role: "Author"
 stack: ["Python", "pytest", "mypy", "ruff", "GitHub Actions", "semantic-release", "Graphviz DOT"]
 repo: "https://github.com/Axeloooo/autograd-from-scratch"
 facts:
@@ -58,10 +58,6 @@ A scalar reverse-mode autograd engine and a small neural network library in plai
 ## Results
 
 The library covers add, mul, pow, exp, log, tanh, relu and the reflected operators, plus `Neuron`, `Layer` and `MLP`. The suite has 19 pytest tests (5 engine functions, one parametrized into 9 cases, plus 2 nn and 3 graph). There is no standalone training script or notebook; the README's training-loop row points at `tests/test_nn.py::test_mlp_learns_tiny_dataset`. One test trains an MLP on a 4-sample toy set for 50 steps and asserts the loss falls below 10% of its starting value; no loss figures are printed anywhere. CI in `.github/workflows/ci.yml` runs ruff, black, mypy, prettier and pytest on Python 3.10 and 3.13. `CHANGELOG.md` lists v1.0.0 to v1.2.0 from semantic-release, but `pyproject.toml` still says 0.0.0, and the release workflow (`.github/workflows/release.yaml`) only tags and updates `CHANGELOG.md`; there is no PyPI publish step.
-
-**TODO (Axel):** What did you want to learn from this, and did you check gradients against PyTorch or train on anything beyond the toy dataset?
-
-**TODO (Axel):** What were the real working dates? Git shows only 2026-10-09 and 2026-10-10, and the initial commit is dated after the first feature commit.
 
 ## Links
 

@@ -1,9 +1,9 @@
 ---
 title: "charlm"
 summary: "Character-level name generators, from a count bigram to a BatchNorm MLP and a hierarchical tree, packaged as a typed Python library with a CLI."
-dates: "Oct. 2026 - Oct. 2026"
+dates: "2026"
 type: "Follow-along"
-role: "Solo author"
+role: "Author"
 stack: ["Python", "PyTorch", "pytest", "mypy", "ruff", "GitHub Actions", "semantic-release"]
 repo: "https://github.com/Axeloooo/charlm"
 facts:
@@ -25,9 +25,7 @@ diagram: |
     tests["tests/<br/>manual grads vs autograd"] -.-> backprop
 ---
 ## Problem
-This is a follow-along of Andrej Karpathy's makemore lectures from the Neural Networks: Zero to Hero series. The README lists five parts: building makemore, MLP, activations/gradients/BatchNorm, backprop by hand, and WaveNet. The models learn to generate names from the 32,033-name makemore dataset. The repo turns notebook-style lecture code into an installable package with tests and a CLI, so each model can be trained from one command.
-
-**TODO (Axel):** What did you want to learn from the series, and what surprised you most?
+This follows Andrej Karpathy's makemore lectures from the Neural Networks: Zero to Hero series. The README lists five parts: building makemore, MLP, activations/gradients/BatchNorm, backprop by hand, and WaveNet. The models learn to generate names from the 32,033-name makemore dataset. The repo turns notebook-style lecture code into an installable package with tests and a CLI, so each model can be trained from one command.
 
 ## Architecture diagram
 Read left to right: `names.txt` is split and windowed by `data.py`, then feeds the bigram models and the layer-based models built from `layers.py`. Solid arrows mean data flows to; the dotted arrow means the tests import the module. `backprop.py` is a standalone module that only the tests exercise, against `loss.backward()`; no CLI path calls it. `__main__.py` selects a model and calls `train.py`.
@@ -50,10 +48,6 @@ Read left to right: `names.txt` is split and windowed by `data.py`, then feeds t
 - 21 test functions in five files under `tests/` cover bigram, data, models, CLI and the gradient check.
 - CI (`.github/workflows/ci.yml`) runs ruff, black, mypy, prettier and pytest on Python 3.10 and 3.13. Three releases (v1.0.0, v1.1.0, v1.1.1) are in `CHANGELOG.md`.
 - The only runtime dependency is `torch>=2.2`. No loss values or sample names appear in the repo.
-
-**TODO (Axel):** What final dev/test losses did each model reach, and after how many steps?
-
-**TODO (Axel):** Confirm the real work dates; git history shows only 2026-10-09 and 2026-10-10, which looks re-imported.
 
 ## Links
 - Repository: https://github.com/Axeloooo/charlm

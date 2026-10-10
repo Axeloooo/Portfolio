@@ -1,9 +1,9 @@
 ---
 title: "Headnote"
 summary: "A document-grounded chat app: FastAPI and LangGraph retrieve passages from Chroma, and answers cite the source documents in a React UI."
-dates: "Oct. 2026 - Oct. 2026"
+dates: "2026"
 type: "Follow-along"
-role: "Author (see TODO below)"
+role: "Author"
 stack: ["Python", "FastAPI", "LangGraph", "ChromaDB", "SQLAlchemy", "React", "TypeScript", "Vite", "Docker", "LangSmith"]
 repo: "https://github.com/Axeloooo/Headnote"
 facts:
@@ -28,11 +28,7 @@ diagram: |
 
 ## Problem
 
-Headnote is a chat app that answers from a library of saved documents and shows which excerpts each answer used. The README says it is based on the "Build Your Own ChatGPT Agent" project from a YouTube video, so it started as a follow-along. The repo then adds a document library, per-answer citations, conversation history, a React UI, container and free-tier deploy configs, and CI with release automation.
-
-**TODO (Axel):** Who is this for, and which parts came from the video versus what you added?
-
-**TODO (Axel):** How do you want your role and process described? The repo contains `CLAUDE.md` and `.claude/skills`.
+Headnote is a chat app that answers from a library of saved documents and shows which excerpts each answer used. It follows the "Build Your Own ChatGPT Agent" YouTube tutorial named in the README and adds a document library, per-answer citations, conversation history, a React UI, container and free-tier deploy configs, and CI with release automation.
 
 ## Architecture diagram
 
@@ -55,11 +51,7 @@ nginx (container) or Vercel serves the built React app and forwards `/api/*` to 
 
 ## Results
 
-The repo has the API, the web app, Docker Compose, CI (ruff, black, mypy, pytest, prettier, vitest, image builds) and a 1.0.0 release dated 2026-10-10 (`CHANGELOG.md`). API and web test suites exist (23 API test functions, 19 web test cases). `docs/AWS_DEPLOYMENT.md` is notes only, not a deployment, and no live URL is confirmed in the repo.
-
-**TODO (Axel):** Is a hosted demo live, and at what URL? Do you have retrieval-quality results or screenshots?
-
-**TODO (Axel):** The 27 commits fall on 2026-10-09 and 2026-10-10 only; is that the real build period or a re-import?
+The repo has the API, the web app, Docker Compose, CI (ruff, black, mypy, pytest, prettier, vitest, image builds) and a 1.0.0 release dated 2026-10-10 (`CHANGELOG.md`). API and web test suites exist (23 API test functions, 19 web test cases). `docs/AWS_DEPLOYMENT.md` is notes only. It was deployed once; it is offline now because of hosting budget, so there is no live demo.
 
 ## Links
 

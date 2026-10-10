@@ -1,9 +1,9 @@
 ---
 title: "Multi-Agent Research Assistant"
 summary: "A local-first research app that runs a Search, Reader, Writer and Critic pipeline and streams each stage to a React UI."
-dates: "Sep. 2026"
+dates: "2026"
 type: "Personal project"
-role: "Solo author"
+role: "Author"
 stack: ["Python", "FastAPI", "LangChain", "Gemini", "Tavily", "React", "TypeScript", "Vite", "Playwright"]
 repo: "https://github.com/Axeloooo/Multi-Agent-Research-Assistant"
 facts:
@@ -31,7 +31,7 @@ diagram: |
 
 ## Problem
 
-The app takes a focused question in the browser and shows four stages advancing through one research run: search, read, write, critique. The user can cancel a run and download the report. The first version (`13acd6a`) was a synchronous script that ran the stages in order and printed each stage's full output to the terminal. The third commit (`eb72156`, PR #4) replaced it with an async pipeline, an HTTP API and a React UI that streams progress and the final report. **TODO (Axel):** Why did you build this, and did you use an AI coding assistant (`AGENTS.md` suggests an agent-driven workflow)?
+The app takes a focused question in the browser and shows four stages advancing through one research run: search, read, write, critique. The user can cancel a run and download the report. The first version (`13acd6a`) was a synchronous script that ran the stages in order and printed each stage's full output to the terminal. The third commit (`eb72156`, PR #4) replaced it with an async pipeline, an HTTP API and a React UI that streams progress and the final report.
 
 ## Architecture diagram
 
@@ -56,7 +56,7 @@ A run enters through FastAPI, is held by an in-memory registry, and is executed 
 
 The repo contains the FastAPI backend, the React frontend with a Storybook story for `RunTimeline`, Markdown and JSON report downloads, and three test layers (pytest with an 80% coverage floor in `backend/pyproject.toml`, Vitest, one Playwright test). CI runs formatting, lint, tests, build and the browser test; a release workflow uses semantic-release. No coverage figure is recorded in the repo.
 
-Limits, from the README: one job at a time, the last 20 runs kept in memory and lost on restart, no multi-user support. The agents are not autonomous: Search and Reader are prompted to call one tool each, the Reader scrapes one URL, and the Critic scores the report without triggering a revision. Citations, durable storage, auth and evaluations are listed as planned. **TODO (Axel):** Did you run live Gemini and Tavily research end to end? Add a sample topic, run time and a screenshot.
+Limits, from the README: one job at a time, the last 20 runs kept in memory and lost on restart, no multi-user support. The agents are not autonomous: Search and Reader are prompted to call one tool each, the Reader scrapes one URL, and the Critic scores the report without triggering a revision. Citations, durable storage, auth and evaluations are listed as planned.
 
 ## Links
 

@@ -1,9 +1,9 @@
 ---
 title: "Signposted"
 summary: "Trip planner where a four-step LLM pipeline (research, itinerary, budget, review) builds a plan behind a FastAPI API, shown on a departures-board web UI."
-dates: "Oct. 2026 - Oct. 2026"
+dates: "2026"
 type: "Personal project"
-role: "Solo author"
+role: "Author"
 stack: ["Python", "FastAPI", "LangGraph", "Groq", "PostgreSQL", "SQLAlchemy", "React", "TypeScript", "Vite", "Docker"]
 repo: "https://github.com/Axeloooo/Signposted"
 facts:
@@ -34,9 +34,7 @@ diagram: |
     EP --> DB
 ---
 ## Problem
-Signposted turns a destination, trip length, budget and interests into a day-by-day plan with a cost split. The README calls it a multi-agent travel planner, but the pipeline is four prompts to one model (Groq `llama-3.3-70b-versatile`) run in a fixed order, with no web search or tools, so the research step is the model's own knowledge and costs are estimates. A plan takes several sequential model calls, so the API answers at once and the UI polls for progress. The repo still carries the earlier name TripMate in places.
-
-**TODO (Axel):** Why this project (learning LangGraph, a portfolio piece, a real trip)? And which name should the portfolio use, Signposted or TripMate?
+Signposted turns a destination, trip length, budget and interests into a day-by-day plan with a cost split. The README calls it a multi-agent travel planner, but the pipeline is four prompts to one model (Groq `llama-3.3-70b-versatile`) run in a fixed order, with no web search or tools, so the research step is the model's own knowledge and costs are estimates. A plan takes several sequential model calls, so the API answers at once and the UI polls for progress.
 
 ## Architecture diagram
 Read left to right: the React app posts a trip through a same-origin `/api` proxy to `main.py`, which starts planning as a background task and returns. The LangGraph pipeline runs research, itinerary, budget and review, can send the itinerary back once, and writes progress and the final plan into one JSON column in PostgreSQL.
@@ -55,9 +53,7 @@ Read left to right: the React app posts a trip through a same-origin `/api` prox
 - **Not hardened.** The docs state the API has no authentication or rate limiting, and tables come from `create_all` with no migrations.
 
 ## Results
-The repo has a working API, pipeline and web UI. 28 tests pass (`pytest` in `apps/api`, fake model and SQLite), and the web app has 18 Vitest cases (`App.test.tsx`, `http.test.ts`). CI in `.github/workflows/pr.yml` runs lint (black, ruff, mypy), tests, web build and Docker builds, and semantic-release tagged v1.0.0 and v1.0.1. `docker-compose.yml`, `render.yaml` and `apps/web/vercel.json` configure deployment, but no live URL appears in the repo.
-
-**TODO (Axel):** Is it deployed (URL)? How good are the plans: how often does the reviewer ask for a rewrite or the JSON fail to parse? Are the Oct. 2026 dates the real build period (git shows 33 commits over two days)?
+The repo has a working API, pipeline and web UI. 28 tests pass (`pytest` in `apps/api`, fake model and SQLite), and the web app has 18 Vitest cases (`App.test.tsx`, `http.test.ts`). CI in `.github/workflows/pr.yml` runs lint (black, ruff, mypy), tests, web build and Docker builds, and semantic-release tagged v1.0.0 and v1.0.1. `docker-compose.yml`, `render.yaml` and `apps/web/vercel.json` configure deployment. It was deployed once; it is offline now because of hosting budget, so there is no live demo.
 
 ## Links
 - Repository: https://github.com/Axeloooo/Signposted
