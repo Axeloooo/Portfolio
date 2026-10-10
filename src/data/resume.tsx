@@ -486,7 +486,7 @@ export const DATA = {
       title:
         "ChiselWare IP Factory Platform by Rocksavage Technology, Inc. (Capstone)",
       href: "#",
-      dates: "Sep. 2025 - Apr. 2026",
+      dates: "2025 - 2026",
       active: true,
       description:
         "A full-stack semiconductor IP marketplace co-built with a 6-engineer team, enabling verified submission, certification, and monetized distribution of Chisel-based IP cores, complete with Stripe payments, OIDC auth, and automated Chisel-to-Verilog compilation.",
@@ -539,7 +539,7 @@ export const DATA = {
     {
       title: "DeFi Stablecoin",
       href: "#",
-      dates: "Aug. 2025 - Sep. 2025",
+      dates: "2025",
       active: true,
       description:
         "A decentralized stablecoin protocol backed by exogenous collateral (ETH and BTC), featuring algorithmic minting and a USD peg, inspired by the MakerDAO model.",
@@ -588,7 +588,7 @@ export const DATA = {
     {
       title: "NFT Collection",
       href: "#",
-      dates: "Jul. 2025 - Aug. 2025",
+      dates: "2025",
       active: true,
       description:
         "A collection of ERC-721 NFT smart contracts built with OpenZeppelin, supporting both static and dynamic on-chain traits with fully verifiable metadata.",
@@ -606,7 +606,7 @@ export const DATA = {
     {
       title: "ERC20 Token",
       href: "#",
-      dates: "Jul. 2025 - Aug. 2025",
+      dates: "2025",
       active: true,
       description:
         "An ERC-20 token smart contract built with OpenZeppelin, deploying Axel Token (AXL) with full test coverage and an automated deployment pipeline.",
@@ -654,7 +654,7 @@ export const DATA = {
       title:
         "Deep Learning Fundamentals, CNN, Transfer Learning, and ViT Replication",
       href: "#",
-      dates: "Mar. 2025 - May. 2025",
+      dates: "2025",
       active: true,
       description:
         "A hands-on collection of PyTorch deep learning workflows covering fundamentals, image classification with CNNs, transfer learning with experiment tracking, and a paper replication of the Vision Transformer (ViT).",
@@ -679,7 +679,7 @@ export const DATA = {
     {
       title: "ChoreShare",
       href: "#",
-      dates: "Jan. 2024 - Apr. 2024",
+      dates: "2024",
       active: true,
       description:
         "A cross-platform app for roommates to organize and assign household chores together; built on a Spring Boot microservice backend with a React/Redux frontend and deployed on GCP Kubernetes.",
@@ -712,7 +712,7 @@ export const DATA = {
     {
       title: "MyNotes",
       href: "#",
-      dates: "Dec. 2023 - Jan. 2024",
+      dates: "2023 - 2024",
       active: true,
       description:
         "A minimal, offline-first note-taking mobile app built with Flutter and Dart, designed for capturing ideas and reminders with local SQLite storage and Firebase sync.",
@@ -730,7 +730,7 @@ export const DATA = {
     {
       title: "Game Heaven",
       href: "#",
-      dates: "Jan. 2023 - Aug. 2023",
+      dates: "2023",
       active: true,
       description:
         "A full-stack e-commerce storefront for video games, featuring an AI customer support chatbot that automatically handles support tickets using the latest GPT models.",
@@ -766,7 +766,7 @@ export const DATA = {
     {
       title: "The Last Show",
       href: "#",
-      dates: "Mar. 2023 - Apr. 2023",
+      dates: "2023",
       active: true,
       description:
         "A serverless web app that generates personalized AI-written obituaries from user input; powered by OpenAI for text generation, AWS Polly for speech synthesis, and Cloudinary for media storage.",
@@ -796,7 +796,7 @@ export const DATA = {
     {
       title: "Lotion Plus",
       href: "#",
-      dates: "Feb. 2023 - Mar. 2023",
+      dates: "2023",
       active: true,
       description:
         "A serverless notes app deployed on AWS Lambda and DynamoDB with infrastructure managed via Terraform and automated deployments through GitHub Actions.",
@@ -823,7 +823,7 @@ export const DATA = {
     {
       title: "LibCode",
       href: "#",
-      dates: "Mar. 2023 - Apr. 2023",
+      dates: "2023",
       active: true,
       description:
         "A Python library of data structures and algorithms published to PyPI, with comprehensive unit tests and an automated release pipeline through GitHub Actions.",
