@@ -2,49 +2,46 @@
 title: "gpt-from-scratch"
 publishedAt: "2026-10-10"
 summary: "A GPT-2-architecture transformer in PyTorch with a character-level training CLI on Tiny Shakespeare, built following two Karpathy lectures."
-dates: "2026"
-type: "Follow-along"
-role: "Author"
-stack: ["Python", "PyTorch", "pytest", "mypy", "ruff", "GitHub Actions", "semantic-release"]
-repo: "https://github.com/Axeloooo/gpt-from-scratch"
-facts:
-  - { label: "Commits", value: "14" }
-  - { label: "Test functions", value: "19" }
-  - { label: "Releases", value: "v1.0.0 to v1.1.1" }
-diagram: |
-  flowchart LR
-    CLI["__main__.py / train.main"] --> DATA
-    TOK -->|"vocab size"| CFG
-    subgraph DATA["data.py"]
-      TXT["input.txt (packaged)"] --> TOK["CharTokenizer"]
-      TOK --> SPLIT["split_tokens 90/10"]
-      SPLIT --> DL["DataLoaderLite"]
-      SPLIT --> GB["get_batch"]
-    end
-    subgraph MODEL["model.py"]
-      CFG["GPTConfig"] --> GPT["GPT"]
-      GPT --> BLK["Block x n_layer"]
-      BLK --> ATT["CausalSelfAttention"]
-      BLK --> MLP["MLP"]
-      GPT --> OPT["configure_optimizers (AdamW)"]
-    end
-    subgraph TRAIN["train.py"]
-      LOOP["train: accum, clip, get_lr"]
-      EST["estimate_loss"]
-    end
-    DL --> LOOP
-    GPT --> LOOP
-    OPT --> LOOP
-    GB --> EST
-    CLI -->|"after training"| EST
-    GPT --> GEN["generate: temperature, top-k"]
 ---
+
+**Stack:** Python, PyTorch, pytest, mypy, ruff, GitHub Actions, semantic-release  
+**Project:** Follow-along · 2026 · Author  
+**Commits:** 14  
+**Test functions:** 19  
+**Releases:** v1.0.0 to v1.1.1  
+**Links:** [Source on GitHub](https://github.com/Axeloooo/gpt-from-scratch)
 
 ## Problem
 
 This follows two lectures from Andrej Karpathy's Neural Networks: Zero to Hero series, "Let's build GPT" and "Let's reproduce GPT-2 (124M)". The README describes the path from a character-level transformer up to the GPT-2 124M architecture and training recipe. The repo restructures the lecture code into an installable `src/` package with a CLI and tests. Only the architecture is at 124M scale; the training runs here use a small configuration.
 
 ## Architecture diagram
+
+```text
+Groups
+  data.py: input.txt (packaged), CharTokenizer, split_tokens 90/10, DataLoaderLite, get_batch
+  model.py: GPTConfig, GPT, Block x n_layer, CausalSelfAttention, MLP, configure_optimizers (AdamW)
+  train.py: train: accum, clip, get_lr, estimate_loss
+
+Flow
+  __main__.py / train.main --> data.py
+  CharTokenizer --(vocab size)--> GPTConfig
+  input.txt (packaged) --> CharTokenizer
+  CharTokenizer --> split_tokens 90/10
+  split_tokens 90/10 --> DataLoaderLite
+  split_tokens 90/10 --> get_batch
+  GPTConfig --> GPT
+  GPT --> Block x n_layer
+  Block x n_layer --> CausalSelfAttention
+  Block x n_layer --> MLP
+  GPT --> configure_optimizers (AdamW)
+  DataLoaderLite --> train: accum, clip, get_lr
+  GPT --> train: accum, clip, get_lr
+  configure_optimizers (AdamW) --> train: accum, clip, get_lr
+  get_batch --> estimate_loss
+  __main__.py / train.main --(after training)--> estimate_loss
+  GPT --> generate: temperature, top-k
+```
 
 `python -m gpt_from_scratch` calls `train.main`, which reads the packaged Tiny Shakespeare text, tokenizes it by character, splits it 90/10, trains a `GPT` from `model.py`, then prints train and validation loss and a sample from `generate`.
 

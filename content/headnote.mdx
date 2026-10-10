@@ -2,36 +2,47 @@
 title: "Headnote"
 publishedAt: "2026-10-10"
 summary: "A document-grounded chat app: FastAPI and LangGraph retrieve passages from Chroma, and answers cite the source documents in a React UI."
-dates: "2026"
-type: "Follow-along"
-role: "Author"
-stack: ["Python", "FastAPI", "LangGraph", "ChromaDB", "SQLAlchemy", "React", "TypeScript", "Vite", "Docker", "LangSmith"]
-repo: "https://github.com/Axeloooo/Headnote"
-facts:
-  - { label: "Commits", value: "27" }
-  - { label: "Release", value: "1.0.0" }
-  - { label: "Tests", value: "23 API test functions, 19 web test cases" }
-diagram: |
-  flowchart LR
-    B["Browser"] --> P["nginx or Vercel<br/>static app + /api proxy"]
-    P --> W["apps/web<br/>React + Vite bundle"]
-    P -->|"/api/*"| M["apps/api main.py<br/>FastAPI"]
-    subgraph Agent["agent.py (LangGraph)"]
-      R["retrieve"] --> S["respond"]
-    end
-    M -->|"POST /chat"| R
-    R --> C[("Chroma<br/>rag.py")]
-    S --> L["llm.py<br/>Claude, OpenAI or echo"]
-    M --> D[("SQLAlchemy<br/>SQLite or Neon")]
-    M -->|"POST /documents"| K["chunk_text"] --> C
-    SD["seed.py<br/>demo_docs"] --> C
 ---
+
+**Stack:** Python, FastAPI, LangGraph, ChromaDB, SQLAlchemy, React, TypeScript, Vite, Docker, LangSmith  
+**Project:** Follow-along · 2026 · Author  
+**Commits:** 27  
+**Release:** 1.0.0  
+**Tests:** 23 API test functions, 19 web test cases  
+**Links:** [Source on GitHub](https://github.com/Axeloooo/Headnote)
 
 ## Problem
 
 Headnote is a chat app that answers from a library of saved documents and shows which excerpts each answer used. It follows the "Build Your Own ChatGPT Agent" YouTube tutorial named in the README and adds a document library, per-answer citations, conversation history, a React UI, container and free-tier deploy configs, and CI with release automation.
 
 ## Architecture diagram
+
+```text
+Groups
+  agent.py (LangGraph): retrieve, respond
+
+Flow
+  Browser --> nginx or Vercel
+  nginx or Vercel --> apps/web
+  nginx or Vercel --(/api/*)--> apps/api main.py
+  retrieve --> respond
+  apps/api main.py --(POST /chat)--> retrieve
+  retrieve --> Chroma
+  respond --> llm.py
+  apps/api main.py --> SQLAlchemy
+  apps/api main.py --(POST /documents)--> chunk_text
+  chunk_text --> Chroma
+  seed.py --> Chroma
+
+Details
+  nginx or Vercel: static app + /api proxy
+  apps/web: React + Vite bundle
+  apps/api main.py: FastAPI
+  Chroma: rag.py
+  llm.py: Claude, OpenAI or echo
+  SQLAlchemy: SQLite or Neon
+  seed.py: demo_docs
+```
 
 nginx (container) or Vercel serves the built React app and forwards `/api/*` to the FastAPI service, so the browser stays on one origin. `POST /chat` runs a two-node LangGraph (retrieve, then respond); documents are chunked into Chroma, and conversations and document metadata live in SQL.
 

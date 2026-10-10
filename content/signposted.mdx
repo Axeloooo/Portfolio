@@ -2,42 +2,48 @@
 title: "Signposted"
 publishedAt: "2026-10-10"
 summary: "Trip planner where a four-step LLM pipeline (research, itinerary, budget, review) builds a plan behind a FastAPI API, shown on a departures-board web UI."
-dates: "2026"
-type: "Personal project"
-role: "Author"
-stack: ["Python", "FastAPI", "LangGraph", "Groq", "PostgreSQL", "SQLAlchemy", "React", "TypeScript", "Vite", "Docker"]
-repo: "https://github.com/Axeloooo/Signposted"
-facts:
-  - { label: "Commits", value: "33" }
-  - { label: "API tests", value: "28 passed (pytest, apps/api)" }
-  - { label: "Releases", value: "v1.0.0, v1.0.1" }
-diagram: |
-  flowchart LR
-    subgraph web["apps/web (React, Vite)"]
-      UI["screens: NewTrip, Progress, Itinerary"]
-      CL["api/client.ts<br/>polls every 1.5 s"]
-    end
-    PX["nginx or Vercel rewrite<br/>/api to API"]
-    subgraph api["apps/api (FastAPI)"]
-      EP["main.py<br/>POST /trips, GET /trips"]
-      BG["BackgroundTasks<br/>run_planning"]
-      subgraph lg["agents/graph.py (LangGraph)"]
-        R["research_agent"] --> I["itinerary_agent"] --> B["budget_agent"] --> V["reviewer_agent"]
-        V -->|"REVISE, under 2 rounds"| I
-      end
-    end
-    DB[("PostgreSQL<br/>trips.plan JSON")]
-    G["Groq<br/>llama-3.3-70b-versatile"]
-    UI --> CL --> PX --> EP
-    EP --> BG --> lg
-    lg --> G
-    BG -->|"save progress and plan"| DB
-    EP --> DB
 ---
+
+**Stack:** Python, FastAPI, LangGraph, Groq, PostgreSQL, SQLAlchemy, React, TypeScript, Vite, Docker  
+**Project:** Personal project · 2026 · Author  
+**Commits:** 33  
+**API tests:** 28 passed (pytest, apps/api)  
+**Releases:** v1.0.0, v1.0.1  
+**Links:** [Source on GitHub](https://github.com/Axeloooo/Signposted)
+
 ## Problem
 Signposted turns a destination, trip length, budget and interests into a day-by-day plan with a cost split. The README calls it a multi-agent travel planner, but the pipeline is four prompts to one model (Groq `llama-3.3-70b-versatile`) run in a fixed order, with no web search or tools, so the research step is the model's own knowledge and costs are estimates. A plan takes several sequential model calls, so the API answers at once and the UI polls for progress.
 
 ## Architecture diagram
+```text
+Groups
+  apps/web (React, Vite): screens: NewTrip, Progress, Itinerary, api/client.ts
+  apps/api (FastAPI): main.py, BackgroundTasks
+  agents/graph.py (LangGraph): research_agent, itinerary_agent, budget_agent, reviewer_agent
+
+Flow
+  research_agent --> itinerary_agent
+  itinerary_agent --> budget_agent
+  budget_agent --> reviewer_agent
+  reviewer_agent --(REVISE, under 2 rounds)--> itinerary_agent
+  screens: NewTrip, Progress, Itinerary --> api/client.ts
+  api/client.ts --> nginx or Vercel rewrite
+  nginx or Vercel rewrite --> main.py
+  main.py --> BackgroundTasks
+  BackgroundTasks --> agents/graph.py (LangGraph)
+  agents/graph.py (LangGraph) --> Groq
+  BackgroundTasks --(save progress and plan)--> PostgreSQL
+  main.py --> PostgreSQL
+
+Details
+  api/client.ts: polls every 1.5 s
+  nginx or Vercel rewrite: /api to API
+  main.py: POST /trips, GET /trips
+  BackgroundTasks: run_planning
+  PostgreSQL: trips.plan JSON
+  Groq: llama-3.3-70b-versatile
+```
+
 Read left to right: the React app posts a trip through a same-origin `/api` proxy to `main.py`, which starts planning as a background task and returns. The LangGraph pipeline runs research, itinerary, budget and review, can send the itinerary back once, and writes progress and the final plan into one JSON column in PostgreSQL.
 
 ## Key decisions

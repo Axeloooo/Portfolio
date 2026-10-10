@@ -2,35 +2,36 @@
 title: "Deep Learning with Keras"
 publishedAt: "2026-10-10"
 summary: "Eight Colab notebooks that move from NumPy forward and backward propagation to Keras regression, MNIST, CNNs, attention and pretrained models."
-dates: "2026"
-type: "Course build"
-role: "Author"
-stack: ["Python", "Jupyter", "Google Colab", "NumPy", "Keras", "TensorFlow", "VGG16", "BLIP", "PyTorch"]
-repo: "https://github.com/Axeloooo/Deep-Learning-and-Neural-Networks-with-Keras"
-facts:
-  - { label: "Notebooks", value: "8" }
-  - { label: "Commits", value: "17" }
-  - { label: "License", value: "MIT" }
-diagram: |
-  flowchart TD
-    subgraph NumPy["NumPy from scratch"]
-      FP["forward-propagation"] --> BP["backward-propagation (XOR)"] --> AF["activation-functions-and-vanishing"]
-    end
-    subgraph Keras["Keras Sequential"]
-      RG["regression-with-keras (concrete CSV)"] --> CL["classification-with-keras (MNIST dense)"] --> CNN["convolutional-neural-networks-with-keras"]
-    end
-    subgraph Adv["Attention and transfer learning"]
-      TR["transformers-with-Keras (LSTM + SelfAttention)"] --> CC["classification-and-captioning (VGG16 + BLIP)"]
-    end
-    AF --> RG
-    CNN --> TR
 ---
+
+**Stack:** Python, Jupyter, Google Colab, NumPy, Keras, TensorFlow, VGG16, BLIP, PyTorch  
+**Project:** Course build · 2026 · Author  
+**Notebooks:** 8  
+**Commits:** 17  
+**License:** MIT  
+**Links:** [Source on GitHub](https://github.com/Axeloooo/Deep-Learning-and-Neural-Networks-with-Keras)
 
 ## Problem
 
 The repository is a set of lessons that connect the arithmetic inside a neural network to the Keras calls that automate it: trace values through a small network, study how gradients drive learning, then move to tabular data, handwritten digits, convolution, attention and pretrained models (`README.md`). The notebooks follow the labs of the Deep Learning with Keras course; this repo adds the Colab-first packaging, fixes, refinements to some lessons (activation functions, regression) and the README and contributor documentation below.
 
 ## Architecture diagram
+
+```text
+Groups
+  NumPy from scratch: forward-propagation, backward-propagation (XOR), activation-functions-and-vanishing
+  Keras Sequential: regression-with-keras (concrete CSV), classification-with-keras (MNIST dense), convolutional-neural-networks-with-keras
+  Attention and transfer learning: transformers-with-Keras (LSTM + SelfAttention), classification-and-captioning (VGG16 + BLIP)
+
+Flow
+  forward-propagation --> backward-propagation (XOR)
+  backward-propagation (XOR) --> activation-functions-and-vanishing
+  regression-with-keras (concrete CSV) --> classification-with-keras (MNIST dense)
+  classification-with-keras (MNIST dense) --> convolutional-neural-networks-with-keras
+  transformers-with-Keras (LSTM + SelfAttention) --> classification-and-captioning (VGG16 + BLIP)
+  activation-functions-and-vanishing --> regression-with-keras (concrete CSV)
+  convolutional-neural-networks-with-keras --> transformers-with-Keras (LSTM + SelfAttention)
+```
 
 This is a learning path, not a service. Each box is a standalone notebook in `notebooks/`, read in the README order (arrows show suggested order, not dependencies): NumPy first, then Keras Sequential models, then attention and transfer learning.
 

@@ -2,32 +2,33 @@
 title: "Cross-Chain Rebase Token"
 publishedAt: "2026-10-10"
 summary: "Foundry/Solidity project: an ETH vault that mints a rebase token with per-user interest rates, and a Chainlink CCIP token pool, tested on Sepolia and Arbitrum Sepolia forks."
-dates: "2026"
-type: "Personal project"
-role: "Author"
-stack: ["Solidity", "Foundry", "OpenZeppelin", "Chainlink CCIP", "GitHub Actions", "semantic-release"]
-repo: "https://github.com/Axeloooo/Cross-Chain-Rebase-Token"
-facts:
-  - { label: "Tests", value: "9 unit + 1 fork (counted from source)" }
-  - { label: "Contracts", value: "3 (263 lines, plus an 11-line interface)" }
-diagram: |
-  flowchart LR
-    User -->|"deposit() ETH"| Vault
-    User -->|"redeem()"| Vault
-    Vault -->|"mint(to, amt, rate)"| RT1["RebaseToken (Sepolia)"]
-    Vault -->|"burn"| RT1
-    User -->|"ccipSend"| R1["CCIP Router"]
-    R1 --> P1["RebaseTokenPool (Sepolia)"]
-    P1 -->|"burn; pool data = user rate"| RT1
-    P1 -.->|"CCIP message"| P2["RebaseTokenPool (Arbitrum Sepolia)"]
-    P2 -->|"mint(receiver, amt, rate)"| RT2["RebaseToken (Arbitrum Sepolia)"]
-    Reg["TokenAdminRegistry"] --- P1
-    Reg --- P2
 ---
+
+**Stack:** Solidity, Foundry, OpenZeppelin, Chainlink CCIP, GitHub Actions, semantic-release  
+**Project:** Personal project · 2026 · Author  
+**Tests:** 9 unit + 1 fork (counted from source)  
+**Contracts:** 3 (263 lines, plus an 11-line interface)  
+**Links:** [Source on GitHub](https://github.com/Axeloooo/Cross-Chain-Rebase-Token)
+
 ## Problem
 The project explores a token whose balance grows over time and whose holders keep the interest rate they had when they deposited, even after moving the token to another chain. A `Vault` takes ETH and mints `RebaseToken`; a CCIP token pool carries each user's rate along with the bridged amount. The README describes it as yield-bearing, but the vault does not earn anything: interest is a fixed linear per-second rate paid out as newly minted tokens.
 
 ## Architecture diagram
+```text
+Flow
+  User --(deposit() ETH)--> Vault
+  User --(redeem())--> Vault
+  Vault --(mint(to, amt, rate))--> RebaseToken (Sepolia)
+  Vault --(burn)--> RebaseToken (Sepolia)
+  User --(ccipSend)--> CCIP Router
+  CCIP Router --> RebaseTokenPool (Sepolia)
+  RebaseTokenPool (Sepolia) --(burn; pool data = user rate)--> RebaseToken (Sepolia)
+  RebaseTokenPool (Sepolia) ..(CCIP message)..> RebaseTokenPool (Arbitrum Sepolia)
+  RebaseTokenPool (Arbitrum Sepolia) --(mint(receiver, amt, rate))--> RebaseToken (Arbitrum Sepolia)
+  TokenAdminRegistry --- RebaseTokenPool (Sepolia)
+  TokenAdminRegistry --- RebaseTokenPool (Arbitrum Sepolia)
+```
+
 Read left to right: ETH enters the `Vault` on Sepolia, which mints the token. Bridging goes through the CCIP router and the pools, which burn on the source chain and mint on Arbitrum Sepolia with the original user's rate. The vault exists only on the source chain.
 
 ## Key decisions

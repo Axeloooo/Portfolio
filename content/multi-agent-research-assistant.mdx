@@ -2,39 +2,46 @@
 title: "Multi-Agent Research Assistant"
 publishedAt: "2026-10-10"
 summary: "A local-first research app that runs a Search, Reader, Writer and Critic pipeline and streams each stage to a React UI."
-dates: "2026"
-type: "Personal project"
-role: "Author"
-stack: ["Python", "FastAPI", "LangChain", "Gemini", "Tavily", "React", "TypeScript", "Vite", "Playwright"]
-repo: "https://github.com/Axeloooo/Multi-Agent-Research-Assistant"
-facts:
-  - { label: "Status", value: "Beta, local only" }
-  - { label: "Commits", value: "3" }
-  - { label: "Test suites", value: "pytest, Vitest, Playwright" }
-diagram: |
-  flowchart LR
-    UI["frontend (React + Vite)"] -->|"POST /api/runs, DELETE"| API["api/app.py (FastAPI)"]
-    API -->|"SSE + Last-Event-ID replay"| UI
-    API --> REG["api/registry.py<br/>RunRegistry, 1 active run"]
-    REG --> PIPE["pipelines/pipeline.py<br/>stream_research_pipeline"]
-    subgraph Stages
-      S["Search agent"] --> R["Reader agent"] --> W["Writer chain"] --> C["Critic chain"]
-    end
-    PIPE --> S
-    S --> T1["tools: web_search (Tavily)"]
-    R --> T2["tools: scrape_url"]
-    S --> G["Gemini"]
-    R --> G
-    W --> G
-    C --> G
-    PIPE -. "typed PipelineEvent" .-> REG
 ---
+
+**Stack:** Python, FastAPI, LangChain, Gemini, Tavily, React, TypeScript, Vite, Playwright  
+**Project:** Personal project · 2026 · Author  
+**Status:** Beta, local only  
+**Commits:** 3  
+**Test suites:** pytest, Vitest, Playwright  
+**Links:** [Source on GitHub](https://github.com/Axeloooo/Multi-Agent-Research-Assistant)
 
 ## Problem
 
 The app takes a focused question in the browser and shows four stages advancing through one research run: search, read, write, critique. The user can cancel a run and download the report. The first version (`13acd6a`) was a synchronous script that ran the stages in order and printed each stage's full output to the terminal. The third commit (`eb72156`, PR #4) replaced it with an async pipeline, an HTTP API and a React UI that streams progress and the final report.
 
 ## Architecture diagram
+
+```text
+Groups
+  Stages: Search agent, Reader agent, Writer chain, Critic chain
+
+Flow
+  frontend (React + Vite) --(POST /api/runs, DELETE)--> api/app.py (FastAPI)
+  api/app.py (FastAPI) --(SSE + Last-Event-ID replay)--> frontend (React + Vite)
+  api/app.py (FastAPI) --> api/registry.py
+  api/registry.py --> pipelines/pipeline.py
+  Search agent --> Reader agent
+  Reader agent --> Writer chain
+  Writer chain --> Critic chain
+  pipelines/pipeline.py --> Search agent
+  Search agent --> tools: web_search (Tavily)
+  Reader agent --> tools: scrape_url
+  Search agent --> Gemini
+  Reader agent --> Gemini
+  Writer chain --> Gemini
+  Critic chain --> Gemini
+  pipelines/pipeline.py ..(typed PipelineEvent)..> api/registry.py
+
+Details
+  api/registry.py: RunRegistry, 1 active run
+  pipelines/pipeline.py: stream_research_pipeline
+```
 
 A run enters through FastAPI, is held by an in-memory registry, and is executed by an async pipeline that yields typed events. The registry converts those events into server-sent events for the browser. Search and Reader each call one tool; Writer and Critic are plain prompt chains that stream text.
 

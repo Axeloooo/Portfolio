@@ -2,35 +2,36 @@
 title: "LootLark"
 publishedAt: "2026-10-10"
 summary: "Full-stack video game store on ASP.NET Core, React and .NET Aspire, with Stripe test-mode checkout and a queue-backed worker that issues game codes."
-dates: "2025 - 2026"
-type: "Course build"
-role: "Author"
-stack: [".NET 8", "ASP.NET Core", "React", "TypeScript", "PostgreSQL", ".NET Aspire", "Stripe", "Azure Service Bus", "Keycloak", "Testcontainers"]
-repo: "https://github.com/Axeloooo/LootLark"
-facts:
-  - { label: "Commits", value: "125" }
-  - { label: "Tests", value: "82 unit (1 skipped), 23 integration (per README)" }
-  - { label: "Releases", value: "v0.1.0, v0.2.0" }
-diagram: |
-  flowchart LR
-    spa["frontend (React, Vite)"] -->|"OIDC"| kc["Keycloak / Entra ID"]
-    spa -->|"bearer JWT"| api["GameStore.Api"]
-    spa -->|"Stripe.js"| stripe["Stripe (test mode)"]
-    api -->|"checkout session"| stripe
-    stripecli["Stripe CLI container"] -->|"webhook (local)"| api
-    stripe -.-> stripecli
-    api --> db[("PostgreSQL")]
-    api --> blobs[("Azurite blobs")]
-    api -->|"OutboxProcessor"| bus[["Service Bus: orders"]]
-    bus --> worker["GameStore.Worker"]
-    worker --> db
-    apphost["GameStore.AppHost (Aspire)"] -.->|"starts and wires"| api
-    apphost -.-> worker
 ---
+
+**Stack:** .NET 8, ASP.NET Core, React, TypeScript, PostgreSQL, .NET Aspire, Stripe, Azure Service Bus, Keycloak, Testcontainers  
+**Project:** Course build · 2025 - 2026 · Author  
+**Commits:** 125  
+**Tests:** 82 unit (1 skipped), 23 integration (per README)  
+**Releases:** v0.1.0, v0.2.0  
+**Links:** [Source on GitHub](https://github.com/Axeloooo/LootLark)
+
 ## Problem
 LootLark is a video game store: browse and filter a catalogue by genre, keep a per-user basket, pay through Stripe in test mode, and receive game codes once the order is processed. It follows the .NET Academy .NET 8 bootcamp, and the code stays close to the course's final trees (`README.md`). That is why the projects, namespaces, API routes and Keycloak realm still use the course's `GameStore.*` names; LootLark is the product name.
 
 ## Architecture diagram
+```text
+Flow
+  frontend (React, Vite) --(OIDC)--> Keycloak / Entra ID
+  frontend (React, Vite) --(bearer JWT)--> GameStore.Api
+  frontend (React, Vite) --(Stripe.js)--> Stripe (test mode)
+  GameStore.Api --(checkout session)--> Stripe (test mode)
+  Stripe CLI container --(webhook (local))--> GameStore.Api
+  Stripe (test mode) ..> Stripe CLI container
+  GameStore.Api --> PostgreSQL
+  GameStore.Api --> Azurite blobs
+  GameStore.Api --(OutboxProcessor)--> Service Bus: orders
+  Service Bus: orders --> GameStore.Worker
+  GameStore.Worker --> PostgreSQL
+  GameStore.AppHost (Aspire) ..(starts and wires)..> GameStore.Api
+  GameStore.AppHost (Aspire) ..> GameStore.Worker
+```
+
 The React SPA signs in through Keycloak (local) or Entra ID and calls `GameStore.Api` with a bearer token. The API creates the Stripe checkout session, and the payment webhook (forwarded by a Stripe CLI container locally) starts order processing; the API publishes through an outbox to a Service Bus queue, and `GameStore.Worker` completes the order.
 
 ## Key decisions

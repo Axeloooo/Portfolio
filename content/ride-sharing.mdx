@@ -2,38 +2,38 @@
 title: "Ride Sharing"
 publishedAt: "2026-10-10"
 summary: "Go microservices backend for a ride-hailing flow: route and fare preview, trip creation, driver matching over RabbitMQ, and Stripe Checkout sessions."
-dates: "2025"
-type: "Course build"
-role: "Author"
-stack: ["Go", "gRPC", "Protocol Buffers", "RabbitMQ", "MongoDB", "Stripe", "OpenTelemetry", "Jaeger", "Kubernetes", "Tilt", "Docker", "WebSocket"]
-repo: "https://github.com/Axeloooo/Ride-Sharing"
-facts:
-  - { label: "Go services", value: "4" }
-  - { label: "Merged PRs", value: "10" }
-  - { label: "Tests / CI", value: "none" }
-diagram: |
-  flowchart LR
-    W["web (starter Next.js)"] -->|"HTTP + WebSocket"| AG["api-gateway"]
-    AG -->|"gRPC"| TS["trip-service"]
-    AG -->|"gRPC"| DS["driver-service"]
-    TS -->|"HTTP"| OSRM["OSRM routing API"]
-    TS --> MDB[("MongoDB")]
-    subgraph RMQ["RabbitMQ: exchange trip, dlx"]
-      Q["queues"]
-    end
-    AG <--> Q
-    TS <--> Q
-    DS <--> Q
-    PS["payment-service"] <--> Q
-    PS -->|"Checkout Session"| ST["Stripe"]
-    AG -.->|"traces"| JG["Jaeger"]
 ---
+
+**Stack:** Go, gRPC, Protocol Buffers, RabbitMQ, MongoDB, Stripe, OpenTelemetry, Jaeger, Kubernetes, Tilt, Docker, WebSocket  
+**Project:** Course build · 2025 · Author  
+**Go services:** 4  
+**Merged PRs:** 10  
+**Tests / CI:** none  
+**Links:** [Source on GitHub](https://github.com/Axeloooo/Ride-Sharing)
 
 ## Problem
 
 This is the backend for an Uber-style ride-hailing app, built as a Go microservices course project. The web client, architecture docs and deploy README come from the course starter; the Go services, messaging, tracing and Kubernetes wiring are the author's.
 
 ## Architecture diagram
+
+```text
+Groups
+  RabbitMQ: exchange trip, dlx: queues
+
+Flow
+  web (starter Next.js) --(HTTP + WebSocket)--> api-gateway
+  api-gateway --(gRPC)--> trip-service
+  api-gateway --(gRPC)--> driver-service
+  trip-service --(HTTP)--> OSRM routing API
+  trip-service --> MongoDB
+  api-gateway <--> queues
+  trip-service <--> queues
+  driver-service <--> queues
+  payment-service <--> queues
+  payment-service --(Checkout Session)--> Stripe
+  api-gateway ..(traces)..> Jaeger
+```
 
 The web client reaches the api-gateway over HTTP and WebSocket. The gateway calls trip-service and driver-service over gRPC, and the trip lifecycle (driver request, accept or decline, payment session) moves as events through one RabbitMQ topic exchange. The diagram shows one tracing edge; all four Go services export traces to Jaeger.
 

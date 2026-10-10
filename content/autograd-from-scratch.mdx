@@ -2,42 +2,45 @@
 title: "autograd-from-scratch"
 publishedAt: "2026-10-10"
 summary: "A scalar reverse-mode autograd engine and small MLP library in pure Python, built while following Karpathy's micrograd lecture."
-dates: "2026"
-type: "Follow-along"
-role: "Author"
-stack: ["Python", "pytest", "mypy", "ruff", "GitHub Actions", "semantic-release", "Graphviz DOT"]
-repo: "https://github.com/Axeloooo/autograd-from-scratch"
-facts:
-  - { label: "Tests", value: "19 (pytest)" }
-  - { label: "Runtime deps", value: "None" }
-  - { label: "Commits", value: "16" }
-diagram: |
-  flowchart LR
-    subgraph engine["engine.py"]
-      V["Value<br/>data, grad, _prev, _op"]
-      OPS["operators<br/>add mul pow exp log tanh relu"]
-      BW["backward()<br/>iterative topo sort"]
-    end
-    subgraph nn["nn.py"]
-      N["Neuron"] --> L["Layer"] --> M["MLP"]
-    end
-    G["graph.py<br/>trace, to_dot"]
-    T["tests/<br/>finite differences"]
-    OPS -->|"build graph + _backward closures"| V
-    BW -->|"chain rule in reverse order"| V
-    N -->|"uses Value ops"| V
-    G -->|"reads _prev, _op"| V
-    G --> DOT["Graphviz DOT text"]
-    T --> V
-    T --> M
-    T --> G
 ---
+
+**Stack:** Python, pytest, mypy, ruff, GitHub Actions, semantic-release, Graphviz DOT  
+**Project:** Follow-along · 2026 · Author  
+**Tests:** 19 (pytest)  
+**Runtime deps:** None  
+**Commits:** 16  
+**Links:** [Source on GitHub](https://github.com/Axeloooo/autograd-from-scratch)
 
 ## Problem
 
 A scalar reverse-mode autograd engine and a small neural network library in plain Python, built from scratch with no runtime dependencies. The repo follows the micrograd lecture from Andrej Karpathy's Neural Networks: Zero to Hero series, as its README says. Beyond the lecture it adds an iterative backward pass, Graphviz DOT export, finite-difference gradient tests, seedable randomness and a CI and release setup.
 
 ## Architecture diagram
+
+```text
+Groups
+  engine.py: Value, operators, backward()
+  nn.py: Neuron, Layer, MLP
+
+Flow
+  Neuron --> Layer
+  Layer --> MLP
+  operators --(build graph + _backward closures)--> Value
+  backward() --(chain rule in reverse order)--> Value
+  Neuron --(uses Value ops)--> Value
+  graph.py --(reads _prev, _op)--> Value
+  graph.py --> Graphviz DOT text
+  tests/ --> Value
+  tests/ --> MLP
+  tests/ --> graph.py
+
+Details
+  Value: data, grad, _prev, _op
+  operators: add mul pow exp log tanh relu
+  backward(): iterative topo sort
+  graph.py: trace, to_dot
+  tests/: finite differences
+```
 
 `engine.py` holds `Value`, which records its inputs and a `_backward` closure per operation. `nn.py` stacks `Neuron`, `Layer` and `MLP` on those operations, and `graph.py` reads the same graph to emit Graphviz DOT text. Tests sit on top of all three.
 

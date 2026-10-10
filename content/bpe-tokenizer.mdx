@@ -2,33 +2,41 @@
 title: "BPE Tokenizer"
 publishedAt: "2026-10-10"
 summary: "A byte pair encoding tokenizer in Python with a GPT-4-style regex split, special tokens, JSON save/load and a small CLI."
-dates: "2026"
-type: "Follow-along"
-role: "Author"
-stack: ["Python", "regex", "pytest", "mypy", "ruff", "GitHub Actions", "semantic-release"]
-repo: "https://github.com/Axeloooo/bpe-tokenizer"
-facts:
-  - { label: "Commits", value: "13" }
-  - { label: "Tests", value: "17 pytest cases" }
-  - { label: "Source", value: "324 lines of Python" }
-diagram: |
-  flowchart LR
-    corpus["corpus.txt"] --> cli["__main__.py<br/>train / encode / decode"]
-    cli --> basic["BasicTokenizer<br/>basic.py"]
-    cli --> rx["RegexTokenizer<br/>regex_tokenizer.py"]
-    rx --> pat["GPT-4 split pattern"]
-    rx --> spec["special tokens<br/>allowed_special"]
-    basic --> base["base.py<br/>get_stats, merge, Tokenizer"]
-    rx --> base
-    base --> json["tokenizer.json<br/>save / load"]
-    json --> cli
 ---
+
+**Stack:** Python, regex, pytest, mypy, ruff, GitHub Actions, semantic-release  
+**Project:** Follow-along · 2026 · Author  
+**Commits:** 13  
+**Tests:** 17 pytest cases  
+**Source:** 324 lines of Python  
+**Links:** [Source on GitHub](https://github.com/Axeloooo/bpe-tokenizer)
 
 ## Problem
 
 This follows Andrej Karpathy's lecture "Let's build the GPT Tokenizer" from the Neural Networks: Zero to Hero series (`README.md`). The goal stated in the README is a byte pair encoding tokenizer built from scratch in the style of GPT-4.
 
 ## Architecture diagram
+
+```text
+Flow
+  corpus.txt --> __main__.py
+  __main__.py --> BasicTokenizer
+  __main__.py --> RegexTokenizer
+  RegexTokenizer --> GPT-4 split pattern
+  RegexTokenizer --> special tokens
+  BasicTokenizer --> base.py
+  RegexTokenizer --> base.py
+  base.py --> tokenizer.json
+  tokenizer.json --> __main__.py
+
+Details
+  __main__.py: train / encode / decode
+  BasicTokenizer: basic.py
+  RegexTokenizer: regex_tokenizer.py
+  special tokens: allowed_special
+  base.py: get_stats, merge, Tokenizer
+  tokenizer.json: save / load
+```
 
 The CLI loads or trains one of two tokenizers that share `base.py`. `RegexTokenizer` splits text with a regex first, `BasicTokenizer` works on the whole text, and both persist merges to a JSON file.
 

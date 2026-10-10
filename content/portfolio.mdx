@@ -2,46 +2,45 @@
 title: "Portfolio"
 publishedAt: "2026-10-10"
 summary: "Personal portfolio site on Next.js 14 with a typed content file, an MDX blog and a PR-to-release workflow."
-dates: "2024 - 2026"
-type: "Personal project"
-role: "Author"
-stack: ["Next.js 14", "TypeScript", "Tailwind CSS", "shadcn/ui", "MDX", "framer-motion", "GitHub Actions", "semantic-release"]
-repo: "https://github.com/Axeloooo/Portfolio"
-facts:
-  - { label: "Commits", value: "46" }
-  - { label: "Project cards", value: "14 in src/data/resume.tsx" }
-  - { label: "Tests", value: "None configured" }
-diagram: |
-  flowchart LR
-    subgraph Content
-      D["src/data/resume.tsx<br/>DATA object"]
-      M["content/*.mdx"]
-    end
-    subgraph App["src/app (Next.js 14 App Router)"]
-      L["layout.tsx"]
-      P["page.tsx<br/>home sections"]
-      BL["blog/page.tsx"]
-      BS["blog/[slug]/page.tsx"]
-    end
-    B["src/data/blog.ts<br/>gray-matter + unified"]
-    C["src/components<br/>ProjectCard, ResumeCard, magicui"]
-    V["Vercel Analytics<br/>+ Speed Insights"]
-    GH["GitHub Actions<br/>ci.yml, release.yml"]
-    D --> P
-    P --> C
-    M --> B
-    B --> BL
-    B --> BS
-    L --> P
-    L --> BL
-    L --> V
-    D --> L
-    GH -.-> App
 ---
+
+**Stack:** Next.js 14, TypeScript, Tailwind CSS, shadcn/ui, MDX, framer-motion, GitHub Actions, semantic-release  
+**Project:** Personal project · 2024 - 2026 · Author  
+**Commits:** 46  
+**Project cards:** 14 in src/data/resume.tsx  
+**Tests:** None configured  
+**Links:** [Source on GitHub](https://github.com/Axeloooo/Portfolio)
+
 ## Problem
 A single place to show work experience, education, research, projects and skills, plus a blog. Content, sections, CI and a release workflow are all maintained in the one repo.
 
 ## Architecture diagram
+```text
+Groups
+  Content: src/data/resume.tsx, content/*.mdx
+  src/app (Next.js 14 App Router): layout.tsx, page.tsx, blog/page.tsx, blog/[slug]/page.tsx
+
+Flow
+  src/data/resume.tsx --> page.tsx
+  page.tsx --> src/components
+  content/*.mdx --> src/data/blog.ts
+  src/data/blog.ts --> blog/page.tsx
+  src/data/blog.ts --> blog/[slug]/page.tsx
+  layout.tsx --> page.tsx
+  layout.tsx --> blog/page.tsx
+  layout.tsx --> Vercel Analytics
+  src/data/resume.tsx --> layout.tsx
+  GitHub Actions ..> src/app (Next.js 14 App Router)
+
+Details
+  src/data/resume.tsx: DATA object
+  page.tsx: home sections
+  src/data/blog.ts: gray-matter + unified
+  src/components: ProjectCard, ResumeCard, magicui
+  Vercel Analytics: + Speed Insights
+  GitHub Actions: ci.yml, release.yml
+```
+
 There is no backend or database. All home-page content comes from one `DATA` object in `src/data/resume.tsx`; blog posts are `.mdx` files turned into HTML by `src/data/blog.ts`. `layout.tsx` wraps both routes and loads the Vercel packages, and the two workflows in `.github/workflows/` run on pull requests and on pushes to `main`.
 
 ## Key decisions
