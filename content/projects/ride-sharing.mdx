@@ -1,0 +1,26 @@
+---
+title: "Ride Sharing"
+summary: "A full-stack ride-sharing platform built on a microservice architecture."
+dates: "Jul. 2025 - Sep. 2025"
+image: "/ride-sharing.png"
+---
+
+## Overview
+
+A full-stack ride-sharing platform where users request rides, match with drivers, and manage trips end to end. It is built as a set of microservices designed to handle real-world traffic patterns.
+
+## Stack
+
+- **Backend:** Go services communicating over gRPC, with RabbitMQ for asynchronous messaging and MongoDB for storage
+- **Frontend:** React, TypeScript, Vite and TailwindCSS
+- **Payments:** Stripe
+- **Observability:** OpenTelemetry traces exported to Jaeger
+- **Infrastructure:** Docker, Kubernetes on GCP, Tilt for local development, GitHub Actions for CI
+
+## Why this architecture
+
+Splitting the platform into independent services lets trip, driver and payment concerns scale and fail separately. Message queues decouple the services, and distributed tracing makes a request that crosses several of them debuggable.
+
+## Links
+
+Source code is on [GitHub](https://github.com/Axeloooo/Ride-Sharing).

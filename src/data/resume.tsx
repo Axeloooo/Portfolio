@@ -268,7 +268,7 @@ export const DATA = {
     },
     {
       title: "Cross-Chain Rebase Token",
-      href: "#",
+      href: "/projects/cross-chain-rebase-token",
       dates: "Feb. 2025 - Mar. 2025",
       active: true,
       description:
@@ -310,7 +310,7 @@ export const DATA = {
     },
     {
       title: "Ride Sharing",
-      href: "#",
+      href: "/projects/ride-sharing",
       dates: "Jul. 2025 - Sep. 2025",
       active: true,
       description:

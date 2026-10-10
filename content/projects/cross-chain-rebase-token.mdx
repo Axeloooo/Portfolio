@@ -1,0 +1,26 @@
+---
+title: "Cross-Chain Rebase Token"
+summary: "A yield-bearing rebase token that bridges across networks with Chainlink CCIP."
+dates: "Feb. 2025 - Mar. 2025"
+image: "/cross-chain-rebase-token.png"
+---
+
+## Overview
+
+A cross-chain rebase token protocol. Users deposit into a vault and receive a yield-bearing balance, and the interest rate they earned is preserved when the token is bridged to another network using Chainlink CCIP.
+
+## Stack
+
+- **Contracts:** Solidity with OpenZeppelin
+- **Tooling and tests:** Foundry
+- **Cross-chain messaging:** Chainlink CCIP
+- **CI:** GitHub Actions
+
+## Key ideas
+
+- Balances grow over time, so holders see yield accrue without claiming it.
+- Bridging carries the holder's interest rate with them, so moving chains neither resets nor inflates what they have earned.
+
+## Links
+
+Source code is on [GitHub](https://github.com/Axeloooo/Cross-Chain-Rebase-Token).
