@@ -112,7 +112,7 @@ export default function AskResumeChat(): JSX.Element {
           className="flex h-[28rem] max-h-[70vh] w-[calc(100vw-2rem)] max-w-sm flex-col rounded-xl border bg-background shadow-lg"
         >
           <div className="border-b px-4 py-3 text-sm font-medium">
-            Ask about {DATA.name.replace(" Portfolio", "")}
+            Ask about {DATA.name}
           </div>
           <div
             role="log"
