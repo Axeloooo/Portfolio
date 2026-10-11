@@ -2,13 +2,16 @@ import { Icons } from "@/components/icons";
 import { HomeIcon, NotebookIcon } from "lucide-react";
 
 export const DATA = {
-  name: "Axel Sanchez Portfolio",
-  initials: "AOSP",
+  name: "Axel Sanchez",
+  initials: "AS",
+  role: "Software Engineer",
   url: "https://axelsanchez.me",
   location: "Calgary, Alberta",
   locationLink: "https://www.google.com/maps/place/calgary",
   description:
     "Software Engineer, Researcher, and Entrepreneur. In my free time I enjoy football, lifting weights and muay thai.",
+  seoDescription:
+    "AI Engineer at Scotiabank and University of Calgary graduate. Built a CUDA AllReduce 2x faster than NCCL on small payloads at Microsoft; cut request latency 66% at Aptum.",
   summary:
     "Hi, I’m Axel Sanchez, a Software Engineer graduate of the University of Calgary. I specialize in high-performance systems ranging from GPU computing and cloud microservices to Agentic AI and blockchain applications. I’ve had the privilege of working across recognized companies like Microsoft, Aptum and Sigma. Take a look around, and if something resonates, I’d love to connect.",
   avatarUrl: "/me.png",
@@ -191,7 +194,7 @@ export const DATA = {
       start: "Sep. 2023",
       end: "Apr. 2024",
       description:
-        "Launched a Next.js/TypeScript news app (+70% engagement) and automated AWS infra with Terraform + GitHub Actions; led hiring and set engineering standards.",
+        "Shipped a Next.js/TypeScript news app that lifted engagement by 70%, automated AWS infrastructure with Terraform and GitHub Actions, and led hiring while setting engineering standards.",
     },
     // {
     //   company: "ReThread",
@@ -456,7 +459,7 @@ export const DATA = {
       video: "",
     },
     {
-      title: "Portfolio",
+      title: "Personal Website",
       href: "/blog/portfolio",
       dates: "2024 - 2026",
       active: true,
