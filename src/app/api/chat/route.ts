@@ -44,6 +44,37 @@ function parseMessages(body: unknown): Anthropic.MessageParam[] | null {
     : null;
 }
 
+// Logs status, error type and message only; never the key or the request.
+function logApiError(err: unknown): void {
+  if (err instanceof Anthropic.APIError) {
+    const type: string | undefined = (
+      err.error as { error?: { type?: string } } | undefined
+    )?.error?.type;
+    console.error(
+      `chat: Anthropic API error status=${err.status} type=${type ?? "unknown"} model=${MODEL} message=${err.message}`
+    );
+  } else {
+    console.error("chat: unexpected error", err instanceof Error ? err.message : err);
+  }
+}
+
+function apiErrorResponse(err: unknown): Response {
+  logApiError(err);
+  let status: number = 502;
+  let message: string = "Sorry, the chat is unavailable right now.";
+  if (err instanceof Anthropic.AuthenticationError || err instanceof Anthropic.PermissionDeniedError) {
+    message = "The chat's API key was rejected. Check ANTHROPIC_API_KEY.";
+  } else if (err instanceof Anthropic.RateLimitError) {
+    status = 429;
+    message = "The chat is busy. Please try again in a moment.";
+  } else if (err instanceof Anthropic.NotFoundError) {
+    message = `The chat model "${MODEL}" was not found for this API key.`;
+  } else if (err instanceof Anthropic.BadRequestError) {
+    message = "The chat request was rejected. Check the Anthropic account's billing and settings.";
+  }
+  return Response.json({ error: message }, { status });
+}
+
 export async function POST(req: Request): Promise<Response> {
   const apiKey: string | undefined = process.env.ANTHROPIC_API_KEY;
   if (!apiKey) {
@@ -63,19 +94,31 @@ export async function POST(req: Request): Promise<Response> {
   }
 
   const client: Anthropic = new Anthropic({ apiKey });
-  const stream: ReturnType<Anthropic["messages"]["stream"]> = client.messages.stream({
-    model: MODEL,
-    max_tokens: 1024,
-    output_config: { effort: "low" },
-    system: [
-      {
-        type: "text",
-        text: SYSTEM_PROMPT,
-        cache_control: { type: "ephemeral" },
-      },
-    ],
-    messages,
-  });
+  const stream: ReturnType<Anthropic["messages"]["stream"]> =
+    client.messages.stream({
+      model: MODEL,
+      max_tokens: 1024,
+      output_config: { effort: "low" },
+      system: [
+        {
+          type: "text",
+          text: SYSTEM_PROMPT,
+          cache_control: { type: "ephemeral" },
+        },
+      ],
+      messages,
+    });
+
+  // Wait for the response headers so API failures (bad key, no credit,
+  // unknown model, rate limit) return a real HTTP error instead of a 200.
+  try {
+    await new Promise<void>((resolve: () => void, reject: (e: unknown) => void): void => {
+      stream.once("connect", resolve);
+      stream.once("error", reject);
+    });
+  } catch (err: unknown) {
+    return apiErrorResponse(err);
+  }
 
   const encoder: TextEncoder = new TextEncoder();
   const body: ReadableStream<Uint8Array> = new ReadableStream<Uint8Array>({
@@ -83,9 +126,9 @@ export async function POST(req: Request): Promise<Response> {
       try {
         stream.on("text", (delta: string): void => controller.enqueue(encoder.encode(delta)));
         await stream.finalMessage();
-      } catch (err) {
-        console.error("chat stream failed", err);
-        controller.enqueue(encoder.encode("\n\nSorry, something went wrong."));
+      } catch (err: unknown) {
+        logApiError(err);
+        controller.enqueue(encoder.encode("\n\nSorry, the answer was cut off."));
       } finally {
         controller.close();
       }
