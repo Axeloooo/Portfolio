@@ -11,7 +11,7 @@ export const DATA = {
   description:
     "Software Engineer, Researcher, and Entrepreneur. In my free time I enjoy football, lifting weights and muay thai.",
   seoDescription:
-    "AI Engineer at Scotiabank and University of Calgary graduate. Built CUDA kernels 2x faster than NCCL at Microsoft; cut request latency 66% at Aptum.",
+    "AI Engineer at Scotiabank and University of Calgary graduate. Built a CUDA AllReduce 2x faster than NCCL on small payloads at Microsoft; cut request latency 66% at Aptum.",
   summary:
     "Hi, I’m Axel Sanchez, a Software Engineer graduate of the University of Calgary. I specialize in high-performance systems ranging from GPU computing and cloud microservices to Agentic AI and blockchain applications. I’ve had the privilege of working across recognized companies like Microsoft, Aptum and Sigma. Take a look around, and if something resonates, I’d love to connect.",
   avatarUrl: "/me.png",
