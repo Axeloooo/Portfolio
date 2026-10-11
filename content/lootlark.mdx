@@ -1,0 +1,66 @@
+---
+title: "Lootlark"
+publishedAt: "2026-10-10"
+summary: "A full-stack video game store on .NET 8 and React: catalog, baskets, Stripe checkout and asynchronous fulfilment built on a transactional outbox, Service Bus and idempotent order handling, orchestrated locally with .NET Aspire."
+image: "/gamestore.png"
+---
+
+**Stack:** C#, .NET 8, ASP.NET Core, .NET Aspire, EF Core, PostgreSQL, Azure Service Bus, Stripe, Keycloak, React, TypeScript, Vite, Testcontainers · **Repo:** [Axeloooo/GameStore](https://github.com/Axeloooo/LootLark) (the codebase keeps the original name GameStore in its projects, routes and Keycloak realm)
+
+## Problem
+
+A store that sells digital goods must not hand out duplicate codes when the browser double-clicks, Stripe redelivers a webhook, or the process crashes between writing to the database and publishing a message. Lootlark is a full-stack game store (browse and filter the catalog, keep a basket, check out with Stripe in test mode, receive codes) built around making that payment-to-fulfilment path safe. Admins can create, edit and delete games, including cover image upload.
+
+## Architecture diagram
+
+```text
+  React SPA --OIDC--> Keycloak (local) / Entra ID
+      |
+      | Bearer JWT                          Stripe.js card entry
+      v                                            |
+  GameStore.Api --create Checkout Session--> Stripe (test mode)
+      ^   |                                        |
+      |   +--> PostgreSQL, Blob storage            |
+      |                                            |
+      +--- signed webhook: checkout.session.completed
+      |
+      | one transaction: order -> Processing,
+      | basket cleared, OutboxMessage written
+      v
+  OutboxProcessor (polls every 10 s)
+      | publishes OrderPaid
+      v
+  Service Bus queue "orders" --> GameStore.Worker
+      |                              | generates codes,
+      |                              v order -> Completed (PostgreSQL)
+      +-- no MessageType --> dead-letter queue --> logging processor
+```
+
+The API is a .NET 8 minimal API in vertical feature slices (Games, Genres, Baskets, Orders, Payments). Order states run Pending, Processing, Completed. A .NET Aspire AppHost starts PostgreSQL, Azurite, the Service Bus emulator, Keycloak and two Stripe CLI containers.
+
+## Key decisions
+
+- **Transactional outbox** rather than publishing from the webhook: the order change and the message commit atomically, at the price of up to ten seconds of delay and at-least-once delivery.
+- **Idempotency at several levels.** A client `operationId` with a unique index on customer and operation, a Stripe idempotency key per order, status guards before confirming payment and before completing an order, and duplicate detection on the queue.
+- **Fast webhook, async fulfilment.** The webhook acknowledges quickly and a separate worker does the slow part.
+- **Two identity providers behind one policy scheme**, chosen by token issuer: tokens from a `ciamlogin.com` issuer use the Entra handler and all others use Keycloak, which is what runs locally.
+- **Order items snapshot** product name, price and image at purchase time.
+- **Stripe signatures verified with API-version mismatch tolerated**, because test accounts send events in their own API version.
+- **Local-only by design.** The AppHost runs every dependency as a container or emulator; nothing in the repository provisions cloud resources.
+
+## Challenges
+
+- **Concurrent duplicate checkouts.** Two simultaneous requests can both try to create the same order; the unique-violation race is caught and the existing order re-read, with unit tests that use an interceptor to force the collision.
+- **Deterministic async tests.** Integration tests wait on exact database events through `OutboxMessageProcessedInterceptor` and `OrderCompletedInterceptor`.
+- **CI stability.** CI pulls test images from a mirror with retries (to avoid Docker Hub rate limits) and pins the Service Bus emulator at 2.0.1.
+- **Dependency vulnerabilities.** Patched transitive packages are pinned in the project files and an audit job checks npm and NuGet advisories.
+
+## Results
+
+- The full purchase flow is implemented from catalog to codes: basket, idempotent order creation, Stripe Checkout, signed webhook, outbox, queue, worker and order completion, plus an admin games area with image upload.
+- Unit tests cover handlers such as order creation and the outbox; integration tests run against real PostgreSQL, Azurite and the Service Bus emulator through Testcontainers and `WebApplicationFactory`. The README reports 82 unit tests (one skipped on purpose) and 23 integration tests.
+- CI builds, runs both test suites, lints and builds the front end, audits dependencies and checks commit messages. Releases use semantic-release, and Dependabot is configured.
+
+## Links
+
+- [Repository](https://github.com/Axeloooo/LootLark)

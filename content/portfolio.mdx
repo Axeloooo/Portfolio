@@ -1,0 +1,64 @@
+---
+title: "Portfolio"
+publishedAt: "2026-10-10"
+summary: "This site: a data-driven Next.js 14 portfolio where nearly all content lives in one typed file, with a Markdown blog and an automated squash-and-release workflow."
+image: "/portfolio.png"
+---
+
+**Stack:** Next.js 14, React, TypeScript, Tailwind CSS, shadcn/ui, Framer Motion, Shiki, GitHub Actions, semantic-release · **Repo:** [Axeloooo/Portfolio](https://github.com/Axeloooo/Portfolio)
+
+## Problem
+
+A portfolio is mostly content that changes often, around a small amount of code that should not. The goal was a site where adding a job, a project or a skill is an edit to one typed data file, and where CI lints and builds every pull request and releases come from commit titles.
+
+## Architecture diagram
+
+```text
+  src/data/resume.tsx  (DATA: jobs, projects, skills, education, contact)
+      |
+      v
+  app/page.tsx --> ProjectCard, ResumeCard, HackathonCard, BlurFade
+
+  content/*.mdx  (Markdown posts)
+      |
+      v
+  data/blog.ts: gray-matter --> remark --> rehype-pretty-code (Shiki)
+      |
+      v
+  blog list page + blog/[slug] pages  (static, generateStaticParams)
+
+  app/layout.tsx wraps both: font, theme provider, dock navbar,
+                             favicons, Vercel Analytics + Speed Insights
+
+  pull request to devel / main --> ci.yml: install, lint, build
+  push to main                 --> release.yml: semantic-release
+```
+
+There is no backend, database or API route. `DATA` holds personal info, skills, work, research, leadership, education, projects, certificates and social links. Blog posts are parsed at build time and statically generated.
+
+## Key decisions
+
+- **One content file.** Nearly all home-page content comes from `DATA`, which keeps edits trivial and diffs reviewable.
+- **Build-time Markdown pipeline.** Syntax highlighting happens at build time with Shiki (`min-light` and `min-dark` themes) instead of shipping a runtime MDX compiler.
+- **Tailwind HSL variables with class-based dark mode.** Colors are CSS variables and `next-themes` toggles the class; favicons switch with the theme.
+- **shadcn/ui primitives plus custom animation components.** Primitives stay untouched under `components/ui`; the dock and blur-fade effects live in `components/magicui`.
+- **A multilingual hero.** The greeting shows English, French, Spanish and Ukrainian side by side, which is why the font loads a Cyrillic subset.
+- **Pinned Node.** `engines.node` is set to 24.x in `package.json` to override the host dashboard setting.
+- **Squash-only branch model.** Feature branches go to `devel`, releases go to `main`, and semantic-release derives versions from squashed Conventional Commit titles.
+
+## Challenges
+
+- **Keeping history clean.** Rebase-and-merge once broke commit signatures on `devel`; resolving it led to the squash-only rule documented in the repo.
+- **Dependency alignment.** ESLint 9 and `eslint-config-next` 16 were tried, then reverted to ESLint 8 and config-next 14 to match Next.js 14.
+- **Keeping content centralised.** Review feedback on a content change moved the contact section copy out of `page.tsx` into `DATA.contactSection`.
+- **Theme-aware highlighting.** Code blocks need both a light and a dark Shiki theme, resolved at build time with `rehype-pretty-code`.
+
+## Results
+
+- A statically generated site with a home page, a blog index and per-post pages, a downloadable resume PDF, and project cards driven entirely by data.
+- CI installs, lints and builds on every pull request into `devel` or `main`; a release workflow runs semantic-release on `main`.
+- No test suite is configured; correctness is enforced by lint and the production build.
+
+## Links
+
+- [Repository](https://github.com/Axeloooo/Portfolio)

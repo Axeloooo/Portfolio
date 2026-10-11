@@ -1,0 +1,69 @@
+---
+title: "BPE Tokenizer"
+publishedAt: "2026-10-10"
+summary: "A byte-pair-encoding tokenizer in pure Python with a GPT-4-style regex split, special-token handling, JSON model files and a train/encode/decode CLI."
+image: "/bpe-tokenizer.png"
+---
+
+**Stack:** Python, regex, pytest, mypy, GitHub Actions, semantic-release · **Repo:** [Axeloooo/bpe-tokenizer](https://github.com/Axeloooo/bpe-tokenizer)
+
+## Problem
+
+This is byte-level byte pair encoding built from first principles: learn merges from a corpus, turn text into token ids, and turn ids back into text, using the same splitting rules as the GPT-4 tokenizer.
+
+The scope is deliberately narrow. It trains its own merges; it does not load `cl100k_base`, depend on `tiktoken` or claim output equivalence with either.
+
+## Architecture diagram
+
+```text
+  corpus.txt
+      |
+      v
+  CLI  (__main__.py)   train | encode | decode
+      |
+      +--------------------------+
+      v                          v
+  RegexTokenizer             BasicTokenizer
+  GPT-4 / GPT-2 split        whole text, one stream
+      |                          |
+      v                          |
+  UTF-8 byte chunks              |
+      |                          |
+      +------------+-------------+
+                   v
+        get_stats + merge loop     (merges never cross chunks in Regex)
+                   |
+                   v
+        merges: pair -> id 256+i  --> vocab: id -> bytes
+                   |
+                   v
+        JSON model file (version 1) <-- special tokens (Python API)
+                   |
+                   +--> loaded again by the CLI for encode / decode
+```
+
+A shared `Tokenizer` base holds the merge table, the vocabulary and JSON save/load. `RegexTokenizer` splits text into chunks first and pools pair statistics across them. Encoding applies the earliest-learned merge available; decoding concatenates vocabulary bytes. The CLI never registers special tokens, so they are used through the Python API.
+
+## Key decisions
+
+- **Byte-level base vocabulary.** Starting from 256 bytes means any Unicode text round-trips; tests cover accents, CJK and emoji.
+- **Regex pre-split with the `regex` module.** The GPT-4 pattern needs `\p{L}` and `\p{N}`, which the standard `re` lacks. A test asserts that no learned token mixes letters and digits.
+- **Merge order is the id order.** The JSON file stores merges only; ids are rebuilt as `256 + index`, and an unsupported version raises an error.
+- **Safe special tokens.** Encoding raises by default if the text contains one (`allowed_special="none_raise"`), and registering one validates it against byte ids, merge ids and duplicates.
+- **Deterministic training.** Ties resolve the same way every run, which a test checks.
+
+## Challenges
+
+- **Knowing which class made a model.** A saved model must be decoded by the tokenizer that trained it. The CLI infers this from an empty versus non-empty pattern in the file.
+- **Training cost.** Pair statistics are recomputed in full on every iteration, so training is O(merges x corpus). That trades speed for readability.
+- **Special-token validation.** Ids must not collide with bytes, merges or each other; validation and the CLI arrived together in one change.
+
+## Results
+
+- A complete train / encode / decode pipeline for both tokenizer kinds, as a Python API and a CLI that prints the compression ratio after training.
+- Tests cover the classic `aaabdaaabac` merge example, round trips, early stop when no pairs remain, special tokens, determinism, save/load and the CLI. CI runs them with ruff, black, mypy and prettier on Python 3.10 and 3.13.
+- Release 1.0.0 comes from semantic-release on `main`, with a workflow step that merges `main` back into `devel`. Commit messages are checked by commitlint.
+
+## Links
+
+- [Repository](https://github.com/Axeloooo/bpe-tokenizer)

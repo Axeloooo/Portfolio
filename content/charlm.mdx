@@ -1,0 +1,64 @@
+---
+title: "charlm"
+publishedAt: "2026-10-10"
+summary: "Character-level language models in PyTorch, from a counted bigram table through MLP and BatchNorm to a WaveNet-style hierarchy, with hand-written layers."
+image: "/charlm.png"
+---
+
+**Stack:** Python, PyTorch, pytest, mypy, GitHub Actions, semantic-release · **Repo:** [Axeloooo/charlm](https://github.com/Axeloooo/charlm)
+
+## Problem
+
+charlm builds one progression on one task, generating names: a bigram table made by counting, a neural bigram, an embedding MLP, the same MLP with BatchNorm, and a WaveNet-style model that fuses context hierarchically. The layers (`Linear`, `BatchNorm1d`, `Embedding` and others) are written by hand in the style of `torch.nn`, without using `torch.nn.Module`.
+
+It is an installable package with a CLI, and the 32,033-name dataset ships inside it.
+
+## Architecture diagram
+
+```text
+  names.txt (package data)
+      |
+      v
+  load_words --> build_vocab (27 symbols) --+
+      |                                     |
+      v                                     v
+  split_words 80/10/10, seed 42      build_mlp / build_wavenet
+      |                              (vocab_size, block_size, generator)
+      +--> CountBigram --> nll + samples            |
+      |                                             v
+      +--> build_dataset(block_size) --------> train
+                                               minibatch SGD,
+                                               lr / 10 after 75%
+                                                  |        |
+                                                  v        v
+                                            evaluate    sample
+                                         train/dev/test  until "."
+
+  Tests only:  NeuralBigram (one-hot @ W)   backprop.py (manual backward)
+```
+
+`layers.py` provides `Linear`, `BatchNorm1d` (2D and 3D input, running stats), `Tanh`, `Embedding`, `FlattenConsecutive` and `Sequential`. The WaveNet stack is Embedding, then three blocks of FlattenConsecutive(2), Linear, BatchNorm and Tanh that shrink the context 8, 4, 2, 1, then a final Linear. `backprop.py` is a separate hand-derived backward pass for a 2-layer BatchNorm MLP, checked against autograd in tests.
+
+## Key decisions
+
+- **Hand-written layers.** `Module`, `Linear`, `BatchNorm1d` and `Sequential` are implemented directly so each layer's behaviour is visible.
+- **Careful initialisation.** Weights use `1/sqrt(fan_in)` scaling and the last layer is scaled by 0.1, so the initial loss starts near ln(27); a test asserts it.
+- **BatchNorm over 2D and 3D input.** For sequences it reduces over batch and length and keeps running statistics under `no_grad`.
+- **Manual backprop, verified.** Gradients use Bessel-corrected variance and `index_add_` for embeddings, and `test_manual_gradients_match_autograd` compares all seven parameter tensors with `allclose`.
+- **Reproducibility.** One seeded `torch.Generator` and a fixed split seed make runs repeatable.
+
+## Challenges
+
+- **Shapes in the hierarchy.** `FlattenConsecutive` fuses neighbouring positions and must squeeze once the context reaches length 1 (`test_flatten_consecutive_shapes`). `build_wavenet` validates that the block size is a power of the grouping factor.
+- **BatchNorm statistics on 3D input and the manual backward pass.** Both are easy to get subtly wrong, so each has a test against a reference.
+- **Installed copies need the dataset.** `names.txt` is declared as package data (`[tool.setuptools.package-data]`) so non-editable installs find it; `test_default_names_file_ships_inside_the_package` covers it.
+
+## Results
+
+- Four model types behind `python -m charlm --model {bigram,mlp,mlp-bn,wavenet}`, each printing train, dev and test loss and generated names. The `bigram` option is a counted table with no training.
+- Five test files cover vocabulary and splits, count versus neural bigram agreement, BatchNorm statistics, shapes, initial loss, loss reduction over 300 steps, manual versus autograd gradients and the CLI. CI runs them with ruff, black, mypy and prettier on Python 3.10 and 3.13.
+- Releases 1.0.0, 1.1.0 and 1.1.1 come from semantic-release, with commitlint on commit messages and a back-merge from `main` into `devel`.
+
+## Links
+
+- [Repository](https://github.com/Axeloooo/charlm)
