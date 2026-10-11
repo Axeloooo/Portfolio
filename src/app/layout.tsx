@@ -19,10 +19,10 @@ const fontSans = FontSans({
 export const metadata: Metadata = {
   metadataBase: new URL(DATA.url),
   title: {
-    default: DATA.name,
+    default: `${DATA.name} | ${DATA.role}`,
     template: `%s | ${DATA.name}`,
   },
-  description: DATA.description,
+  description: DATA.seoDescription,
   icons: {
     icon: [
       { url: "/favicon-light.ico", media: "(prefers-color-scheme: light)" },
@@ -30,10 +30,10 @@ export const metadata: Metadata = {
     ],
   },
   openGraph: {
-    title: `${DATA.name}`,
-    description: DATA.description,
+    title: `${DATA.name} | ${DATA.role}`,
+    description: DATA.seoDescription,
     url: DATA.url,
-    siteName: `${DATA.name}`,
+    siteName: DATA.name,
     locale: "en_US",
     type: "website",
   },
@@ -49,7 +49,8 @@ export const metadata: Metadata = {
     },
   },
   twitter: {
-    title: `${DATA.name}`,
+    title: `${DATA.name} | ${DATA.role}`,
+    description: DATA.seoDescription,
     card: "summary_large_image",
   },
   verification: {
