@@ -1,0 +1,70 @@
+---
+title: "Multi-Agent Research Assistant"
+publishedAt: "2026-10-10"
+summary: "A local-first research command center: enter a topic and four agents (Search, Reader, Writer, Critic) stream status, a report and a critique to the browser, with cancel and Markdown or JSON download."
+image: "/multi-agent-research-assistant.png"
+---
+
+**Stack:** Python, FastAPI, LangChain, Gemini, Tavily, React, TypeScript, Vite, Tailwind CSS, Playwright, Storybook · **Repo:** [Axeloooo/Multi-Agent-Research-Assistant](https://github.com/Axeloooo/Multi-Agent-Research-Assistant)
+
+## Problem
+
+The browser in this project receives only a narrow surface: a fixed allowlist of activity labels, bounded status summaries, and the streamed report and critique. It never sees raw tool calls, provider metadata, chain reasoning or raw exceptions.
+
+Behind that, four agents work on a topic in sequence. The scope is stated as a beta: one process, one job at a time, up to 20 finished runs kept in memory and lost on restart. Durable storage, auth and citations are listed as planned.
+
+## Architecture diagram
+
+```text
+  React + Vite UI (useResearchRun.ts)
+      |  POST /api/runs        DELETE /api/runs/{id}   EventSource
+      v                                                    ^
+  FastAPI (create_app) -----------------------------------+
+      |  enqueue                     GET /api/runs/{id}/events (SSE)
+      v                                      ^  ids + Last-Event-ID replay
+  RunRegistry: one active run, in memory ----+
+      |  pipeline_factory                    ^ typed PipelineEvent
+      v                                      |
+  stream_research_pipeline -------------------+
+      |
+      v
+  Search agent (Tavily web_search)
+      v
+  Reader agent (scrape_url)
+      v
+  Writer chain  --> streams report deltas
+      v
+  Critic chain  --> streams critique deltas
+
+  Completed runs only: report.md and result.json downloads
+```
+
+`POST /api/runs` queues a run in `RunRegistry`, which runs one asyncio task at a time. Search and Reader are LangChain agents with one tool each; Writer and Critic are prompt, model and output-parser chains, all on a Gemini flash-lite model. The registry stores events with ids so `EventSource` can reconnect and replay from `Last-Event-ID`, with a keepalive every 15 seconds.
+
+## Key decisions
+
+- **A typed, provider-neutral event layer** between pipeline and HTTP keeps model and tool details out of the API.
+- **Per-stage deadlines** (Search 90 s, Reader 120 s, Writer 90 s, Critic 45 s). On a timeout the run fails with a fixed message and later agents are marked skipped.
+- **A safe error surface.** Unexpected exceptions become a fixed "Research run failed" message, and tools return generic strings on failure.
+- **Cooperative cancellation** through an `asyncio.Event` checked after each stage and for every streamed delta, plus task cancellation in the registry. Closing the browser tab deliberately does not cancel a run.
+- **Bounded tool loops.** Prompts tell the Search and Reader agents to call their tool exactly once and not again.
+- **Resumable SSE** with event ids instead of a socket protocol.
+- **Injectable dependencies.** `create_app(pipeline_factory)` and `PipelineDependencies` let tests and a deterministic fake server run without credentials; provider clients are created lazily so importing needs no keys.
+- **Layered scraping.** trafilatura first, then readability with BeautifulSoup, then a full-page fallback, with output capped at 5,000 characters.
+
+## Challenges
+
+- **Stages that can hang.** Each stage runs under a deadline, so a slow search or model call ends the run with a fixed message instead of leaving the browser waiting.
+- **Sync agents in an async server.** LangChain's `invoke` is synchronous, so agents run in `asyncio.to_thread`, and their tool callbacks are bridged back to the event loop with a thread-safe emitter.
+- **Not leaking internals.** Raw search results stay in the Reader's context and are never sent to the browser; a test asserts that.
+
+## Results
+
+- A working end-to-end flow: submit a topic, watch four agents progress, read the streamed report and critique, cancel, and download the output.
+- Backend tests cover tools, agents, pipeline and API; frontend tests cover the run hook and timeline; one Playwright test runs against a deterministic fake pipeline. The backend enforces an 80% coverage gate.
+- CI runs black, flake8 and pytest; eslint, prettier, Vitest, the build and a Storybook build; and the browser end-to-end test. Semantic-release runs on `main`.
+- No output-quality, latency or cost measurements are recorded in the repository.
+
+## Links
+
+- [Repository](https://github.com/Axeloooo/Multi-Agent-Research-Assistant)

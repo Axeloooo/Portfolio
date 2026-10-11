@@ -1,0 +1,65 @@
+---
+title: "GPT From Scratch"
+publishedAt: "2026-10-10"
+summary: "A small, typed, tested GPT in PyTorch: a character-level model trained on Tiny Shakespeare from one command, built from GPT-2 124M architecture and training-recipe components."
+image: "/gpt-from-scratch.png"
+---
+
+**Stack:** Python, PyTorch, pytest, mypy, GitHub Actions, semantic-release · **Repo:** [Axeloooo/gpt-from-scratch](https://github.com/Axeloooo/gpt-from-scratch)
+
+## Problem
+
+Every part of a GPT gets one clear home in this package: tokenizer, data loading, attention, transformer blocks, initialisation, optimizer parameter groups, learning-rate schedule, gradient accumulation and sampling.
+
+`python -m gpt_from_scratch` trains a small character-level model on Tiny Shakespeare (defaults: 4 layers, 4 heads, 128 dimensions, block size 64). `GPTConfig()` defaults to the GPT-2 124M shape, and a test checks its parameter count. The repository states what it leaves out: the large-scale pretraining run, HellaSwag evaluation, Hugging Face weight loading, `torch.compile` and multi-GPU training.
+
+## Architecture diagram
+
+```text
+  input.txt (packaged data, or --data path)
+      |
+      v
+  load_text --> CharTokenizer --> split_tokens 90/10
+                                      |
+                  +-------------------+-------------------+
+                  | train 90%                             | val 10%
+                  v                                       |
+          DataLoaderLite (sequential batches)             |
+                  |                                       |
+                  v                                       |
+  train loop: grad accumulation, clip 1.0,                |
+  warmup + cosine LR, AdamW            <-- GPT -->        |
+                  |      wte + wpe, N pre-norm blocks,    |
+                  |      ln_f, tied lm_head               |
+                  v                                       v
+          estimate_loss (random windows) <----------------+
+          on train and val splits
+                  |
+  GPT.generate: temperature + top-k --> decoded sample
+```
+
+`model.py` defines `GPTConfig` and `GPT`; `train.py` runs the loop and CLI, then reports train and validation loss and prints a generated sample.
+
+## Key decisions
+
+- **Two attention paths behind a flag.** `CausalSelfAttention` runs either a written-out masked softmax or fused `scaled_dot_product_attention`; a test asserts they agree to 1e-5.
+- **GPT-2 details kept.** Pre-norm residual blocks, tanh-GELU MLP with 4x expansion, weight tying, scaled residual-projection init, and a vocabulary padded from 50,257 to 50,304.
+- **Optimizer groups.** AdamW applies weight decay only to parameters with two or more dimensions, with betas (0.9, 0.95); a test checks the split.
+- **Recipe pieces, tested.** Warmup plus cosine decay, gradient clipping at 1.0, and gradient accumulation that a test shows matches one large batch within 1e-5.
+- **Explicit failures.** Clear `ValueError`s when a sequence exceeds the block size or the data is too small for one batch.
+
+## Challenges
+
+- **Typing a dynamic framework.** A few `# type: ignore` markers around custom init attributes and buffer indexing let the rest of the code stay under mypy strict.
+- **Proving equivalences.** The risky parts (manual versus fused attention, accumulated versus big-batch gradients, causality) are each pinned by a test.
+- **Installed copies need the data.** The dataset is package data so a regular install finds it, with a `--data` flag for other text.
+
+## Results
+
+- A complete training and sampling pipeline in about 370 lines across `data.py`, `model.py` and `train.py`.
+- Tests cover shapes, initial loss near ln(65), causality, attention equivalence, weight tying, a parameter count of 124,439,808 for `GPTConfig(vocab_size=50257)`, optimizer groups, the LR schedule, accumulation equivalence, loss reduction and the CLI. CI runs them with ruff, black, mypy and prettier on Python 3.10 and 3.13.
+- Releases 1.0.0, 1.1.0 and 1.1.1 come from semantic-release, with commitlint, pre-commit (gitleaks) and a back-merge from `main` into `devel`.
+
+## Links
+
+- [Repository](https://github.com/Axeloooo/gpt-from-scratch)

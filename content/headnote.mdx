@@ -1,0 +1,65 @@
+---
+title: "Headnote"
+publishedAt: "2026-10-10"
+summary: "A ChatGPT-style retrieval-augmented assistant: save documents to a library, ask questions, and get answers with source pills that cite the retrieved chunks. It was deployed once on free tiers and is now offline because of hosting budget."
+image: "/headnote.png"
+---
+
+**Stack:** Python, FastAPI, LangGraph, ChromaDB, SQLAlchemy, PostgreSQL, React, TypeScript, Vite, Docker, Vercel, Render · **Repo:** [Axeloooo/Headnote](https://github.com/Axeloooo/Headnote)
+
+## Problem
+
+Headnote lets you add documents to a library, ask a question, and read an answer whose source pills show which document and which part of it were retrieved.
+
+With no API key, an offline echo model lets the whole app run end to end; with a key it uses Anthropic or OpenAI. It was built for free-tier hosting: Vercel for the web app, Render for the API and Neon for Postgres. The app was deployed once and is now offline because of hosting budget.
+
+## Architecture diagram
+
+```text
+  React SPA (apps/web)
+      |  /api/*   (same origin)
+      v
+  nginx in Docker   or   Vercel rewrite
+      |
+      v
+  FastAPI (create_app)
+      |
+      +-- POST /documents --> chunk_text (~800 chars) --+
+      |                                                 v
+      +-- POST /chat --> LangGraph:                ChromaDB collection
+      |                    retrieve (top 3 chunks) <----+
+      |                    respond --> ChatAnthropic | ChatOpenAI | echo model
+      |
+      +-- SQLAlchemy --> SQLite (local) or Postgres (Neon)
+
+  seed_library: bundled demo docs --> Chroma + SQL at start
+```
+
+`POST /documents` splits text into paragraph-packed chunks, inserts a `Document` row to get an id, and adds the chunks to Chroma with that id as metadata. `POST /chat` loads the last 20 messages, runs the two-node graph with the top three chunks in the system prompt, saves both messages, and returns the reply with sources mapped back to titles.
+
+## Key decisions
+
+- **A fixed two-step graph.** Retrieve then respond keeps the flow predictable and easy to test.
+- **Citations from metadata.** Each chunk carries its `document_id` and chunk number, so answers cite a title and "part N"; chunks whose document row is gone are skipped.
+- **Provider auto-selection with an offline fallback.** The app picks Anthropic, OpenAI or the echo model from the available keys, and fails with an explicit error if a forced provider has no key.
+- **Embeddings that match the deployment.** OpenAI embeddings when a key is present, otherwise Chroma's local model, which the Dockerfile pre-downloads at build time.
+- **Same-origin proxy instead of CORS.** CORS is off by default and opt-in through `CORS_ORIGINS`.
+- **Database URL normalisation and `pool_pre_ping`**, so a pasted Neon string works and idle serverless connections do not break requests.
+
+## Challenges
+
+- **Ephemeral disks on free hosting.** The vector index disappears when the free Render instance spins down while Postgres rows persist. A seed step rebuilds the index from bundled demo documents at start, reusing document rows by title; user-added documents drop out of search after a restart, which the deployment guide states.
+- **Cold starts and memory.** The free instance sleeps after inactivity and its first request is slow; local embeddings may exceed 512 MB, so hosted setups can switch to OpenAI embeddings.
+- **Proxy timeouts on long answers.** The guide documents calling the API directly with `VITE_API_URL` and `CORS_ORIGINS` as the alternative.
+- **A rename without data loss.** The project was renamed from Cairnly to Headnote; the README explains how to keep an existing `cairnly.db` or `cairnly_docs` collection by renaming it to the new defaults.
+
+## Results
+
+- The repository ships Docker Compose, a Render blueprint and a Vercel config, plus guides for free-tier and AWS deployment.
+- API tests cover the chat flow, deployment URL handling and provider selection with file-based SQLite and a deterministic embedding function, so no network is needed; web tests use Vitest and Testing Library.
+- CI runs ruff, black, mypy, prettier, pytest, web typecheck, tests and build. Releases run semantic-release with the built-in `GITHUB_TOKEN`, and a separate CI job builds both Docker images and checks that the nginx config parses.
+- No retrieval-quality or latency measurements are recorded in the repository.
+
+## Links
+
+- [Repository](https://github.com/Axeloooo/Headnote)

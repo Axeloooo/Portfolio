@@ -238,10 +238,255 @@ export const DATA = {
   ],
   projects: [
     {
+      title: "Headnote",
+      href: "/blog/headnote",
+      dates: "2026",
+      active: true,
+      description:
+        "A document-grounded chat app: FastAPI and LangGraph retrieve passages from Chroma, and answers cite the source documents in a React UI.",
+      technologies: [
+        "Python",
+        "FastAPI",
+        "LangGraph",
+        "ChromaDB",
+        "SQLAlchemy",
+        "React",
+        "TypeScript",
+        "Vite",
+        "Docker",
+        "LangSmith",
+      ],
+      links: [
+        {
+          type: "Source",
+          href: "https://github.com/Axeloooo/Headnote",
+          icon: <Icons.github className="size-3" />,
+        },
+      ],
+      image: "/headnote.png",
+      video: "",
+    },
+    {
+      title: "Signposted",
+      href: "/blog/signposted",
+      dates: "2026",
+      active: true,
+      description:
+        "Trip planner where a four-step LLM pipeline (research, itinerary, budget, review) builds a plan behind a FastAPI API, shown on a departures-board web UI.",
+      technologies: [
+        "Python",
+        "FastAPI",
+        "LangGraph",
+        "Groq",
+        "PostgreSQL",
+        "SQLAlchemy",
+        "React",
+        "TypeScript",
+        "Vite",
+        "Docker",
+      ],
+      links: [
+        {
+          type: "Source",
+          href: "https://github.com/Axeloooo/Signposted",
+          icon: <Icons.github className="size-3" />,
+        },
+      ],
+      image: "/signposted.png",
+      video: "",
+    },
+    {
+      title: "charlm",
+      href: "/blog/charlm",
+      dates: "2026",
+      active: true,
+      description:
+        "Character-level name generators, from a count bigram to a BatchNorm MLP and a hierarchical tree, packaged as a typed Python library with a CLI.",
+      technologies: [
+        "Python",
+        "PyTorch",
+        "pytest",
+        "mypy",
+        "ruff",
+        "GitHub Actions",
+        "semantic-release",
+      ],
+      links: [
+        {
+          type: "Source",
+          href: "https://github.com/Axeloooo/charlm",
+          icon: <Icons.github className="size-3" />,
+        },
+      ],
+      image: "/charlm.png",
+      video: "",
+    },
+    {
+      title: "gpt-from-scratch",
+      href: "/blog/gpt-from-scratch",
+      dates: "2026",
+      active: true,
+      description:
+        "A GPT-2-architecture transformer in PyTorch with a character-level training CLI on Tiny Shakespeare, built following two Karpathy lectures.",
+      technologies: [
+        "Python",
+        "PyTorch",
+        "pytest",
+        "mypy",
+        "ruff",
+        "GitHub Actions",
+        "semantic-release",
+      ],
+      links: [
+        {
+          type: "Source",
+          href: "https://github.com/Axeloooo/gpt-from-scratch",
+          icon: <Icons.github className="size-3" />,
+        },
+      ],
+      image: "/gpt-from-scratch.png",
+      video: "",
+    },
+    {
+      title: "BPE Tokenizer",
+      href: "/blog/bpe-tokenizer",
+      dates: "2026",
+      active: true,
+      description:
+        "A byte pair encoding tokenizer in Python with a GPT-4-style regex split, special tokens, JSON save/load and a small CLI.",
+      technologies: [
+        "Python",
+        "regex",
+        "pytest",
+        "mypy",
+        "ruff",
+        "GitHub Actions",
+        "semantic-release",
+      ],
+      links: [
+        {
+          type: "Source",
+          href: "https://github.com/Axeloooo/bpe-tokenizer",
+          icon: <Icons.github className="size-3" />,
+        },
+      ],
+      image: "/bpe-tokenizer.png",
+      video: "",
+    },
+    {
+      title: "autograd-from-scratch",
+      href: "/blog/autograd-from-scratch",
+      dates: "2026",
+      active: true,
+      description:
+        "A scalar reverse-mode autograd engine and small MLP library in pure Python, built while following Karpathy's micrograd lecture.",
+      technologies: [
+        "Python",
+        "pytest",
+        "mypy",
+        "ruff",
+        "GitHub Actions",
+        "semantic-release",
+        "Graphviz DOT",
+      ],
+      links: [
+        {
+          type: "Source",
+          href: "https://github.com/Axeloooo/autograd-from-scratch",
+          icon: <Icons.github className="size-3" />,
+        },
+      ],
+      image: "/autograd-from-scratch.png",
+      video: "",
+    },
+    {
+      title: "Deep Learning with Keras",
+      href: "/blog/deep-learning-keras",
+      dates: "2026",
+      active: true,
+      description:
+        "Eight Colab notebooks that move from NumPy forward and backward propagation to Keras regression, MNIST, CNNs, attention and pretrained models.",
+      technologies: [
+        "Python",
+        "Jupyter",
+        "Google Colab",
+        "NumPy",
+        "Keras",
+        "TensorFlow",
+        "VGG16",
+        "BLIP",
+        "PyTorch",
+      ],
+      links: [
+        {
+          type: "Source",
+          href: "https://github.com/Axeloooo/Deep-Learning-and-Neural-Networks-with-Keras",
+          icon: <Icons.github className="size-3" />,
+        },
+      ],
+      image: "/deep-learning-keras.png",
+      video: "",
+    },
+    {
+      title: "Multi-Agent Research Assistant",
+      href: "/blog/multi-agent-research-assistant",
+      dates: "2026",
+      active: true,
+      description:
+        "A local-first research app that runs a Search, Reader, Writer and Critic pipeline and streams each stage to a React UI.",
+      technologies: [
+        "Python",
+        "FastAPI",
+        "LangChain",
+        "Gemini",
+        "Tavily",
+        "React",
+        "TypeScript",
+        "Vite",
+        "Playwright",
+      ],
+      links: [
+        {
+          type: "Source",
+          href: "https://github.com/Axeloooo/Multi-Agent-Research-Assistant",
+          icon: <Icons.github className="size-3" />,
+        },
+      ],
+      image: "/multi-agent-research-assistant.png",
+      video: "",
+    },
+    {
+      title: "Portfolio",
+      href: "/blog/portfolio",
+      dates: "2024 - 2026",
+      active: true,
+      description:
+        "Personal portfolio site on Next.js 14 with a typed content file, an MDX blog and a PR-to-release workflow.",
+      technologies: [
+        "Next.js 14",
+        "TypeScript",
+        "Tailwind CSS",
+        "shadcn/ui",
+        "MDX",
+        "framer-motion",
+        "GitHub Actions",
+        "semantic-release",
+      ],
+      links: [
+        {
+          type: "Source",
+          href: "https://github.com/Axeloooo/Portfolio",
+          icon: <Icons.github className="size-3" />,
+        },
+      ],
+      image: "/portfolio.png",
+      video: "",
+    },
+    {
       title:
         "ChiselWare IP Factory Platform by Rocksavage Technology, Inc. (Capstone)",
       href: "#",
-      dates: "Sep. 2025 - Apr. 2026",
+      dates: "2025 - 2026",
       active: true,
       description:
         "A full-stack semiconductor IP marketplace co-built with a 6-engineer team, enabling verified submission, certification, and monetized distribution of Chisel-based IP cores, complete with Stripe payments, OIDC auth, and automated Chisel-to-Verilog compilation.",
@@ -268,17 +513,18 @@ export const DATA = {
     },
     {
       title: "Cross-Chain Rebase Token",
-      href: "#",
-      dates: "Feb. 2025 - Mar. 2025",
+      href: "/blog/cross-chain-rebase-token",
+      dates: "2026",
       active: true,
       description:
-        "A cross-chain rebase token protocol that mints yield-bearing balances from vault deposits and bridges preserved interest rates across networks using Chainlink CCIP.",
+        "Foundry/Solidity project: an ETH vault that mints a rebase token with per-user interest rates, and a Chainlink CCIP token pool, tested on Sepolia and Arbitrum Sepolia forks.",
       technologies: [
-        "Foundry",
         "Solidity",
+        "Foundry",
         "OpenZeppelin",
         "Chainlink CCIP",
         "GitHub Actions",
+        "semantic-release",
       ],
       links: [
         {
@@ -293,7 +539,7 @@ export const DATA = {
     {
       title: "DeFi Stablecoin",
       href: "#",
-      dates: "Aug. 2025 - Sep. 2025",
+      dates: "2025",
       active: true,
       description:
         "A decentralized stablecoin protocol backed by exogenous collateral (ETH and BTC), featuring algorithmic minting and a USD peg, inspired by the MakerDAO model.",
@@ -310,28 +556,24 @@ export const DATA = {
     },
     {
       title: "Ride Sharing",
-      href: "#",
-      dates: "Jul. 2025 - Sep. 2025",
+      href: "/blog/ride-sharing",
+      dates: "2025",
       active: true,
       description:
-        "A full-stack ride-sharing platform where users request rides, match with drivers, and manage trips end to end; built on a scalable microservice architecture designed to handle real-world traffic patterns.",
+        "Go microservices backend for a ride-hailing flow: route and fare preview, trip creation, driver matching over RabbitMQ, and Stripe Checkout sessions.",
       technologies: [
         "Go",
-        "TypeScript",
-        "Vite",
-        "React",
-        "TailwindCSS",
-        "RabbitMQ",
-        "Docker",
-        "Kubernetes",
-        "GCP",
-        "Tilt",
-        "MongoDB",
-        "Jaeger",
-        "OpenTelemetry",
         "gRPC",
+        "Protocol Buffers",
+        "RabbitMQ",
+        "MongoDB",
         "Stripe",
-        "Github Actions",
+        "OpenTelemetry",
+        "Jaeger",
+        "Kubernetes",
+        "Tilt",
+        "Docker",
+        "WebSocket",
       ],
       links: [
         {
@@ -346,7 +588,7 @@ export const DATA = {
     {
       title: "NFT Collection",
       href: "#",
-      dates: "Jul. 2025 - Aug. 2025",
+      dates: "2025",
       active: true,
       description:
         "A collection of ERC-721 NFT smart contracts built with OpenZeppelin, supporting both static and dynamic on-chain traits with fully verifiable metadata.",
@@ -364,7 +606,7 @@ export const DATA = {
     {
       title: "ERC20 Token",
       href: "#",
-      dates: "Jul. 2025 - Aug. 2025",
+      dates: "2025",
       active: true,
       description:
         "An ERC-20 token smart contract built with OpenZeppelin, deploying Axel Token (AXL) with full test coverage and an automated deployment pipeline.",
@@ -380,27 +622,28 @@ export const DATA = {
       video: "",
     },
     {
-      title: "GameStore",
-      href: "#",
-      dates: "Mar. 2025 - Jun. 2025",
+      title: "LootLark",
+      href: "/blog/lootlark",
+      dates: "2025 - 2026",
       active: true,
       description:
-        "A full-stack video game store where users browse, search, and purchase titles through a responsive interface; secured with Keycloak authentication and backed by a .NET/C# API.",
+        "Full-stack video game store on ASP.NET Core, React and .NET Aspire, with Stripe test-mode checkout and a queue-backed worker that issues game codes.",
       technologies: [
-        ".NET",
-        "C#",
-        "Vite",
+        ".NET 8",
+        "ASP.NET Core",
         "React",
         "TypeScript",
-        "TailwindCSS",
+        "PostgreSQL",
+        ".NET Aspire",
+        "Stripe",
+        "Azure Service Bus",
         "Keycloak",
-        "MySQL",
-        "Docker",
+        "Testcontainers",
       ],
       links: [
         {
           type: "Source",
-          href: "https://github.com/Axeloooo/GameStore",
+          href: "https://github.com/Axeloooo/LootLark",
           icon: <Icons.github className="size-3" />,
         },
       ],
@@ -411,7 +654,7 @@ export const DATA = {
       title:
         "Deep Learning Fundamentals, CNN, Transfer Learning, and ViT Replication",
       href: "#",
-      dates: "Mar. 2025 - May. 2025",
+      dates: "2025",
       active: true,
       description:
         "A hands-on collection of PyTorch deep learning workflows covering fundamentals, image classification with CNNs, transfer learning with experiment tracking, and a paper replication of the Vision Transformer (ViT).",
@@ -436,7 +679,7 @@ export const DATA = {
     {
       title: "ChoreShare",
       href: "#",
-      dates: "Jan. 2024 - Apr. 2024",
+      dates: "2024",
       active: true,
       description:
         "A cross-platform app for roommates to organize and assign household chores together; built on a Spring Boot microservice backend with a React/Redux frontend and deployed on GCP Kubernetes.",
@@ -469,7 +712,7 @@ export const DATA = {
     {
       title: "MyNotes",
       href: "#",
-      dates: "Dec. 2023 - Jan. 2024",
+      dates: "2023 - 2024",
       active: true,
       description:
         "A minimal, offline-first note-taking mobile app built with Flutter and Dart, designed for capturing ideas and reminders with local SQLite storage and Firebase sync.",
@@ -487,7 +730,7 @@ export const DATA = {
     {
       title: "Game Heaven",
       href: "#",
-      dates: "Jan. 2023 - Aug. 2023",
+      dates: "2023",
       active: true,
       description:
         "A full-stack e-commerce storefront for video games, featuring an AI customer support chatbot that automatically handles support tickets using the latest GPT models.",
@@ -523,7 +766,7 @@ export const DATA = {
     {
       title: "The Last Show",
       href: "#",
-      dates: "Mar. 2023 - Apr. 2023",
+      dates: "2023",
       active: true,
       description:
         "A serverless web app that generates personalized AI-written obituaries from user input; powered by OpenAI for text generation, AWS Polly for speech synthesis, and Cloudinary for media storage.",
@@ -553,7 +796,7 @@ export const DATA = {
     {
       title: "Lotion Plus",
       href: "#",
-      dates: "Feb. 2023 - Mar. 2023",
+      dates: "2023",
       active: true,
       description:
         "A serverless notes app deployed on AWS Lambda and DynamoDB with infrastructure managed via Terraform and automated deployments through GitHub Actions.",
@@ -580,7 +823,7 @@ export const DATA = {
     {
       title: "LibCode",
       href: "#",
-      dates: "Mar. 2023 - Apr. 2023",
+      dates: "2023",
       active: true,
       description:
         "A Python library of data structures and algorithms published to PyPI, with comprehensive unit tests and an automated release pipeline through GitHub Actions.",

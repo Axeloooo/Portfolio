@@ -1,0 +1,69 @@
+---
+title: "Signposted"
+publishedAt: "2026-10-10"
+summary: "A multi-agent travel planner: four Groq-backed LangGraph agents research, schedule, budget and review a trip, FastAPI serves the plan, and a departure-board-style React UI shows each agent's progress. It was deployed once on free tiers and is now offline because of hosting budget."
+image: "/signposted.png"
+---
+
+**Stack:** Python, FastAPI, LangGraph, Groq, SQLAlchemy, PostgreSQL, React, TypeScript, Vite, Docker, Vercel, Render · **Repo:** [Axeloooo/Signposted](https://github.com/Axeloooo/Signposted)
+
+## Problem
+
+Planning a trip means juggling destination research, a day-by-day schedule and a budget, and the pieces constrain each other. You submit a destination, number of days, a USD budget and interests, and four agents produce a plan that a reviewer checks against the budget and interests before it is returned.
+
+The web UI presents the plan as a departure board: time-first itineraries, a live status for each agent, and a flag on the stop where running spend first crosses the budget. The app was deployed once on free tiers and is now offline because of hosting budget.
+
+## Architecture diagram
+
+```text
+  React SPA (polls GET /trips/{id} every 1.5 s)
+      |  /api/*
+      v
+  nginx or Vercel rewrite (strips /api)
+      |
+      v
+  FastAPI (create_app)
+      |  POST /trips: insert status=planning, return 202
+      v
+  PostgreSQL / SQLite   trips.plan (JSON column)
+      ^                          |
+      | progress after each      | background task
+      | node, then final plan    v
+      +---------------  plan_trip (LangGraph)
+
+     research_agent --> itinerary_agent --> budget_agent --> reviewer_agent
+                             ^                                    |
+                             +------ REVISE, reviews < 2 ---------+
+                                     APPROVE or 2 reviews --> END
+
+  every agent node --> Groq chat model (llama-3.3-70b-versatile)
+```
+
+`POST /trips` validates the request, stores a trip with status `planning` and returns 202. A background task streams the compiled graph and writes progress into the `plan` JSON after each node, which is what the browser polls. The reviewer approves or sends the graph back to the itinerary agent with its feedback; the loop is capped at two review rounds, so at most one revision pass. The itinerary agent is asked for JSON only, which is parsed and validated into typed stops; if parsing fails, the raw text is kept.
+
+## Key decisions
+
+- **202 and polling instead of a held-open request.** A trip takes several model calls, and the nginx proxy and the free-tier host have their own timeouts and sleep behaviour.
+- **Persist progress per agent**, so the UI can render live status without a streaming connection.
+- **A bounded review loop.** The revision prompt includes the previous itinerary and the reviewer's feedback; a test pins this.
+- **Structured output with a tolerant parser.** Prompt for JSON, strip code fences, slice to the outermost braces, validate with Pydantic (`HH:MM` times, a fixed set of stop kinds, non-negative costs), and fall back to raw text.
+- **Restart safety.** Trips still marked `planning` at startup are marked `failed`, so nothing hangs after a redeploy.
+- **Injected dependencies.** `create_app(settings, llm)` lets tests use a fake chat model and SQLite with no credentials.
+- **Input limits at the edge:** destination length, 1 to 14 days, a bounded budget and a capped interest list.
+
+## Challenges
+
+- **Unreliable model output.** The planner returns a 503 when the model key is missing, stores a `failed` plan with a generic message on errors, and tolerates malformed itinerary JSON.
+- **Long chains versus hosting limits.** The docs note a slow first request after the free API sleeps and that a restart mid-plan fails the trip rather than leaving it stuck. The client tolerates a few failed polls (`MAX_POLL_FAILURES = 3`) before giving up.
+- **Free-tier rate limits.** A trip makes four model calls, up to seven if the reviewer asks for a revision, so the docs suggest a smaller Groq model as a fallback.
+- **Proxy configuration.** The nginx template resolves the API upstream when the container starts, and CI runs `nginx -t` on it.
+
+## Results
+
+- The repository contains the full stack: API, agent graph, web UI, Docker images, Docker Compose, a Render blueprint, a Vercel config and a deployment guide.
+- A pytest suite covers the API and the graph's approval and revision behaviour; Vitest covers the web UI and HTTP client. CI also runs black, ruff, mypy and prettier, and builds both Docker images.
+- Releases v1.0.0 and v1.0.1 are recorded in the changelog. No measurements of latency, cost or itinerary quality are committed.
+
+## Links
+
+- [Repository](https://github.com/Axeloooo/Signposted)
