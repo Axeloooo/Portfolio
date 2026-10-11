@@ -1,5 +1,12 @@
 # Changelog
 
+# [1.9.0](https://github.com/Axeloooo/Portfolio/compare/v1.8.0...v1.9.0) (2026-10-11)
+
+
+### Features
+
+* drop Portfolio from search titles and rewrite meta description ([#36](https://github.com/Axeloooo/Portfolio/issues/36)) ([0b3c674](https://github.com/Axeloooo/Portfolio/commit/0b3c67454e221daa544b23a14e01b786fce88af4))
+
 # [1.8.0](https://github.com/Axeloooo/Portfolio/compare/v1.7.0...v1.8.0) (2026-10-11)
 
 
