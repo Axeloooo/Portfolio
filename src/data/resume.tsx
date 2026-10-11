@@ -194,7 +194,7 @@ export const DATA = {
       start: "Sep. 2023",
       end: "Apr. 2024",
       description:
-        "Launched a Next.js/TypeScript news app (+70% engagement) and automated AWS infra with Terraform + GitHub Actions; led hiring and set engineering standards.",
+        "Shipped a Next.js/TypeScript news app that lifted engagement by 70%, automated AWS infrastructure with Terraform and GitHub Actions, and led hiring while setting engineering standards.",
     },
     // {
     //   company: "ReThread",
