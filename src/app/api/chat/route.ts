@@ -75,10 +75,25 @@ function apiErrorResponse(err: unknown): Response {
   return Response.json({ error: message }, { status });
 }
 
+// Env values pasted into dashboards often carry quotes or stray whitespace.
+function readApiKey(): string | undefined {
+  const raw: string | undefined = process.env.ANTHROPIC_API_KEY;
+  if (!raw) return undefined;
+  const key: string = raw.trim().replace(/^["'\u201C\u2018]+|["'\u201D\u2019]+$/g, "").trim();
+  return key.length > 0 ? key : undefined;
+}
+
 export async function POST(req: Request): Promise<Response> {
-  const apiKey: string | undefined = process.env.ANTHROPIC_API_KEY;
+  const apiKey: string | undefined = readApiKey();
   if (!apiKey) {
     return Response.json({ error: "Chat is not configured." }, { status: 503 });
+  }
+  if (!/^[\x21-\x7E]+$/.test(apiKey)) {
+    console.error("chat: ANTHROPIC_API_KEY contains characters that are not valid in an HTTP header");
+    return Response.json(
+      { error: "ANTHROPIC_API_KEY contains invalid characters. Re-paste the key without quotes or extra text." },
+      { status: 503 }
+    );
   }
 
   const ip: string = req.headers.get("x-forwarded-for")?.split(",")[0].trim() ?? "unknown";
