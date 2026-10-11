@@ -9,7 +9,20 @@ type Entry = {
   description: string;
 };
 
-const pickEntry = ({
+type Education = (typeof DATA.education)[number];
+type Project = (typeof DATA.projects)[number];
+type ProjectLink = Project["links"][number];
+type Certificate = (typeof DATA.certificates)[number];
+type EducationSummary = Pick<Education, "school" | "degree" | "start" | "end">;
+type ProjectSummary = {
+  title: string;
+  dates: string;
+  description: string;
+  technologies: readonly string[];
+  links: { type: string; href: string }[];
+};
+
+const pickEntry: (entry: Entry) => Entry = ({
   company,
   title,
   location,
@@ -42,20 +55,23 @@ export const RESUME_JSON: string = JSON.stringify(
     work: DATA.work.map(pickEntry),
     research: DATA.research.map(pickEntry),
     leadership: DATA.leadership.map(pickEntry),
-    education: DATA.education.map(({ school, degree, start, end }) => ({
+    education: DATA.education.map(({ school, degree, start, end }: Education): EducationSummary => ({
       school,
       degree,
       start,
       end,
     })),
-    projects: DATA.projects.map((p) => ({
+    projects: DATA.projects.map((p: Project): ProjectSummary => ({
       title: p.title,
       dates: p.dates,
       description: p.description,
       technologies: p.technologies,
-      links: p.links.map((l) => ({ type: l.type, href: l.href })),
+      links: p.links.map((l: ProjectLink): { type: string; href: string } => ({
+        type: l.type,
+        href: l.href,
+      })),
     })),
-    certificates: DATA.certificates.map((c) => ({
+    certificates: DATA.certificates.map((c: Certificate): { title: string; dates: string } => ({
       title: c.title,
       dates: c.dates,
     })),

@@ -3,9 +3,13 @@ import { SYSTEM_PROMPT } from "@/lib/resume-context";
 
 export const runtime = "nodejs";
 
-const MODEL: string = process.env.ANTHROPIC_MODEL ?? "claude-opus-5-5";
+// Haiku keeps a public, unauthenticated widget cheap; ANTHROPIC_MODEL overrides it.
+const MODEL: string = process.env.ANTHROPIC_MODEL?.trim() || "claude-haiku-5-5";
 const MAX_MESSAGES: number = 12;
-const MAX_CHARS: number = 1000;
+const MAX_USER_CHARS: number = 1000;
+// Replies of up to max_tokens (1024) come back as history on the next turn.
+const MAX_ASSISTANT_CHARS: number = 6000;
+const FALLBACK_REPLY: string = "Sorry, I can't answer that one. Try asking about Axel's experience, projects or skills.";
 const RATE_LIMIT: number = 15; // requests per IP per minute
 
 // Best-effort limiter: per-instance memory only, resets on cold start.
@@ -33,7 +37,7 @@ function parseMessages(body: unknown): Anthropic.MessageParam[] | null {
       (m?.role !== "user" && m?.role !== "assistant") ||
       typeof m.content !== "string" ||
       m.content.length === 0 ||
-      m.content.length > MAX_CHARS
+      m.content.length > (m.role === "user" ? MAX_USER_CHARS : MAX_ASSISTANT_CHARS)
     ) {
       return null;
     }
@@ -124,6 +128,44 @@ export async function POST(req: Request): Promise<Response> {
       messages,
     });
 
+  // Attach the text listener before anything awaits so no early delta is
+  // missed; the ReadableStream buffers chunks until the response is returned.
+  const encoder: TextEncoder = new TextEncoder();
+  let connected: boolean = false;
+  const body: ReadableStream<Uint8Array> = new ReadableStream<Uint8Array>({
+    start(controller: ReadableStreamDefaultController<Uint8Array>): void {
+      let sent: boolean = false;
+      stream.on("text", (delta: string): void => {
+        sent = true;
+        controller.enqueue(encoder.encode(delta));
+      });
+      stream
+        .finalMessage()
+        .then((message: Anthropic.Message): void => {
+          // A refusal or an empty turn would otherwise leave a blank reply.
+          if (!sent) controller.enqueue(encoder.encode(FALLBACK_REPLY));
+          else if (message.stop_reason === "refusal") {
+            controller.enqueue(encoder.encode(`\n\n${FALLBACK_REPLY}`));
+          }
+        })
+        .catch((err: unknown): void => {
+          if (!connected) return;
+          logApiError(err);
+          controller.enqueue(encoder.encode("\n\nSorry, the answer was cut off."));
+        })
+        .finally((): void => {
+          try {
+            controller.close();
+          } catch {
+            // Already closed because the client went away.
+          }
+        });
+    },
+    cancel(): void {
+      stream.abort();
+    },
+  });
+
   // Wait for the response headers so API failures (bad key, no credit,
   // unknown model, rate limit) return a real HTTP error instead of a 200.
   try {
@@ -131,27 +173,10 @@ export async function POST(req: Request): Promise<Response> {
       stream.once("connect", resolve);
       stream.once("error", reject);
     });
+    connected = true;
   } catch (err: unknown) {
     return apiErrorResponse(err);
   }
-
-  const encoder: TextEncoder = new TextEncoder();
-  const body: ReadableStream<Uint8Array> = new ReadableStream<Uint8Array>({
-    async start(controller: ReadableStreamDefaultController<Uint8Array>): Promise<void> {
-      try {
-        stream.on("text", (delta: string): void => controller.enqueue(encoder.encode(delta)));
-        await stream.finalMessage();
-      } catch (err: unknown) {
-        logApiError(err);
-        controller.enqueue(encoder.encode("\n\nSorry, the answer was cut off."));
-      } finally {
-        controller.close();
-      }
-    },
-    cancel(): void {
-      stream.abort();
-    },
-  });
 
   return new Response(body, {
     headers: { "Content-Type": "text/plain; charset=utf-8", "Cache-Control": "no-store" },
