@@ -4,17 +4,17 @@ import { HomeIcon, NotebookIcon } from "lucide-react";
 export const DATA = {
   name: "Axel Sanchez",
   initials: "AS",
-  role: "Software Engineer",
+  role: "AI Engineer",
   url: "https://axelsanchez.me",
-  location: "Calgary, Alberta",
-  locationLink: "https://www.google.com/maps/place/calgary",
+  location: "Toronto, Ontario",
+  locationLink: "https://www.google.com/maps/place/toronto",
   description:
-    "Software Engineer, Researcher, and Entrepreneur. In my free time I enjoy football, lifting weights and muay thai.",
+    "AI Engineer, Researcher, and Entrepreneur. In my free time I enjoy football, lifting weights and muay thai.",
   seoDescription:
-    "AI Engineer at Scotiabank and University of Calgary graduate. Built a CUDA AllReduce 2x faster than NCCL on small payloads at Microsoft; cut request latency 66% at Aptum.",
+    "AI Engineer at Scotiabank shipping AI agents to production. Built a CUDA AllReduce 2x faster than NCCL on small payloads at Microsoft; cut request latency 66% at Aptum.",
   summary:
-    "Hi, I’m Axel Sanchez, a Software Engineer graduate of the University of Calgary. I specialize in high-performance systems ranging from GPU computing and cloud microservices to Agentic AI and blockchain applications. I’ve had the privilege of working across recognized companies like Microsoft, Aptum and Sigma. Take a look around, and if something resonates, I’d love to connect.",
-  avatarUrl: "/me.png",
+    "Hi, I’m Axel Sanchez, an AI Engineer at Scotiabank on Scotia Intelligence, the bank’s central AI team, and a Software Engineering graduate of the University of Calgary. I specialize in high-performance systems ranging from production AI agents and GPU computing to cloud microservices and blockchain applications. Before Scotiabank, I worked at Microsoft, Aptum and Sigma. Take a look around, and if something resonates, I’d love to connect.",
+  avatarUrl: "/images/me.png",
   skills: [
     // Programming Languages
     "C",
@@ -34,41 +34,49 @@ export const DATA = {
     "Azure",
     "AWS",
     "GCP",
-    "Blockchain",
     "Kubernetes",
     "Docker",
     "Helm",
+    "Argo CD",
     "Terraform",
+    "OpenTelemetry",
     "Kafka",
     "RabbitMQ",
 
     // Databases
     "MySQL",
     "PostgreSQL",
+    "Redis",
+    "MongoDB",
 
     // Frameworks & Platforms
     ".NET",
     "Spring Boot",
     "Express",
     "Django",
+    "FastAPI",
 
     // Frontend
     "React",
-    "Next.js",
-    "Vue.js",
     "Redux",
-    "Expo",
     "Flutter",
-    "Vite",
-    "Tailwind",
 
     // APIs & Tools
     "gRPC",
 
     // Machine Learning / HPC
     "PyTorch",
+    "TensorFlow",
+    "Keras",
+    "NumPy",
     "CUDA",
-    "LLM",
+    "Gemini",
+    "LangChain",
+    "LangGraph",
+    "Triton",
+    "Hugging Face",
+    "OpenAI",
+    "Claude",
 
     // CI/CD
     "Jenkins",
@@ -115,10 +123,12 @@ export const DATA = {
       badges: [],
       location: "Toronto, Ontario",
       title: "AI Engineer",
-      logoUrl: "/scotiabank-logo.png",
+      logoUrl: "/images/logos/scotiabank.png",
+      highlights: ["39K+ monthly users", "4 agents to production", "642 vulnerabilities found"],
       start: "Jun. 2026",
       end: "Present",
-      description: "NDA",
+      description:
+        "I joined Scotia Intelligence, the bank's central AI platform, as one of its founding engineers. The platform has more than 39,000 monthly active users and over 28 million actions, and I built its conversational search: retrieval-augmented generation that answers with inline citations across the platform's tools, FAQs, and training content. Most of my time now goes to taking model-agnostic agents to production. I lead the deployment of four agentic AI applications on the bank's LangGraph-compatible agent platform, through test, UAT, and production on Kubernetes with Argo CD, Helm, Terraform, and Microsoft Entra ID. I also developed a Word-to-PowerPoint agent commissioned by the bank's Strategy Director, with reusable slide components and four executive slide templates, and shipped four knowledge agents in English, French, and Spanish for procurement, accounting, and application-security questions. Earlier, I led an AI-assisted security scan of 21 applications, 274 repositories, and over 4.3 million lines of code that surfaced 642 vulnerabilities for remediation. I also built a Python analytics and forecasting pipeline over 1.26 million Cloud Run log records, proposed a BigQuery architecture, and mentor an AI engineering intern building a human-in-the-loop RAG agent.",
     },
     {
       company: "Microsoft",
@@ -126,11 +136,12 @@ export const DATA = {
       badges: [],
       location: "Vancouver, British Columbia",
       title: "Software Engineer Intern",
-      logoUrl: "/microsoft-logo.jpeg",
+      logoUrl: "/images/logos/microsoft.jpeg",
+      highlights: ["2x faster than NCCL", "Custom CUDA kernels", "H200 clusters"],
       start: "May 2025",
       end: "Aug. 2025",
       description:
-        "I spent this internship deep in the GPU stack, building custom CUDA kernels for tensor-parallel LLM inference on NVIDIA H200 clusters. I implemented one-shot, two-shot, and user-buffers All-Reduce variants integrated as TensorRT-LLM plugins in C++, and developed BLAS primitives benchmarked head-to-head against NCCL and cuBLAS across FP16 and FP32. The highlight was an IPC-based AllReduce that hit 2x speedup over NCCL on sub-2 MB payloads by fusing reduction directly with matrix multiplication, eliminating a full round-trip across the memory hierarchy.",
+        "I spent this internship deep in the GPU stack, building custom CUDA kernels for tensor-parallel LLM inference on NVIDIA H200 clusters. I implemented one-shot, two-shot, and user-buffers All-Reduce variants integrated as TensorRT-LLM plugins in C++, and developed BLAS primitives (GEMM, AXPY, dot product, reduction) benchmarked head-to-head against NCCL and cuBLAS across FP16 and FP32. The highlight was an IPC-based AllReduce that hit 2x speedup over NCCL on sub-2 MB payloads by fusing reduction directly with matrix multiplication, eliminating a full round-trip across the memory hierarchy. I also wrote Triton GPU kernels for broadcasting, activations, and AllReduce, with Python tooling to check each kernel's correctness.",
     },
     {
       company: "Aptum",
@@ -138,7 +149,8 @@ export const DATA = {
       badges: [],
       location: "Calgary, Alberta",
       title: "Cloud Developer Intern",
-      logoUrl: "/aptum-logo.png",
+      logoUrl: "/images/logos/aptum.png",
+      highlights: ["66% lower latency", "2x CI/CD throughput", "Monolith to gRPC"],
       start: "May 2024",
       end: "Apr. 2025",
       description:
@@ -150,7 +162,8 @@ export const DATA = {
       badges: [],
       location: "Remote",
       title: "Software Engineer Intern",
-      logoUrl: "/sigma-logo.png",
+      logoUrl: "/images/logos/sigma.png",
+      highlights: ["80% better address accuracy", "98.75% less manual QA"],
       start: "May 2023",
       end: "Aug. 2023",
       description:
@@ -164,11 +177,11 @@ export const DATA = {
       badges: [],
       location: "Calgary, Alberta",
       title: "Undergraduate Researcher",
-      logoUrl: "/ucalgary-logo.jpeg",
+      logoUrl: "/images/logos/ucalgary.jpeg",
       start: "Sep. 2025",
       end: "Apr. 2026",
       description:
-        "I am building BridgeMart, a cross-chain data marketplace on Ethereum and Solana where anyone can list, discover, and purchase encrypted datasets without trusting a third party. The core of the system is a privacy-preserving vending pipeline: datasets are encrypted client-side, integrity hashes are stored on-chain, and a smart-contract-gated decryption-key release ensures buyers only decrypt what they have paid for. On top of that, I shipped a RAG-style discovery service that uses LLM embeddings to match natural-language queries against tabular dataset signatures, backed by a FastAPI/Pydantic API and consumed by React and React Native frontends.",
+        "I developed TheDataBay, an Ethereum dataset marketplace where anyone can list, discover, and buy datasets without trusting a third party. Its discovery service uses LLM embeddings to rank dataset metadata against natural-language queries, with REST APIs consumed by React/TypeScript and React Native clients. I also built the privacy-preserving delivery pipeline: datasets are encrypted before upload to IPFS, integrity hashes are stored on-chain, and FastAPI releases the AES key only after a Solidity smart contract verifies the buyer's access.",
     },
   ],
   leadership: [
@@ -178,11 +191,11 @@ export const DATA = {
       badges: [],
       location: "Calgary, Alberta",
       title: "Founding Engineer",
-      logoUrl: "/agrivanna-logo.jpeg",
+      logoUrl: "/images/logos/agrivanna.jpeg",
       start: "Sep. 2024",
       end: "Apr. 2025",
       description:
-        "Shipped Go/Java microservices and ML features (scikit-learn + PyTorch) for personalized health; deployed FastAPI on Kubernetes and mentored teammates on Docker/K8s.",
+        "Architected crop-health REST microservices in Go and Spring Boot on Docker and Kubernetes, and productionized a PyTorch yield-forecasting model over Kafka streams, served through FastAPI with GitHub Actions CI/CD.",
     },
     {
       company: "Student Energy UCalgary",
@@ -190,11 +203,11 @@ export const DATA = {
       href: "https://studentenergyuofc.org/",
       location: "Calgary, Alberta",
       title: "VP Software Development",
-      logoUrl: "/seuc-logo.png",
+      logoUrl: "/images/logos/student-energy.png",
       start: "Sep. 2023",
       end: "Apr. 2024",
       description:
-        "Shipped a Next.js/TypeScript news app that lifted engagement by 70%, automated AWS infrastructure with Terraform and GitHub Actions, and led hiring while setting engineering standards.",
+        "Led a 6-engineer team delivering a Next.js/TypeScript platform that increased chapter engagement 70%, owned AWS, Terraform, and GitHub Actions CI/CD, and defined hiring rubrics across 15+ interviews.",
     },
     // {
     //   company: "ReThread",
@@ -202,7 +215,7 @@ export const DATA = {
     //   href: "#",
     //   location: "Calgary, Alberta",
     //   title: "Backend Engineer Part-Time",
-    //   logoUrl: "/rethread-logo.png",
+    //   logoUrl: "/images/logos/rethread.png",
     //   start: "Sep. 2023",
     //   end: "Apr. 2024",
     //   description:
@@ -214,7 +227,7 @@ export const DATA = {
     //   badges: [],
     //   location: "Calgary, AB",
     //   title: "Frontend Engineer Part-Time",
-    //   logoUrl: "/bandist-logo.png",
+    //   logoUrl: "/images/logos/bandist.png",
     //   start: "Sep. 2022",
     //   end: "Apr. 2023",
     //   description:
@@ -226,7 +239,7 @@ export const DATA = {
     //   school: "Schulich School of Engineering, University of Calgary",
     //   href: "https://schulich.ucalgary.ca/",
     //   degree: "Master of Science in Electrical Engineering",
-    //   logoUrl: "/ucalgary-logo.jpeg",
+    //   logoUrl: "/images/logos/ucalgary.jpeg",
     //   start: "Sep. 2026",
     //   end: "Apr. 2028",
     // },
@@ -234,7 +247,7 @@ export const DATA = {
       school: "Schulich School of Engineering, University of Calgary",
       href: "https://schulich.ucalgary.ca/",
       degree: "Bachelor of Science in Software Engineering",
-      logoUrl: "/ucalgary-logo.jpeg",
+      logoUrl: "/images/logos/ucalgary.jpeg",
       start: "Sep. 2021",
       end: "Apr. 2026",
     },
@@ -266,7 +279,7 @@ export const DATA = {
           icon: <Icons.github className="size-3" />,
         },
       ],
-      image: "/headnote.png",
+      image: "/images/projects/headnote.png",
       video: "",
     },
     {
@@ -295,7 +308,7 @@ export const DATA = {
           icon: <Icons.github className="size-3" />,
         },
       ],
-      image: "/signposted.png",
+      image: "/images/projects/signposted.png",
       video: "",
     },
     {
@@ -321,7 +334,7 @@ export const DATA = {
           icon: <Icons.github className="size-3" />,
         },
       ],
-      image: "/charlm.png",
+      image: "/images/projects/charlm.png",
       video: "",
     },
     {
@@ -347,7 +360,7 @@ export const DATA = {
           icon: <Icons.github className="size-3" />,
         },
       ],
-      image: "/gpt-from-scratch.png",
+      image: "/images/projects/gpt-from-scratch.png",
       video: "",
     },
     {
@@ -373,7 +386,7 @@ export const DATA = {
           icon: <Icons.github className="size-3" />,
         },
       ],
-      image: "/bpe-tokenizer.png",
+      image: "/images/projects/bpe-tokenizer.png",
       video: "",
     },
     {
@@ -399,7 +412,7 @@ export const DATA = {
           icon: <Icons.github className="size-3" />,
         },
       ],
-      image: "/autograd-from-scratch.png",
+      image: "/images/projects/autograd-from-scratch.png",
       video: "",
     },
     {
@@ -427,7 +440,7 @@ export const DATA = {
           icon: <Icons.github className="size-3" />,
         },
       ],
-      image: "/deep-learning-keras.png",
+      image: "/images/projects/deep-learning-keras.png",
       video: "",
     },
     {
@@ -455,7 +468,7 @@ export const DATA = {
           icon: <Icons.github className="size-3" />,
         },
       ],
-      image: "/multi-agent-research-assistant.png",
+      image: "/images/projects/multi-agent-research-assistant.png",
       video: "",
     },
     {
@@ -482,7 +495,7 @@ export const DATA = {
           icon: <Icons.github className="size-3" />,
         },
       ],
-      image: "/portfolio.png",
+      image: "/images/projects/portfolio.png",
       video: "",
     },
     {
@@ -492,7 +505,7 @@ export const DATA = {
       dates: "2025 - 2026",
       active: true,
       description:
-        "A full-stack semiconductor IP marketplace co-built with a 6-engineer team, enabling verified submission, certification, and monetized distribution of Chisel-based IP cores, complete with Stripe payments, OIDC auth, and automated Chisel-to-Verilog compilation.",
+        "A full-stack semiconductor IP marketplace co-built with a 6-engineer team for verified submission, certification, and sale of Chisel-based IP cores, with Stripe checkout, LinkedIn OIDC, a Chisel-to-Verilog compilation worker, and deployment to Azure Kubernetes Service with Terraform.",
       technologies: [
         "React",
         "TypeScript",
@@ -503,6 +516,9 @@ export const DATA = {
         "Docker",
         "Kubernetes",
         "Azure",
+        "Terraform",
+        "Stripe",
+        "Playwright",
       ],
       links: [
         {
@@ -511,7 +527,7 @@ export const DATA = {
           icon: <Icons.github className="size-3" />,
         },
       ],
-      image: "/ip-factory.png",
+      image: "/images/projects/chiselware.png",
       video: "",
     },
     {
@@ -536,7 +552,7 @@ export const DATA = {
           icon: <Icons.github className="size-3" />,
         },
       ],
-      image: "/cross-chain-rebase-token.png",
+      image: "/images/projects/cross-chain-rebase-token.png",
       video: "",
     },
     {
@@ -554,7 +570,7 @@ export const DATA = {
           icon: <Icons.github className="size-3" />,
         },
       ],
-      image: "/defi-stablecoin.png",
+      image: "/images/projects/defi-stablecoin.png",
       video: "",
     },
     {
@@ -585,7 +601,7 @@ export const DATA = {
           icon: <Icons.github className="size-3" />,
         },
       ],
-      image: "/ride-sharing.png",
+      image: "/images/projects/ride-sharing.png",
       video: "",
     },
     {
@@ -603,7 +619,7 @@ export const DATA = {
           icon: <Icons.github className="size-3" />,
         },
       ],
-      image: "/pug.png",
+      image: "/images/projects/nft-collection.png",
       video: "",
     },
     {
@@ -621,7 +637,7 @@ export const DATA = {
           icon: <Icons.github className="size-3" />,
         },
       ],
-      image: "/erc20-token.png",
+      image: "/images/projects/erc20-token.png",
       video: "",
     },
     {
@@ -650,7 +666,7 @@ export const DATA = {
           icon: <Icons.github className="size-3" />,
         },
       ],
-      image: "/gamestore.png",
+      image: "/images/projects/lootlark.png",
       video: "",
     },
     {
@@ -676,7 +692,7 @@ export const DATA = {
           icon: <Icons.github className="size-3" />,
         },
       ],
-      image: "/pytorch.webp",
+      image: "/images/projects/pytorch-deep-learning.webp",
       video: "",
     },
     {
@@ -709,7 +725,7 @@ export const DATA = {
           icon: <Icons.github className="size-3" />,
         },
       ],
-      image: "/choreshare-logo.png",
+      image: "/images/projects/choreshare.png",
       video: "",
     },
     {
@@ -727,7 +743,7 @@ export const DATA = {
           icon: <Icons.github className="size-3" />,
         },
       ],
-      image: "/mynotes-logo.png",
+      image: "/images/projects/mynotes.png",
       video: "",
     },
     {
@@ -763,7 +779,7 @@ export const DATA = {
           icon: <Icons.github className="size-3" />,
         },
       ],
-      image: "/game-heaven-logo.png",
+      image: "/images/projects/game-heaven.png",
       video: "",
     },
     {
@@ -793,7 +809,7 @@ export const DATA = {
           icon: <Icons.github className="size-3" />,
         },
       ],
-      image: "/the-last-show-logo.png",
+      image: "/images/projects/the-last-show.png",
       video: "",
     },
     {
@@ -820,7 +836,7 @@ export const DATA = {
           icon: <Icons.github className="size-3" />,
         },
       ],
-      image: "/lotion.png",
+      image: "/images/projects/lotion-plus.png",
       video: "",
     },
     {
@@ -843,7 +859,7 @@ export const DATA = {
           icon: <Icons.globe className="size-3" />,
         },
       ],
-      image: "/dsa.jpg",
+      image: "/images/projects/libcode.jpg",
       video: "",
     },
   ],
@@ -851,7 +867,7 @@ export const DATA = {
     {
       title: "AWS Certified Cloud Practitioner",
       dates: "May 2024 - May 2027",
-      image: "aws-ccp-logo.png",
+      image: "/images/certificates/aws-ccp.png",
       mlh: "https://s3.amazonaws.com/logged-assets/trust-badge/2019/mlh-trust-badge-2019-white.svg",
       links: [
         {
@@ -864,7 +880,7 @@ export const DATA = {
     {
       title: "Microsoft Certified Azure Fundamentals",
       dates: "Feb. 2025",
-      image: "microsoft-az900-logo.png",
+      image: "/images/certificates/azure-az900.png",
       mlh: "https://s3.amazonaws.com/logged-assets/trust-badge/2019/mlh-trust-badge-2019-white.svg",
       links: [
         {

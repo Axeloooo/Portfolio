@@ -9,7 +9,7 @@ export const contentType: string = "image/png";
 export default function Image(): ImageResponse {
   return renderOgImage(
     DATA.name,
-    "Software Engineer, Researcher, and Entrepreneur",
+    "AI Engineer, Researcher, and Entrepreneur",
     DATA.url.replace(/^https?:\/\//, "")
   );
 }
