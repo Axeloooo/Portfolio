@@ -1,5 +1,5 @@
 import { Icons } from "@/components/icons";
-import { CalendarClockIcon, HomeIcon, NotebookIcon } from "lucide-react";
+import { HomeIcon, NotebookIcon } from "lucide-react";
 
 export const DATA = {
   name: "Axel Sanchez",
@@ -77,30 +77,7 @@ export const DATA = {
   navbar: [
     { href: "/", icon: HomeIcon, label: "Home" },
     { href: "/blog", icon: NotebookIcon, label: "Blog" },
-    { href: "/now", icon: CalendarClockIcon, label: "Now" },
   ],
-  // What I'm up to; edit about once a month and bump `updated` (YYYY-MM-DD).
-  now: {
-    updated: "2026-10-27",
-    items: [
-      {
-        label: "Focus",
-        text: "Taking Gemini-based agents from prototype to production on Scotia Intelligence, Scotiabank's central AI team.",
-      },
-      {
-        label: "Learning",
-        text: "The infrastructure side of shipping agents: Terraform, identity, certificates and DNS across test, UAT and production.",
-      },
-      {
-        label: "Mentoring",
-        text: "An intern building a knowledge-retrieval agent with human-in-the-loop review.",
-      },
-      {
-        label: "Life",
-        text: "Settling into Toronto. Outside work: football, lifting weights and muay thai.",
-      },
-    ],
-  },
   contact: {
     email: "axelshz@gmail.com",
     tel: "+14033903596",
