@@ -22,34 +22,56 @@ type ApiMsg = { role: Role; content: string };
 // Mirrors the API route's limit; older turns are dropped from the request.
 const MAX_HISTORY: number = 12;
 
-const MARKDOWN_LINK: RegExp = /\[([^\]\n]+)\]\(([^)\s]+)\)/g;
+// A markdown link, a bare URL or a bare email address.
+const LINK_PATTERN: RegExp =
+  /\[([^\]\n]+)\]\(([^)\s]+)\)|(https?:\/\/[^\s<>()\[\]]+)|([\w.+-]+@[\w-]+(?:\.[\w-]+)+)/g;
 
-// Renders markdown links from a reply; links outside the allowlist show as
-// their text only.
+// Renders links from a reply; links outside the allowlist show as their text.
 function ReplyText({ text }: { text: string }): JSX.Element {
   const parts: (string | JSX.Element)[] = [];
   let last: number = 0;
-  for (const match of Array.from(text.matchAll(MARKDOWN_LINK))) {
-    const [whole, label, url] = match;
+  for (const match of Array.from(text.matchAll(LINK_PATTERN))) {
+    const [, mdLabel, mdUrl, bareUrl, email] = match;
     const start: number = match.index ?? 0;
-    parts.push(text.slice(last, start));
-    const link: ChatLink | null = allowedLink(url);
-    const className: string = "font-medium underline underline-offset-2";
-    if (!link) parts.push(label);
-    else if (link.external) {
-      parts.push(
-        <a key={start} href={link.href} target="_blank" rel="noopener noreferrer" className={className}>
-          {label}
-        </a>
-      );
+    let whole: string = match[0];
+    let label: string;
+    let url: string;
+    if (mdUrl) {
+      label = mdLabel;
+      url = mdUrl;
+    } else if (bareUrl) {
+      // Sentence punctuation right after a URL isn't part of it.
+      whole = bareUrl.replace(/[.,;:!?'"]+$/, "");
+      label = url = whole;
     } else {
+      whole = email.replace(/\.+$/, "");
+      label = whole;
+      url = `mailto:${whole}`;
+    }
+    parts.push(text.slice(last, start));
+    last = start + whole.length;
+    const link: ChatLink | null = allowedLink(url);
+    const className: string = "font-medium underline underline-offset-2 break-words";
+    if (!link) parts.push(label);
+    else if (!link.external) {
       parts.push(
         <Link key={start} href={link.href} className={className}>
           {label}
         </Link>
       );
+    } else if (link.href.startsWith("mailto:")) {
+      parts.push(
+        <a key={start} href={link.href} className={className}>
+          {label}
+        </a>
+      );
+    } else {
+      parts.push(
+        <a key={start} href={link.href} target="_blank" rel="noopener noreferrer" className={className}>
+          {label}
+        </a>
+      );
     }
-    last = start + whole.length;
   }
   parts.push(text.slice(last));
   return <>{parts}</>;
