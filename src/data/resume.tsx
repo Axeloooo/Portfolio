@@ -35,10 +35,14 @@ export const DATA = {
     "AWS",
     "GCP",
     "Blockchain",
+    "Ethereum",
+    "IPFS",
     "Kubernetes",
     "Docker",
     "Helm",
+    "Argo CD",
     "Terraform",
+    "Linux",
     "Kafka",
     "RabbitMQ",
 
@@ -46,6 +50,7 @@ export const DATA = {
     "MySQL",
     "PostgreSQL",
     "Redis",
+    "BigQuery",
 
     // Frameworks & Platforms
     ".NET",
@@ -56,6 +61,7 @@ export const DATA = {
 
     // Frontend
     "React",
+    "React Native",
     "Next.js",
     "Vue.js",
     "Redux",
@@ -70,7 +76,9 @@ export const DATA = {
     // Machine Learning / HPC
     "PyTorch",
     "CUDA",
+    "TensorRT-LLM",
     "LLM",
+    "Gemini",
     "LangChain",
     "LangGraph",
     "Triton",
@@ -78,6 +86,12 @@ export const DATA = {
     // CI/CD
     "Jenkins",
     "GitHub Actions",
+
+    // Testing & Payments
+    "pytest",
+    "Vitest",
+    "Playwright",
+    "Stripe",
   ],
   navbar: [
     { href: "/", icon: HomeIcon, label: "Home" },
@@ -121,11 +135,11 @@ export const DATA = {
       location: "Toronto, Ontario",
       title: "AI Engineer",
       logoUrl: "/scotiabank-logo.png",
-      highlights: ["274 repos audited", "642 findings triaged", "Agents to production"],
+      highlights: ["39K+ monthly users", "4 agents to production", "642 vulnerabilities found"],
       start: "Jun. 2026",
       end: "Present",
       description:
-        "I joined Scotia Intelligence, the bank's central AI team, as one of its founding engineers. My first project was an AI-assisted security sweep of 274 repositories and over 4.3 million lines of code, which gave application teams a prioritized list of 642 findings to work through. I then rebuilt search on our internal AI platform, pairing typed keyword search with a retrieval-backed chat that answers with inline citations. Today most of my time goes to taking Gemini-based agents from prototype to production: building slide primitives for a Word-to-PowerPoint agent, and owning the Terraform, identity, certificate, DNS, and database setup that gets agents through test, UAT, and production. Along the way I improved our agent onboarding guide and mentor an intern building a knowledge-retrieval agent with human-in-the-loop review.",
+        "I joined Scotia Intelligence, the bank's central AI platform, as one of its founding engineers. The platform has more than 39,000 monthly active users and over 28 million actions, and I built its conversational search: retrieval-augmented generation that answers with inline citations across the platform's tools, FAQs, and training content. Most of my time now goes to taking model-agnostic agents to production. I lead the deployment of four agentic AI applications on the bank's LangGraph-compatible agent platform, through test, UAT, and production on Kubernetes with Argo CD, Helm, Terraform, and Microsoft Entra ID. I also developed a Word-to-PowerPoint agent commissioned by the bank's Strategy Director, with reusable slide components and four executive slide templates, and shipped four knowledge agents in English, French, and Spanish for procurement, accounting, and application-security questions. Earlier, I led an AI-assisted security scan of 21 applications, 274 repositories, and over 4.3 million lines of code that surfaced 642 vulnerabilities for remediation. I also built a Python analytics and forecasting pipeline over 1.26 million Cloud Run log records, proposed a BigQuery architecture, and mentor an AI engineering intern building a human-in-the-loop RAG agent.",
     },
     {
       company: "Microsoft",
@@ -138,7 +152,7 @@ export const DATA = {
       start: "May 2025",
       end: "Aug. 2025",
       description:
-        "I spent this internship deep in the GPU stack, building custom CUDA kernels for tensor-parallel LLM inference on NVIDIA H200 clusters. I implemented one-shot, two-shot, and user-buffers All-Reduce variants integrated as TensorRT-LLM plugins in C++, and developed BLAS primitives benchmarked head-to-head against NCCL and cuBLAS across FP16 and FP32. The highlight was an IPC-based AllReduce that hit 2x speedup over NCCL on sub-2 MB payloads by fusing reduction directly with matrix multiplication, eliminating a full round-trip across the memory hierarchy.",
+        "I spent this internship deep in the GPU stack, building custom CUDA kernels for tensor-parallel LLM inference on NVIDIA H200 clusters. I implemented one-shot, two-shot, and user-buffers All-Reduce variants integrated as TensorRT-LLM plugins in C++, and developed BLAS primitives (GEMM, AXPY, dot product, reduction) benchmarked head-to-head against NCCL and cuBLAS across FP16 and FP32. The highlight was an IPC-based AllReduce that hit 2x speedup over NCCL on sub-2 MB payloads by fusing reduction directly with matrix multiplication, eliminating a full round-trip across the memory hierarchy. I also wrote Triton GPU kernels for broadcasting, activations, and AllReduce, with Python tooling to check each kernel's correctness.",
     },
     {
       company: "Aptum",
@@ -178,7 +192,7 @@ export const DATA = {
       start: "Sep. 2025",
       end: "Apr. 2026",
       description:
-        "I am building BridgeMart, a cross-chain data marketplace on Ethereum and Solana where anyone can list, discover, and purchase encrypted datasets without trusting a third party. The core of the system is a privacy-preserving vending pipeline: datasets are encrypted client-side, integrity hashes are stored on-chain, and a smart-contract-gated decryption-key release ensures buyers only decrypt what they have paid for. On top of that, I shipped a RAG-style discovery service that uses LLM embeddings to match natural-language queries against tabular dataset signatures, backed by a FastAPI/Pydantic API and consumed by React and React Native frontends.",
+        "I developed TheDataBay, an Ethereum dataset marketplace where anyone can list, discover, and buy datasets without trusting a third party. Its discovery service uses LLM embeddings to rank dataset metadata against natural-language queries, with REST APIs consumed by React/TypeScript and React Native clients. I also built the privacy-preserving delivery pipeline: datasets are encrypted before upload to IPFS, integrity hashes are stored on-chain, and FastAPI releases the AES key only after a Solidity smart contract verifies the buyer's access.",
     },
   ],
   leadership: [
@@ -192,7 +206,7 @@ export const DATA = {
       start: "Sep. 2024",
       end: "Apr. 2025",
       description:
-        "Shipped Go/Java microservices and ML features (scikit-learn + PyTorch) for personalized health; deployed FastAPI on Kubernetes and mentored teammates on Docker/K8s.",
+        "Architected crop-health REST microservices in Go and Spring Boot on Docker and Kubernetes, and productionized a PyTorch yield-forecasting model over Kafka streams, served through FastAPI with GitHub Actions CI/CD.",
     },
     {
       company: "Student Energy UCalgary",
@@ -204,7 +218,7 @@ export const DATA = {
       start: "Sep. 2023",
       end: "Apr. 2024",
       description:
-        "Shipped a Next.js/TypeScript news app that lifted engagement by 70%, automated AWS infrastructure with Terraform and GitHub Actions, and led hiring while setting engineering standards.",
+        "Led a 6-engineer team delivering a Next.js/TypeScript platform that increased chapter engagement 70%, owned AWS, Terraform, and GitHub Actions CI/CD, and defined hiring rubrics across 15+ interviews.",
     },
     // {
     //   company: "ReThread",
@@ -502,7 +516,7 @@ export const DATA = {
       dates: "2025 - 2026",
       active: true,
       description:
-        "A full-stack semiconductor IP marketplace co-built with a 6-engineer team, enabling verified submission, certification, and monetized distribution of Chisel-based IP cores, complete with Stripe payments, OIDC auth, and automated Chisel-to-Verilog compilation.",
+        "A full-stack semiconductor IP marketplace co-built with a 6-engineer team for verified submission, certification, and sale of Chisel-based IP cores, with Stripe checkout, LinkedIn OIDC, a Chisel-to-Verilog compilation worker, and deployment to Azure Kubernetes Service with Terraform.",
       technologies: [
         "React",
         "TypeScript",
@@ -513,6 +527,9 @@ export const DATA = {
         "Docker",
         "Kubernetes",
         "Azure",
+        "Terraform",
+        "Stripe",
+        "Playwright",
       ],
       links: [
         {
