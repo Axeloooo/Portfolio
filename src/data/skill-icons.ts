@@ -53,7 +53,7 @@ export const SKILL_ICONS: Record<string, SkillIcon> = {
   "LangGraph": { src: "/skills/langgraph.svg" },
   "Triton": { lucide: "CpuIcon" },
   "Hugging Face": { src: "/skills/hugging-face.svg" },
-  "ChatGPT/Codex": { src: "/skills/chatgpt-codex.svg", darkMode: "invert" },
+  "OpenAI": { src: "/skills/openai.svg", darkMode: "invert" },
   "Claude": { src: "/skills/claude.svg" },
   "Jenkins": { src: "/skills/jenkins.svg" },
   "GitHub Actions": { src: "/skills/github-actions.svg" },

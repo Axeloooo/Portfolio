@@ -75,7 +75,7 @@ export const DATA = {
     "LangGraph",
     "Triton",
     "Hugging Face",
-    "ChatGPT/Codex",
+    "OpenAI",
     "Claude",
 
     // CI/CD

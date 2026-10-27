@@ -1,7 +1,7 @@
 # Skill logos
 
 - Most logos come from [Simple Icons](https://simpleicons.org) 16.36.0 (CC0-1.0), with each brand's color added as the fill.
-- ChatGPT/Codex uses the OpenAI logo from Simple Icons 15.22.0, the last release that includes it.
+- The OpenAI logo comes from Simple Icons 15.22.0, the last release that includes it.
 - C#, Java, Azure and AWS come from [Devicon](https://devicon.dev) v2.16.0 (MIT), scaled to a 24×24 viewBox.
 - SQL, Triton and gRPC (whose logo is an unreadable wordmark at this size) use [Lucide](https://lucide.dev) icons (ISC) in the app.
 
