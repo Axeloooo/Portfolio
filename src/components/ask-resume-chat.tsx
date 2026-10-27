@@ -2,8 +2,10 @@
 
 import { Button } from "@/components/ui/button";
 import { DATA } from "@/data/resume";
+import { allowedLink, type ChatLink } from "@/lib/chat-links";
 import { cn } from "@/lib/utils";
 import { MessageCircleIcon, SendIcon, XIcon } from "lucide-react";
+import Link from "next/link";
 import {
   useEffect,
   useRef,
@@ -19,6 +21,39 @@ type ApiMsg = { role: Role; content: string };
 
 // Mirrors the API route's limit; older turns are dropped from the request.
 const MAX_HISTORY: number = 12;
+
+const MARKDOWN_LINK: RegExp = /\[([^\]\n]+)\]\(([^)\s]+)\)/g;
+
+// Renders markdown links from a reply; links outside the allowlist show as
+// their text only.
+function ReplyText({ text }: { text: string }): JSX.Element {
+  const parts: (string | JSX.Element)[] = [];
+  let last: number = 0;
+  for (const match of Array.from(text.matchAll(MARKDOWN_LINK))) {
+    const [whole, label, url] = match;
+    const start: number = match.index ?? 0;
+    parts.push(text.slice(last, start));
+    const link: ChatLink | null = allowedLink(url);
+    const className: string = "font-medium underline underline-offset-2";
+    if (!link) parts.push(label);
+    else if (link.external) {
+      parts.push(
+        <a key={start} href={link.href} target="_blank" rel="noopener noreferrer" className={className}>
+          {label}
+        </a>
+      );
+    } else {
+      parts.push(
+        <Link key={start} href={link.href} className={className}>
+          {label}
+        </Link>
+      );
+    }
+    last = start + whole.length;
+  }
+  parts.push(text.slice(last));
+  return <>{parts}</>;
+}
 
 const SUGGESTIONS: string[] = [
   "What did Axel do at Microsoft?",
@@ -147,7 +182,7 @@ export default function AskResumeChat(): JSX.Element {
                     : "bg-muted"
                 )}
               >
-                {m.content || "…"}
+                {m.role === "assistant" && m.content ? <ReplyText text={m.content} /> : m.content || "…"}
               </div>
             ))}
             <div ref={endRef} />
