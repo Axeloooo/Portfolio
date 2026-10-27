@@ -45,12 +45,14 @@ export const DATA = {
     // Databases
     "MySQL",
     "PostgreSQL",
+    "Redis",
 
     // Frameworks & Platforms
     ".NET",
     "Spring Boot",
     "Express",
     "Django",
+    "FastAPI",
 
     // Frontend
     "React",
@@ -69,6 +71,9 @@ export const DATA = {
     "PyTorch",
     "CUDA",
     "LLM",
+    "LangChain",
+    "LangGraph",
+    "Triton",
 
     // CI/CD
     "Jenkins",

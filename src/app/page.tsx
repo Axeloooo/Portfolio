@@ -4,8 +4,8 @@ import BlurFadeText from "@/components/magicui/blur-fade-text";
 import NowTicker from "@/components/now-ticker";
 import { ProjectCard } from "@/components/project-card";
 import { ResumeCard } from "@/components/resume-card";
+import SkillsMarquee from "@/components/skills-marquee";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
 import { DATA } from "@/data/resume";
 import Markdown from "react-markdown";
 
@@ -156,13 +156,9 @@ export default function Page() {
           <BlurFade delay={BLUR_FADE_DELAY * 15}>
             <h2 className="text-xl font-bold">Skills</h2>
           </BlurFade>
-          <div className="flex flex-wrap gap-1">
-            {DATA.skills.map((skill, id) => (
-              <BlurFade key={skill} delay={BLUR_FADE_DELAY * 16 + id * 0.05}>
-                <Badge key={skill}>{skill}</Badge>
-              </BlurFade>
-            ))}
-          </div>
+          <BlurFade delay={BLUR_FADE_DELAY * 16}>
+            <SkillsMarquee />
+          </BlurFade>
         </div>
       </section>
       <section id="projects">
