@@ -34,15 +34,12 @@ export const DATA = {
     "Azure",
     "AWS",
     "GCP",
-    "Blockchain",
-    "Ethereum",
-    "IPFS",
     "Kubernetes",
     "Docker",
     "Helm",
     "Argo CD",
     "Terraform",
-    "Linux",
+    "OpenTelemetry",
     "Kafka",
     "RabbitMQ",
 
@@ -50,7 +47,7 @@ export const DATA = {
     "MySQL",
     "PostgreSQL",
     "Redis",
-    "BigQuery",
+    "MongoDB",
 
     // Frameworks & Platforms
     ".NET",
@@ -61,37 +58,29 @@ export const DATA = {
 
     // Frontend
     "React",
-    "React Native",
-    "Next.js",
-    "Vue.js",
     "Redux",
-    "Expo",
     "Flutter",
-    "Vite",
-    "Tailwind",
 
     // APIs & Tools
     "gRPC",
 
     // Machine Learning / HPC
     "PyTorch",
+    "TensorFlow",
+    "Keras",
+    "NumPy",
     "CUDA",
-    "TensorRT-LLM",
-    "LLM",
     "Gemini",
     "LangChain",
     "LangGraph",
     "Triton",
+    "Hugging Face",
+    "ChatGPT/Codex",
+    "Claude",
 
     // CI/CD
     "Jenkins",
     "GitHub Actions",
-
-    // Testing & Payments
-    "pytest",
-    "Vitest",
-    "Playwright",
-    "Stripe",
   ],
   navbar: [
     { href: "/", icon: HomeIcon, label: "Home" },

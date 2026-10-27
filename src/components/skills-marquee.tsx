@@ -2,14 +2,12 @@ import { Marquee } from "@/components/magicui/marquee";
 import { SKILL_ICONS, type SkillIcon } from "@/data/skill-icons";
 import { DATA } from "@/data/resume";
 import { cn } from "@/lib/utils";
-import { BlocksIcon, BrainCircuitIcon, CpuIcon, DatabaseIcon, NetworkIcon, type LucideIcon } from "lucide-react";
+import { CpuIcon, DatabaseIcon, NetworkIcon, type LucideIcon } from "lucide-react";
 import Image from "next/image";
 
 type LucideName = Extract<SkillIcon, { lucide: string }>["lucide"];
 
 const LUCIDE_ICONS: Record<LucideName, LucideIcon> = {
-  BlocksIcon,
-  BrainCircuitIcon,
   CpuIcon,
   DatabaseIcon,
   NetworkIcon,
