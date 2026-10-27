@@ -4,16 +4,16 @@ import { HomeIcon, NotebookIcon } from "lucide-react";
 export const DATA = {
   name: "Axel Sanchez",
   initials: "AS",
-  role: "Software Engineer",
+  role: "AI Engineer",
   url: "https://axelsanchez.me",
-  location: "Calgary, Alberta",
-  locationLink: "https://www.google.com/maps/place/calgary",
+  location: "Toronto, Ontario",
+  locationLink: "https://www.google.com/maps/place/toronto",
   description:
-    "Software Engineer, Researcher, and Entrepreneur. In my free time I enjoy football, lifting weights and muay thai.",
+    "AI Engineer, Researcher, and Entrepreneur. In my free time I enjoy football, lifting weights and muay thai.",
   seoDescription:
-    "AI Engineer at Scotiabank and University of Calgary graduate. Built a CUDA AllReduce 2x faster than NCCL on small payloads at Microsoft; cut request latency 66% at Aptum.",
+    "AI Engineer at Scotiabank shipping AI agents to production. Built a CUDA AllReduce 2x faster than NCCL on small payloads at Microsoft; cut request latency 66% at Aptum.",
   summary:
-    "Hi, I’m Axel Sanchez, a Software Engineer graduate of the University of Calgary. I specialize in high-performance systems ranging from GPU computing and cloud microservices to Agentic AI and blockchain applications. I’ve had the privilege of working across recognized companies like Microsoft, Aptum and Sigma. Take a look around, and if something resonates, I’d love to connect.",
+    "Hi, I’m Axel Sanchez, an AI Engineer at Scotiabank on Scotia Intelligence, the bank’s central AI team, and a Software Engineering graduate of the University of Calgary. I specialize in high-performance systems ranging from production AI agents and GPU computing to cloud microservices and blockchain applications. Before Scotiabank, I worked at Microsoft, Aptum and Sigma. Take a look around, and if something resonates, I’d love to connect.",
   avatarUrl: "/me.png",
   skills: [
     // Programming Languages
@@ -118,7 +118,8 @@ export const DATA = {
       logoUrl: "/scotiabank-logo.png",
       start: "Jun. 2026",
       end: "Present",
-      description: "NDA",
+      description:
+        "I joined Scotia Intelligence, the bank's central AI team, as one of its founding engineers. My first project was an AI-assisted security sweep of 274 repositories and over 4.3 million lines of code, which gave application teams a prioritized list of 642 findings to work through. I then rebuilt search on our internal AI platform, pairing typed keyword search with a retrieval-backed chat that answers with inline citations. Today most of my time goes to taking Gemini-based agents from prototype to production: building slide primitives for a Word-to-PowerPoint agent, and owning the Terraform, identity, certificate, DNS, and database setup that gets agents through test, UAT, and production. Along the way I improved our agent onboarding guide and mentor an intern building a knowledge-retrieval agent with human-in-the-loop review.",
     },
     {
       company: "Microsoft",
