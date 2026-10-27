@@ -14,7 +14,7 @@ export const DATA = {
     "AI Engineer at Scotiabank shipping AI agents to production. Built a CUDA AllReduce 2x faster than NCCL on small payloads at Microsoft; cut request latency 66% at Aptum.",
   summary:
     "Hi, I’m Axel Sanchez, an AI Engineer at Scotiabank on Scotia Intelligence, the bank’s central AI team, and a Software Engineering graduate of the University of Calgary. I specialize in high-performance systems ranging from production AI agents and GPU computing to cloud microservices and blockchain applications. Before Scotiabank, I worked at Microsoft, Aptum and Sigma. Take a look around, and if something resonates, I’d love to connect.",
-  avatarUrl: "/me.png",
+  avatarUrl: "/images/me.png",
   skills: [
     // Programming Languages
     "C",
@@ -134,7 +134,7 @@ export const DATA = {
       badges: [],
       location: "Toronto, Ontario",
       title: "AI Engineer",
-      logoUrl: "/scotiabank-logo.png",
+      logoUrl: "/images/logos/scotiabank.png",
       highlights: ["39K+ monthly users", "4 agents to production", "642 vulnerabilities found"],
       start: "Jun. 2026",
       end: "Present",
@@ -147,7 +147,7 @@ export const DATA = {
       badges: [],
       location: "Vancouver, British Columbia",
       title: "Software Engineer Intern",
-      logoUrl: "/microsoft-logo.jpeg",
+      logoUrl: "/images/logos/microsoft.jpeg",
       highlights: ["2x faster than NCCL", "Custom CUDA kernels", "H200 clusters"],
       start: "May 2025",
       end: "Aug. 2025",
@@ -160,7 +160,7 @@ export const DATA = {
       badges: [],
       location: "Calgary, Alberta",
       title: "Cloud Developer Intern",
-      logoUrl: "/aptum-logo.png",
+      logoUrl: "/images/logos/aptum.png",
       highlights: ["66% lower latency", "2x CI/CD throughput", "Monolith to gRPC"],
       start: "May 2024",
       end: "Apr. 2025",
@@ -173,7 +173,7 @@ export const DATA = {
       badges: [],
       location: "Remote",
       title: "Software Engineer Intern",
-      logoUrl: "/sigma-logo.png",
+      logoUrl: "/images/logos/sigma.png",
       highlights: ["80% better address accuracy", "98.75% less manual QA"],
       start: "May 2023",
       end: "Aug. 2023",
@@ -188,7 +188,7 @@ export const DATA = {
       badges: [],
       location: "Calgary, Alberta",
       title: "Undergraduate Researcher",
-      logoUrl: "/ucalgary-logo.jpeg",
+      logoUrl: "/images/logos/ucalgary.jpeg",
       start: "Sep. 2025",
       end: "Apr. 2026",
       description:
@@ -202,7 +202,7 @@ export const DATA = {
       badges: [],
       location: "Calgary, Alberta",
       title: "Founding Engineer",
-      logoUrl: "/agrivanna-logo.jpeg",
+      logoUrl: "/images/logos/agrivanna.jpeg",
       start: "Sep. 2024",
       end: "Apr. 2025",
       description:
@@ -214,7 +214,7 @@ export const DATA = {
       href: "https://studentenergyuofc.org/",
       location: "Calgary, Alberta",
       title: "VP Software Development",
-      logoUrl: "/seuc-logo.png",
+      logoUrl: "/images/logos/student-energy.png",
       start: "Sep. 2023",
       end: "Apr. 2024",
       description:
@@ -226,7 +226,7 @@ export const DATA = {
     //   href: "#",
     //   location: "Calgary, Alberta",
     //   title: "Backend Engineer Part-Time",
-    //   logoUrl: "/rethread-logo.png",
+    //   logoUrl: "/images/logos/rethread.png",
     //   start: "Sep. 2023",
     //   end: "Apr. 2024",
     //   description:
@@ -238,7 +238,7 @@ export const DATA = {
     //   badges: [],
     //   location: "Calgary, AB",
     //   title: "Frontend Engineer Part-Time",
-    //   logoUrl: "/bandist-logo.png",
+    //   logoUrl: "/images/logos/bandist.png",
     //   start: "Sep. 2022",
     //   end: "Apr. 2023",
     //   description:
@@ -250,7 +250,7 @@ export const DATA = {
     //   school: "Schulich School of Engineering, University of Calgary",
     //   href: "https://schulich.ucalgary.ca/",
     //   degree: "Master of Science in Electrical Engineering",
-    //   logoUrl: "/ucalgary-logo.jpeg",
+    //   logoUrl: "/images/logos/ucalgary.jpeg",
     //   start: "Sep. 2026",
     //   end: "Apr. 2028",
     // },
@@ -258,7 +258,7 @@ export const DATA = {
       school: "Schulich School of Engineering, University of Calgary",
       href: "https://schulich.ucalgary.ca/",
       degree: "Bachelor of Science in Software Engineering",
-      logoUrl: "/ucalgary-logo.jpeg",
+      logoUrl: "/images/logos/ucalgary.jpeg",
       start: "Sep. 2021",
       end: "Apr. 2026",
     },
@@ -290,7 +290,7 @@ export const DATA = {
           icon: <Icons.github className="size-3" />,
         },
       ],
-      image: "/headnote.png",
+      image: "/images/projects/headnote.png",
       video: "",
     },
     {
@@ -319,7 +319,7 @@ export const DATA = {
           icon: <Icons.github className="size-3" />,
         },
       ],
-      image: "/signposted.png",
+      image: "/images/projects/signposted.png",
       video: "",
     },
     {
@@ -345,7 +345,7 @@ export const DATA = {
           icon: <Icons.github className="size-3" />,
         },
       ],
-      image: "/charlm.png",
+      image: "/images/projects/charlm.png",
       video: "",
     },
     {
@@ -371,7 +371,7 @@ export const DATA = {
           icon: <Icons.github className="size-3" />,
         },
       ],
-      image: "/gpt-from-scratch.png",
+      image: "/images/projects/gpt-from-scratch.png",
       video: "",
     },
     {
@@ -397,7 +397,7 @@ export const DATA = {
           icon: <Icons.github className="size-3" />,
         },
       ],
-      image: "/bpe-tokenizer.png",
+      image: "/images/projects/bpe-tokenizer.png",
       video: "",
     },
     {
@@ -423,7 +423,7 @@ export const DATA = {
           icon: <Icons.github className="size-3" />,
         },
       ],
-      image: "/autograd-from-scratch.png",
+      image: "/images/projects/autograd-from-scratch.png",
       video: "",
     },
     {
@@ -451,7 +451,7 @@ export const DATA = {
           icon: <Icons.github className="size-3" />,
         },
       ],
-      image: "/deep-learning-keras.png",
+      image: "/images/projects/deep-learning-keras.png",
       video: "",
     },
     {
@@ -479,7 +479,7 @@ export const DATA = {
           icon: <Icons.github className="size-3" />,
         },
       ],
-      image: "/multi-agent-research-assistant.png",
+      image: "/images/projects/multi-agent-research-assistant.png",
       video: "",
     },
     {
@@ -506,7 +506,7 @@ export const DATA = {
           icon: <Icons.github className="size-3" />,
         },
       ],
-      image: "/portfolio.png",
+      image: "/images/projects/portfolio.png",
       video: "",
     },
     {
@@ -538,7 +538,7 @@ export const DATA = {
           icon: <Icons.github className="size-3" />,
         },
       ],
-      image: "/ip-factory.png",
+      image: "/images/projects/chiselware.png",
       video: "",
     },
     {
@@ -563,7 +563,7 @@ export const DATA = {
           icon: <Icons.github className="size-3" />,
         },
       ],
-      image: "/cross-chain-rebase-token.png",
+      image: "/images/projects/cross-chain-rebase-token.png",
       video: "",
     },
     {
@@ -581,7 +581,7 @@ export const DATA = {
           icon: <Icons.github className="size-3" />,
         },
       ],
-      image: "/defi-stablecoin.png",
+      image: "/images/projects/defi-stablecoin.png",
       video: "",
     },
     {
@@ -612,7 +612,7 @@ export const DATA = {
           icon: <Icons.github className="size-3" />,
         },
       ],
-      image: "/ride-sharing.png",
+      image: "/images/projects/ride-sharing.png",
       video: "",
     },
     {
@@ -630,7 +630,7 @@ export const DATA = {
           icon: <Icons.github className="size-3" />,
         },
       ],
-      image: "/pug.png",
+      image: "/images/projects/nft-collection.png",
       video: "",
     },
     {
@@ -648,7 +648,7 @@ export const DATA = {
           icon: <Icons.github className="size-3" />,
         },
       ],
-      image: "/erc20-token.png",
+      image: "/images/projects/erc20-token.png",
       video: "",
     },
     {
@@ -677,7 +677,7 @@ export const DATA = {
           icon: <Icons.github className="size-3" />,
         },
       ],
-      image: "/gamestore.png",
+      image: "/images/projects/lootlark.png",
       video: "",
     },
     {
@@ -703,7 +703,7 @@ export const DATA = {
           icon: <Icons.github className="size-3" />,
         },
       ],
-      image: "/pytorch.webp",
+      image: "/images/projects/pytorch-deep-learning.webp",
       video: "",
     },
     {
@@ -736,7 +736,7 @@ export const DATA = {
           icon: <Icons.github className="size-3" />,
         },
       ],
-      image: "/choreshare-logo.png",
+      image: "/images/projects/choreshare.png",
       video: "",
     },
     {
@@ -754,7 +754,7 @@ export const DATA = {
           icon: <Icons.github className="size-3" />,
         },
       ],
-      image: "/mynotes-logo.png",
+      image: "/images/projects/mynotes.png",
       video: "",
     },
     {
@@ -790,7 +790,7 @@ export const DATA = {
           icon: <Icons.github className="size-3" />,
         },
       ],
-      image: "/game-heaven-logo.png",
+      image: "/images/projects/game-heaven.png",
       video: "",
     },
     {
@@ -820,7 +820,7 @@ export const DATA = {
           icon: <Icons.github className="size-3" />,
         },
       ],
-      image: "/the-last-show-logo.png",
+      image: "/images/projects/the-last-show.png",
       video: "",
     },
     {
@@ -847,7 +847,7 @@ export const DATA = {
           icon: <Icons.github className="size-3" />,
         },
       ],
-      image: "/lotion.png",
+      image: "/images/projects/lotion-plus.png",
       video: "",
     },
     {
@@ -870,7 +870,7 @@ export const DATA = {
           icon: <Icons.globe className="size-3" />,
         },
       ],
-      image: "/dsa.jpg",
+      image: "/images/projects/libcode.jpg",
       video: "",
     },
   ],
@@ -878,7 +878,7 @@ export const DATA = {
     {
       title: "AWS Certified Cloud Practitioner",
       dates: "May 2024 - May 2027",
-      image: "aws-ccp-logo.png",
+      image: "/images/certificates/aws-ccp.png",
       mlh: "https://s3.amazonaws.com/logged-assets/trust-badge/2019/mlh-trust-badge-2019-white.svg",
       links: [
         {
@@ -891,7 +891,7 @@ export const DATA = {
     {
       title: "Microsoft Certified Azure Fundamentals",
       dates: "Feb. 2025",
-      image: "microsoft-az900-logo.png",
+      image: "/images/certificates/azure-az900.png",
       mlh: "https://s3.amazonaws.com/logged-assets/trust-badge/2019/mlh-trust-badge-2019-white.svg",
       links: [
         {
