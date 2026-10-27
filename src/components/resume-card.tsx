@@ -16,6 +16,7 @@ interface ResumeCardProps {
   subtitle?: string;
   href?: string;
   badges?: readonly string[];
+  highlights?: readonly string[];
   period: string;
   description?: string;
 }
@@ -26,6 +27,7 @@ export const ResumeCard = ({
   subtitle,
   href,
   badges,
+  highlights,
   period,
   description,
 }: ResumeCardProps) => {
@@ -85,6 +87,20 @@ export const ResumeCard = ({
               </div>
             </div>
             {subtitle && <div className="font-sans text-xs">{subtitle}</div>}
+            {highlights && highlights.length > 0 && (
+              <ul className="flex flex-wrap gap-1 pt-1">
+                {highlights.map((highlight) => (
+                  <li key={highlight}>
+                    <Badge
+                      variant="outline"
+                      className="px-1.5 py-0 text-[10px] font-normal text-muted-foreground"
+                    >
+                      {highlight}
+                    </Badge>
+                  </li>
+                ))}
+              </ul>
+            )}
           </CardHeader>
           {description && (
             <motion.div

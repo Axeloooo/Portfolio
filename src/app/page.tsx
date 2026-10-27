@@ -89,6 +89,7 @@ export default function Page() {
                 subtitle={work.title}
                 href={work.href}
                 badges={work.badges}
+                highlights={"highlights" in work ? work.highlights : undefined}
                 period={`${work.start} - ${work.end ?? "Present"}`}
                 description={work.description}
               />

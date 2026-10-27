@@ -116,6 +116,7 @@ export const DATA = {
       location: "Toronto, Ontario",
       title: "AI Engineer",
       logoUrl: "/scotiabank-logo.png",
+      highlights: ["274 repos audited", "642 findings triaged", "Agents to production"],
       start: "Jun. 2026",
       end: "Present",
       description:
@@ -128,6 +129,7 @@ export const DATA = {
       location: "Vancouver, British Columbia",
       title: "Software Engineer Intern",
       logoUrl: "/microsoft-logo.jpeg",
+      highlights: ["2x faster than NCCL", "Custom CUDA kernels", "H200 clusters"],
       start: "May 2025",
       end: "Aug. 2025",
       description:
@@ -140,6 +142,7 @@ export const DATA = {
       location: "Calgary, Alberta",
       title: "Cloud Developer Intern",
       logoUrl: "/aptum-logo.png",
+      highlights: ["66% lower latency", "2x CI/CD throughput", "Monolith to gRPC"],
       start: "May 2024",
       end: "Apr. 2025",
       description:
@@ -152,6 +155,7 @@ export const DATA = {
       location: "Remote",
       title: "Software Engineer Intern",
       logoUrl: "/sigma-logo.png",
+      highlights: ["80% better address accuracy", "98.75% less manual QA"],
       start: "May 2023",
       end: "Aug. 2023",
       description:
