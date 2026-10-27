@@ -26,7 +26,9 @@ function SkillLogo({ name }: { name: string }) {
       alt=""
       width={20}
       height={20}
-      loading="lazy"
+      // Eager: lazy loading left logos blank while they scrolled into view, and all
+      // of them together are only a few KB.
+      loading="eager"
       unoptimized
       className={cn(
         "size-5",
@@ -54,7 +56,7 @@ export default function SkillsMarquee() {
   const rows: (readonly string[])[] = [skills.slice(0, half), skills.slice(half)];
 
   return (
-    <div className="flex flex-col gap-2">
+    <div className="flex flex-col gap-2 py-4">
       {rows.map((row: readonly string[], index: number) => (
         <Marquee key={index} reverse={index === 1} duration={50}>
           {row.map((skill: string) => (
