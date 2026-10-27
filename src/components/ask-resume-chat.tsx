@@ -2,8 +2,10 @@
 
 import { Button } from "@/components/ui/button";
 import { DATA } from "@/data/resume";
+import { allowedLink, type ChatLink } from "@/lib/chat-links";
 import { cn } from "@/lib/utils";
 import { MessageCircleIcon, SendIcon, XIcon } from "lucide-react";
+import Link from "next/link";
 import {
   useEffect,
   useRef,
@@ -19,6 +21,61 @@ type ApiMsg = { role: Role; content: string };
 
 // Mirrors the API route's limit; older turns are dropped from the request.
 const MAX_HISTORY: number = 12;
+
+// A markdown link, a bare URL or a bare email address.
+const LINK_PATTERN: RegExp =
+  /\[([^\]\n]+)\]\(([^)\s]+)\)|(https?:\/\/[^\s<>()\[\]]+)|([\w.+-]+@[\w-]+(?:\.[\w-]+)+)/g;
+
+// Renders links from a reply; links outside the allowlist show as their text.
+function ReplyText({ text }: { text: string }): JSX.Element {
+  const parts: (string | JSX.Element)[] = [];
+  let last: number = 0;
+  for (const match of Array.from(text.matchAll(LINK_PATTERN))) {
+    const [, mdLabel, mdUrl, bareUrl, email] = match;
+    const start: number = match.index ?? 0;
+    let whole: string = match[0];
+    let label: string;
+    let url: string;
+    if (mdUrl) {
+      label = mdLabel;
+      url = mdUrl;
+    } else if (bareUrl) {
+      // Sentence punctuation right after a URL isn't part of it.
+      whole = bareUrl.replace(/[.,;:!?'"]+$/, "");
+      label = url = whole;
+    } else {
+      whole = email.replace(/\.+$/, "");
+      label = whole;
+      url = `mailto:${whole}`;
+    }
+    parts.push(text.slice(last, start));
+    last = start + whole.length;
+    const link: ChatLink | null = allowedLink(url);
+    const className: string = "font-medium underline underline-offset-2 break-words";
+    if (!link) parts.push(label);
+    else if (!link.external) {
+      parts.push(
+        <Link key={start} href={link.href} className={className}>
+          {label}
+        </Link>
+      );
+    } else if (link.href.startsWith("mailto:")) {
+      parts.push(
+        <a key={start} href={link.href} className={className}>
+          {label}
+        </a>
+      );
+    } else {
+      parts.push(
+        <a key={start} href={link.href} target="_blank" rel="noopener noreferrer" className={className}>
+          {label}
+        </a>
+      );
+    }
+  }
+  parts.push(text.slice(last));
+  return <>{parts}</>;
+}
 
 const SUGGESTIONS: string[] = [
   "What did Axel do at Microsoft?",
@@ -147,7 +204,7 @@ export default function AskResumeChat(): JSX.Element {
                     : "bg-muted"
                 )}
               >
-                {m.content || "…"}
+                {m.role === "assistant" && m.content ? <ReplyText text={m.content} /> : m.content || "…"}
               </div>
             ))}
             <div ref={endRef} />
