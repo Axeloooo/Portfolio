@@ -135,6 +135,9 @@ export default function AskResumeChat(): JSX.Element {
                     {s}
                   </button>
                 ))}
+                <p className="pt-1 text-xs text-muted-foreground">
+                  Questions are saved anonymously for 90 days to improve answers.
+                </p>
               </div>
             )}
             {messages.map((m: Msg, i: number): JSX.Element => (

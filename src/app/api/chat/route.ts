@@ -1,4 +1,6 @@
 import Anthropic from "@anthropic-ai/sdk";
+import { DATA } from "@/data/resume";
+import { checkLimits, logQuestion, type LimitResult } from "@/lib/chat-store";
 import { SYSTEM_PROMPT } from "@/lib/resume-context";
 
 export const runtime = "nodejs";
@@ -10,19 +12,6 @@ const MAX_USER_CHARS: number = 1000;
 // Replies of up to max_tokens (1024) come back as history on the next turn.
 const MAX_ASSISTANT_CHARS: number = 6000;
 const FALLBACK_REPLY: string = "Sorry, I can't answer that one. Try asking about Axel's experience, projects or skills.";
-const RATE_LIMIT: number = 15; // requests per IP per minute
-
-// Best-effort limiter: per-instance memory only, resets on cold start.
-const hits: Map<string, number[]> = new Map<string, number[]>();
-
-function rateLimited(ip: string): boolean {
-  const now: number = Date.now();
-  const recent: number[] = (hits.get(ip) ?? []).filter((t: number): boolean => now - t < 60_000);
-  recent.push(now);
-  hits.set(ip, recent);
-  if (hits.size > 5000) hits.clear();
-  return recent.length > RATE_LIMIT;
-}
 
 type ChatMessage = { role?: unknown; content?: unknown };
 
@@ -101,8 +90,15 @@ export async function POST(req: Request): Promise<Response> {
   }
 
   const ip: string = req.headers.get("x-forwarded-for")?.split(",")[0].trim() ?? "unknown";
-  if (rateLimited(ip)) {
+  const limit: LimitResult = await checkLimits(ip);
+  if (limit === "ip") {
     return Response.json({ error: "Too many requests." }, { status: 429 });
+  }
+  if (limit === "daily") {
+    return Response.json(
+      { error: `The chat has reached its limit for today. Please try again tomorrow or email ${DATA.contact.email}.` },
+      { status: 429 }
+    );
   }
 
   const messages: Anthropic.MessageParam[] | null = parseMessages(
@@ -111,6 +107,9 @@ export async function POST(req: Request): Promise<Response> {
   if (!messages) {
     return Response.json({ error: "Invalid request." }, { status: 400 });
   }
+
+  // Runs alongside the model call; a logging failure never blocks the answer.
+  const logged: Promise<void> = logQuestion(messages[messages.length - 1].content as string);
 
   const client: Anthropic = new Anthropic({ apiKey });
   const stream: ReturnType<Anthropic["messages"]["stream"]> =
@@ -176,6 +175,8 @@ export async function POST(req: Request): Promise<Response> {
     connected = true;
   } catch (err: unknown) {
     return apiErrorResponse(err);
+  } finally {
+    await logged;
   }
 
   return new Response(body, {
