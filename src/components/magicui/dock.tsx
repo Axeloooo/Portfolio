@@ -2,8 +2,7 @@
 
 import { cn } from "@/lib/utils";
 import { cva, type VariantProps } from "class-variance-authority";
-import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
-import React, { PropsWithChildren, useRef } from "react";
+import React, { PropsWithChildren, useCallback, useRef } from "react";
 
 export interface DockProps extends VariantProps<typeof dockVariants> {
   className?: string;
@@ -14,11 +13,14 @@ export interface DockProps extends VariantProps<typeof dockVariants> {
 
 const DEFAULT_MAGNIFICATION = 60;
 const DEFAULT_DISTANCE = 140;
+const BASE_SIZE = 40;
 
 const dockVariants = cva(
   "mx-auto w-max h-full p-2 flex items-end rounded-full border"
 );
 
+// Magnifies icons near the pointer. Widths are written straight to the DOM in a
+// rAF (no React state, no animation library); a CSS transition smooths them.
 const Dock = React.forwardRef<HTMLDivElement, DockProps>(
   (
     {
@@ -28,33 +30,48 @@ const Dock = React.forwardRef<HTMLDivElement, DockProps>(
       distance = DEFAULT_DISTANCE,
       ...props
     },
-    ref
+    forwardedRef
   ) => {
-    const mousex = useMotionValue(Infinity);
+    const innerRef = useRef<HTMLDivElement | null>(null);
+    const frame = useRef<number | null>(null);
 
-    const renderChildren = () => {
-      return React.Children.map(children, (child: any) => {
-        if (React.isValidElement(child)) {
-          return React.cloneElement(child, {
-            mousex,
-            magnification,
-            distance,
-          } as DockIconProps);
-        }
-        return child;
+    const setRef = useCallback(
+      (node: HTMLDivElement | null) => {
+        innerRef.current = node;
+        if (typeof forwardedRef === "function") forwardedRef(node);
+        else if (forwardedRef) forwardedRef.current = node;
+      },
+      [forwardedRef]
+    );
+
+    const resize = (pointerX: number | null) => {
+      if (frame.current !== null) cancelAnimationFrame(frame.current);
+      frame.current = requestAnimationFrame(() => {
+        const icons =
+          innerRef.current?.querySelectorAll<HTMLElement>("[data-dock-icon]");
+        icons?.forEach((icon: HTMLElement) => {
+          if (pointerX === null) {
+            icon.style.width = "";
+            return;
+          }
+          const bounds = icon.getBoundingClientRect();
+          const offset = Math.abs(pointerX - bounds.x - bounds.width / 2);
+          const t = Math.max(0, 1 - offset / distance);
+          icon.style.width = `${BASE_SIZE + (magnification - BASE_SIZE) * t}px`;
+        });
       });
     };
 
     return (
-      <motion.div
-        ref={ref}
-        onMouseMove={(e) => mousex.set(e.pageX)}
-        onMouseLeave={() => mousex.set(Infinity)}
+      <div
+        ref={setRef}
+        onMouseMove={(e) => resize(e.clientX)}
+        onMouseLeave={() => resize(null)}
         {...props}
         className={cn(dockVariants({ className }))}
       >
-        {renderChildren()}
-      </motion.div>
+        {children}
+      </div>
     );
   }
 );
@@ -62,55 +79,23 @@ const Dock = React.forwardRef<HTMLDivElement, DockProps>(
 Dock.displayName = "Dock";
 
 export interface DockIconProps {
-  size?: number;
-  magnification?: number;
-  distance?: number;
-  mousex?: any;
   className?: string;
   children?: React.ReactNode;
   props?: PropsWithChildren;
 }
 
-const DockIcon = ({
-  size,
-  magnification = DEFAULT_MAGNIFICATION,
-  distance = DEFAULT_DISTANCE,
-  mousex,
-  className,
-  children,
-  ...props
-}: DockIconProps) => {
-  const ref = useRef<HTMLDivElement>(null);
-
-  const distanceCalc = useTransform(mousex, (val: number) => {
-    const bounds = ref.current?.getBoundingClientRect() ?? { x: 0, width: 0 };
-    return val - bounds.x - bounds.width / 2;
-  });
-
-  let widthSync = useTransform(
-    distanceCalc,
-    [-distance, 0, distance],
-    [40, magnification, 40]
-  );
-
-  let width = useSpring(widthSync, {
-    mass: 0.1,
-    stiffness: 150,
-    damping: 12,
-  });
-
+const DockIcon = ({ className, children, ...props }: DockIconProps) => {
   return (
-    <motion.div
-      ref={ref}
-      style={{ width }}
+    <div
+      data-dock-icon
       className={cn(
-        "flex aspect-square cursor-pointer items-center justify-center rounded-full",
+        "flex aspect-square w-10 cursor-pointer items-center justify-center rounded-full transition-[width] duration-150 ease-out",
         className
       )}
       {...props}
     >
       {children}
-    </motion.div>
+    </div>
   );
 };
 

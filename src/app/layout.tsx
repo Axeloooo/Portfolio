@@ -14,6 +14,9 @@ import "./globals.css";
 const fontSans = FontSans({
   subsets: ["latin", "cyrillic"],
   variable: "--font-sans",
+  // Use Inter only if it arrives within the first frames; never swap it in
+  // later, which reflowed text (CLS) on slow connections.
+  display: "optional",
 });
 
 export const metadata: Metadata = {
@@ -76,8 +79,13 @@ export default function RootLayout({
           <TooltipProvider delayDuration={0}>
             <FaviconSwitcher />
             {children}
-            <SpeedInsights />
-            <Analytics />
+            {/* The Vercel scripts only exist on Vercel; elsewhere they 404. */}
+            {process.env.VERCEL && (
+              <>
+                <SpeedInsights />
+                <Analytics />
+              </>
+            )}
             <Navbar />
             <AskResumeChat />
           </TooltipProvider>
