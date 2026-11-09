@@ -31,6 +31,9 @@ export default async function BlogPage() {
             <Link
               className="flex flex-col space-y-1 mb-4"
               href={`/blog/${post.slug}`}
+              // Prefetch on hover only; prefetching every post on load
+              // parsed ~200 KB of RSC payloads up front.
+              prefetch={false}
             >
               <div className="w-full flex flex-col">
                 <p className="tracking-tight">{post.metadata.title}</p>

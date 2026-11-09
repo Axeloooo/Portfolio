@@ -20,7 +20,9 @@ const config = {
     },
     extend: {
       fontFamily: {
-        sans: ["var(--font-sans)", ...fontFamily.sans],
+        // System UI stack (SF Pro, Segoe UI, Roboto...): no web font to
+        // download, so text paints with the first frame and never reflows.
+        sans: fontFamily.sans,
       },
       colors: {
         border: "hsl(var(--border))",

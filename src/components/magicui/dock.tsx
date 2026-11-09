@@ -89,7 +89,7 @@ const DockIcon = ({ className, children, ...props }: DockIconProps) => {
     <div
       data-dock-icon
       className={cn(
-        "flex aspect-square w-10 cursor-pointer items-center justify-center rounded-full transition-[width] duration-150 ease-out",
+        "group relative flex aspect-square w-10 cursor-pointer items-center justify-center rounded-full transition-[width] duration-150 ease-out",
         className
       )}
       {...props}

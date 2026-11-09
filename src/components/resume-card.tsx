@@ -106,7 +106,7 @@ export const ResumeCard = ({
           {description && (
             <div
               className={cn(
-                "grid transition-[grid-template-rows,opacity] duration-700 ease-[cubic-bezier(0.16,1,0.3,1)]",
+                "grid transition-[grid-template-rows,opacity] duration-700 [transition-timing-function:cubic-bezier(0.16,1,0.3,1)]",
                 isExpanded
                   ? "grid-rows-[1fr] opacity-100"
                   : "grid-rows-[0fr] opacity-0"

@@ -3,21 +3,10 @@ import Navbar from "@/components/navbar";
 import FaviconSwitcher from "@/components/favicon-switcher";
 import { Analytics } from "@vercel/analytics/react";
 import { ThemeProvider } from "@/components/theme-provider";
-import { TooltipProvider } from "@/components/ui/tooltip";
 import { DATA } from "@/data/resume";
-import { cn } from "@/lib/utils";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import type { Metadata } from "next";
-import { Inter as FontSans } from "next/font/google";
 import "./globals.css";
-
-const fontSans = FontSans({
-  subsets: ["latin", "cyrillic"],
-  variable: "--font-sans",
-  // Use Inter only if it arrives within the first frames; never swap it in
-  // later, which reflowed text (CLS) on slow connections.
-  display: "optional",
-});
 
 export const metadata: Metadata = {
   metadataBase: new URL(DATA.url),
@@ -69,26 +58,19 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body
-        className={cn(
-          "min-h-screen bg-background font-sans antialiased max-w-2xl mx-auto py-12 sm:py-24 px-6",
-          fontSans.variable
-        )}
-      >
+      <body className="min-h-screen bg-background font-sans antialiased max-w-2xl mx-auto py-12 sm:py-24 px-6">
         <ThemeProvider attribute="class" defaultTheme="light">
-          <TooltipProvider delayDuration={0}>
-            <FaviconSwitcher />
-            {children}
-            {/* The Vercel scripts only exist on Vercel; elsewhere they 404. */}
-            {process.env.VERCEL && (
-              <>
-                <SpeedInsights />
-                <Analytics />
-              </>
-            )}
-            <Navbar />
-            <AskResumeChat />
-          </TooltipProvider>
+          <FaviconSwitcher />
+          {children}
+          {/* The Vercel scripts only exist on Vercel; elsewhere they 404. */}
+          {process.env.VERCEL && (
+            <>
+              <SpeedInsights />
+              <Analytics />
+            </>
+          )}
+          <Navbar />
+          <AskResumeChat />
         </ThemeProvider>
       </body>
     </html>
