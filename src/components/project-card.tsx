@@ -49,6 +49,8 @@ export function ProjectCard({
       <Link
         href={href || "#"}
         className={cn("block cursor-pointer", className)}
+        // Prefetch on hover only: 20+ cards would otherwise prefetch on load.
+        prefetch={false}
       >
         {video && (
           <video
@@ -66,6 +68,7 @@ export function ProjectCard({
             alt={title}
             width={500}
             height={300}
+            sizes="(min-width: 640px) 320px, 100vw"
             className="h-40 w-full overflow-hidden object-cover object-top"
           />
         )}
@@ -86,13 +89,14 @@ export function ProjectCard({
         {tags && tags.length > 0 && (
           <div className="mt-2 flex flex-wrap gap-1">
             {tags?.map((tag) => (
-              <Badge
-                className="px-1 py-0 text-[10px]"
-                variant="secondary"
+              // Plain span rather than <Badge>: ~150 tags on the home page, and
+              // Badge's hover/focus classes are dead weight on static labels.
+              <span
+                className="inline-flex items-center rounded-md bg-secondary px-1 py-0 text-[10px] font-semibold text-secondary-foreground"
                 key={tag}
               >
                 {tag}
-              </Badge>
+              </span>
             ))}
           </div>
         )}

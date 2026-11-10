@@ -1,62 +1,47 @@
-"use client";
-
-import { AnimatePresence, motion, useInView, Variants } from "framer-motion";
-import { useRef } from "react";
+import { cn } from "@/lib/utils";
+import React from "react";
 
 interface BlurFadeProps {
   children: React.ReactNode;
   className?: string;
-  variant?: {
-    hidden: { y: number };
-    visible: { y: number };
-  };
+  // Element to render; use "li" when the item sits directly inside a list.
+  as?: "div" | "li" | "span";
   duration?: number;
   delay?: number;
   yOffset?: number;
-  inView?: boolean;
-  inViewMargin?: string;
-  blur?: string;
+  // Fade in from transparent. Turn off for above-the-fold content so it is
+  // visible (and counts as the largest contentful paint) on the first frame.
+  fade?: boolean;
 }
+
+// Fade-and-rise entrance done in CSS so it runs before hydration and stays on
+// the compositor (opacity + transform only). Disabled for reduced motion.
 const BlurFade = ({
   children,
   className,
-  variant,
+  as: Tag = "div",
   duration = 0.4,
   delay = 0,
   yOffset = 6,
-  inView = false,
-  inViewMargin = "-50px",
-  blur = "6px",
+  fade = true,
 }: BlurFadeProps) => {
-  const ref = useRef(null);
-  const inViewResult = useInView(ref, {
-    once: true,
-    margin: inViewMargin as any,
-  });
-  const isInView = !inView || inViewResult;
-  const defaultVariants: Variants = {
-    hidden: { y: yOffset, opacity: 0, filter: `blur(${blur})` },
-    visible: { y: -yOffset, opacity: 1, filter: `blur(0px)` },
-  };
-  const combinedVariants = variant || defaultVariants;
   return (
-    <AnimatePresence>
-      <motion.div
-        ref={ref}
-        initial="hidden"
-        animate={isInView ? "visible" : "hidden"}
-        exit="hidden"
-        variants={combinedVariants}
-        transition={{
-          delay: 0.04 + delay,
-          duration,
-          ease: "easeOut",
-        }}
-        className={className}
-      >
-        {children}
-      </motion.div>
-    </AnimatePresence>
+    <Tag
+      className={cn(
+        fade ? "animate-blur-fade" : "animate-rise",
+        "motion-reduce:animate-none",
+        className
+      )}
+      style={
+        {
+          "--blur-fade-y": `${yOffset}px`,
+          animationDuration: `${duration}s`,
+          animationDelay: `${0.04 + delay}s`,
+        } as React.CSSProperties
+      }
+    >
+      {children}
+    </Tag>
   );
 };
 

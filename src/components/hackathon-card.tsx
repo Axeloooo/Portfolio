@@ -1,5 +1,6 @@
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
+import Image from "next/image";
 import Link from "next/link";
 
 interface Props {
@@ -15,11 +16,20 @@ interface Props {
 
 export function HackathonCard({ title, dates, image, links }: Props) {
   return (
-    <li className="relative ml-10 py-4">
+    <div className="relative ml-10 py-4">
       <div className="absolute -left-16 top-2 flex items-center justify-center bg-white rounded-full">
         <Avatar className="border size-12 m-auto">
-          <AvatarImage src={image} alt={title} className="object-contain" />
-          <AvatarFallback>{title[0]}</AvatarFallback>
+          {image ? (
+            <Image
+              src={image}
+              alt={title}
+              width={48}
+              height={48}
+              className="aspect-square size-full object-contain"
+            />
+          ) : (
+            <AvatarFallback>{title[0]}</AvatarFallback>
+          )}
         </Avatar>
       </div>
       <div className="flex flex-1 flex-col justify-start gap-1">
@@ -40,6 +50,6 @@ export function HackathonCard({ title, dates, image, links }: Props) {
           ))}
         </div>
       )}
-    </li>
+    </div>
   );
 }
