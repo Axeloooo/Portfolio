@@ -15,7 +15,7 @@ No test suite is configured.
 
 ## Architecture
 
-This is a **Next.js 14 App Router** portfolio site built with TypeScript, Tailwind CSS, and shadcn/ui.
+This is a **Next.js 15 App Router** portfolio site built with TypeScript, Tailwind CSS, and shadcn/ui.
 
 ### Content Data Layer
 

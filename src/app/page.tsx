@@ -4,8 +4,9 @@ import BlurFadeText from "@/components/magicui/blur-fade-text";
 import { ProjectCard } from "@/components/project-card";
 import { ResumeCard } from "@/components/resume-card";
 import SkillsMarquee from "@/components/skills-marquee";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Avatar } from "@/components/ui/avatar";
 import { DATA } from "@/data/resume";
+import Image from "next/image";
 import Markdown from "react-markdown";
 
 const BLUR_FADE_DELAY = 0.04;
@@ -18,21 +19,29 @@ export default function Page() {
           <div className="gap-2 flex justify-between">
             <div className="flex-col flex flex-1 space-y-1.5">
               <BlurFadeText
+                fade={false}
                 delay={BLUR_FADE_DELAY}
                 className="text-3xl font-bold tracking-tighter sm:text-5xl xl:text-4xl/none"
                 yOffset={8}
                 text={`Hi! / Bonjour! / Hola! / Привіт! 👋`}
               />
               <BlurFadeText
+                fade={false}
                 className="max-w-[600px] md:text-xl"
                 delay={BLUR_FADE_DELAY}
                 text={DATA.description}
               />
             </div>
-            <BlurFade delay={BLUR_FADE_DELAY}>
+            <BlurFade fade={false} delay={BLUR_FADE_DELAY}>
               <Avatar className="size-28 border">
-                <AvatarImage alt={DATA.name} src={DATA.avatarUrl} />
-                <AvatarFallback>{DATA.initials}</AvatarFallback>
+                <Image
+                  alt={DATA.name}
+                  src={DATA.avatarUrl}
+                  width={112}
+                  height={112}
+                  priority
+                  className="aspect-square size-full object-cover"
+                />
               </Avatar>
             </BlurFade>
           </div>
@@ -222,6 +231,7 @@ export default function Page() {
             <ul className="mb-4 ml-4 divide-y divide-dashed border-l">
               {DATA.certificates.map((project, id) => (
                 <BlurFade
+                  as="li"
                   key={project.title + project.dates}
                   delay={BLUR_FADE_DELAY * 21 + id * 0.05}
                 >
@@ -247,7 +257,7 @@ export default function Page() {
               <h2 className="text-3xl font-bold tracking-tighter sm:text-5xl">
                 {DATA.contactSection.heading}
               </h2>
-              <Markdown className="prose mx-auto max-w-[600px] text-pretty font-sans text-muted-foreground dark:prose-invert md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed [&_a]:text-blue-500 [&_a]:no-underline hover:[&_a]:underline">
+              <Markdown className="prose mx-auto max-w-[600px] text-pretty font-sans text-muted-foreground dark:prose-invert md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed [&_a]:text-blue-600 dark:[&_a]:text-blue-400 [&_a]:no-underline hover:[&_a]:underline">
                 {DATA.contactSection.description}
               </Markdown>
             </div>
