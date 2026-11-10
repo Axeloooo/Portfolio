@@ -20,7 +20,9 @@ const config = {
     },
     extend: {
       fontFamily: {
-        sans: ["var(--font-sans)", ...fontFamily.sans],
+        // System UI stack (SF Pro, Segoe UI, Roboto...): no web font to
+        // download, so text paints with the first frame and never reflows.
+        sans: fontFamily.sans,
       },
       colors: {
         border: "hsl(var(--border))",
@@ -71,6 +73,17 @@ const config = {
           from: { height: "var(--radix-accordion-content-height)" },
           to: { height: "0" },
         },
+        "blur-fade": {
+          from: {
+            opacity: "0",
+            transform: "translateY(var(--blur-fade-y, 6px))",
+          },
+          to: { opacity: "1", transform: "translateY(0)" },
+        },
+        rise: {
+          from: { transform: "translateY(var(--blur-fade-y, 6px))" },
+          to: { transform: "translateY(0)" },
+        },
         marquee: {
           from: { transform: "translateX(0)" },
           to: { transform: "translateX(calc(-100% - var(--gap)))" },
@@ -79,6 +92,8 @@ const config = {
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
+        "blur-fade": "blur-fade 0.4s ease-out both",
+        rise: "rise 0.4s ease-out both",
         marquee: "marquee var(--duration) linear infinite",
       },
     },
